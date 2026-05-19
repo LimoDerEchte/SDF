@@ -1,0 +1,1 @@
+Place SDK generated using Dumper-7 into libs/CppSDK and init submodules of libs/RE-UE4SS
