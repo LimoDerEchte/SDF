@@ -4,7 +4,7 @@ if(UNIX)
     set(CMAKE_TOOLCHAIN_FILE libs/RE-UE4SS/cmake/toolchains/xwin-clang-cl-toolchain.cmake)
 endif()
 
-project(SN2CustomCraft)
+project(LimoMods)
 
 set(CMAKE_CXX_STANDARD 23)
 
