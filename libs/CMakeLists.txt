@@ -1,12 +1,18 @@
 
 add_subdirectory(RE-UE4SS)
 
+file(GLOB_RECURSE SDK_SOURCES CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/CppSDK/SDK/*.cpp
+)
+
 add_library(SDK SHARED
-        "CppSDK/SDK/Basic.cpp"
-        "CppSDK/SDK/CoreUObject_functions.cpp"
-        "CppSDK/SDK/WBP_RecipeCategory_functions.cpp"
+        ${SDK_SOURCES}
 )
 target_include_directories(SDK PUBLIC CppSDK)
+target_compile_options(SDK PRIVATE /Zi)
+target_link_options(SDK PRIVATE /DEBUG)
+
+set(MINHOOK_INCLUDE)
 
 set(SDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/CppSDK" PARENT_SCOPE)
 set(SDK_COMPILE

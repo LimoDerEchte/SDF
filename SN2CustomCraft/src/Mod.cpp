@@ -1,7 +1,7 @@
+#include "registering/Hooks.hpp"
+
 #include <DynamicOutput/Output.hpp>
 #include <Mod/CppUserModBase.hpp>
-
-#include "registering/Hooks.hpp"
 
 using namespace RC;
 using namespace Unreal;

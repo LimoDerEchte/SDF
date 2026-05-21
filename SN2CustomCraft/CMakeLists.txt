@@ -4,7 +4,7 @@ set(TARGET SN2CustomCraft)
 project(${TARGET})
 
 add_library(${TARGET} SHARED
-        "src/Mod.cpp"
+        src/Mod.cpp
         src/registering/Hooks.cpp
         src/registering/Hooks.hpp
 )
