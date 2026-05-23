@@ -5,5 +5,5 @@ name = "Custom Food"
 description = "Custom and data driven food category"
 
 crafted_by = "Fabricator"
-parent_category = "Sustenance" # A parent category is currently necessary for everything but Processor categories
-icon = "DEFAULT" # Placeholder Alterra Cicada icon => not sure where this icon is actually used
+parent_category = "Sustenance" # Optional; a parent category is currently necessary for everything but Processor categories
+icon = "DEFAULT" # Optional; placeholder Alterra Cicada icon => not sure where this icon is actually used

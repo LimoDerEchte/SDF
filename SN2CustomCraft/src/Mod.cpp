@@ -4,6 +4,8 @@
 #include <DynamicOutput/Output.hpp>
 #include <Mod/CppUserModBase.hpp>
 
+#include "parsing/CategoryParser.hpp"
+#include "parsing/FileTraversal.hpp"
 #include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
 
@@ -37,20 +39,16 @@ public:
     static void Startup() {
         Hooks::RegisterHooks();
 
+        FileTraversal::ScanFiles();
+        CategoryParser::ParseCategories();
+
         CategoryFactory upperCategory("UpperCategory", "Upper Category", "This is an upper category", ECrafterType::Fabricator);
         upperCategory.setIconFromItem("MetalSalvage");
         const auto upperCatPtr = upperCategory.registerCategory();
-        upperCatPtr->OrderingIndex = 50;
-
-        CategoryFactory category("CustomCategory", "Custom Category", "This is a custom category :)", ECrafterType::ModificationStation);
-        //category.setParent(upperCatPtr);
-        category.setParent("ToolUpgrades");
-        category.setIconFromItem("CopperIngot");
-        const auto catPtr = category.registerCategory();
 
         RecipeFactory recipe("CustomRecipe", "Copper Ingot", "This is a custom test recipe :)");
         recipe.setIconFromItem("CopperIngot");
-        recipe.setCategory(catPtr);
+        recipe.setCategory("CustomCategory");
 
         recipe.addIngredient("PowerCell", 1);
         recipe.addIngredient("Grease", 3);

@@ -1,9 +1,6 @@
 [submodule "RE-UE4SS"]
 	path = libs/RE-UE4SS
 	url = https://github.com/UE4SS-RE/RE-UE4SS.git
-[submodule "libs/utfcpp"]
-	path = libs/utfcpp
-	url = https://github.com/nemtrif/utfcpp.git
 [submodule "libs/tomlplusplus"]
 	path = libs/tomlplusplus
 	url = https://github.com/marzer/tomlplusplus.git

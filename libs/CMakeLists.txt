@@ -13,8 +13,7 @@ target_compile_options(SDK PRIVATE /Zi)
 target_link_options(SDK PRIVATE /DEBUG)
 
 set(HEADER_ONLY_INCLUDE
-        "${CMAKE_CURRENT_SOURCE_DIR}/utfcpp/source"
-        "${CMAKE_CURRENT_SOURCE_DIR}tomlplusplus/include/toml++"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tomlplusplus/include"
 PARENT_SCOPE)
 
 set(SDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/CppSDK" PARENT_SCOPE)
