@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "UnrealContainers.hpp"
 #include "SDK/UWECrafting_classes.hpp"
+#include "SDK/UWEInventory_classes.hpp"
 
 using namespace SDK;
 
@@ -15,19 +15,25 @@ class RecipeFactory {
     static std::vector<UUWECraftingRecipe*> registeredRecipes;
 
     std::string recipeId, recipeName, recipeDescription;
-    TArray<FCraftingRecipeRequirement> ingredients;
-    TArray<FCraftingRecipeOutput> outputs;
+    UUWECraftingRecipeCategory* recipeCategory = nullptr;
+
+    std::vector<FCraftingRecipeRequirement> ingredients{};
+    std::vector<FCraftingRecipeOutput> outputs{};
 
     static UUWEItemType *searchItem(const std::string &itemId);
+    static UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
 
 public:
     explicit RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription);
 
-    void addIngredient(const std::string &itemId, int32_t amount);
-    void addIngredient(UUWEItemType *item, int32_t amount);
+    bool setCategory(const std::string &categoryId);
+    bool setCategory(UUWECraftingRecipeCategory *category);
 
-    void addOutput(const std::string &itemId, int32_t amount);
-    void addOutput(UUWEItemType *item, int32_t amount);
+    bool addIngredient(const std::string &itemId, int32_t amount);
+    bool addIngredient(UUWEItemType *item, int32_t amount);
+
+    bool addOutput(const std::string &itemId, int32_t amount);
+    bool addOutput(UUWEItemType *item, int32_t amount);
 
     void registerRecipe() const;
 

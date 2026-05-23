@@ -4,20 +4,20 @@
 
 #pragma once
 
-#include <UnrealContainers.hpp>
 #include <SDK/UWECrafting_classes.hpp>
 #include "polyhook2/Detour/x64Detour.hpp"
+#include "Containers/Array.hpp"
 
 using namespace SDK;
 
-using getRecipeT = TArray<UUWECraftingRecipe*>(*)();
+using getRecipeT = RC::Unreal::TArray<UUWECraftingRecipe*>(*)();
 
 class Hooks {
     static getRecipeT originalGetRecipes;
 
     static std::unique_ptr<PLH::Detour> getRecipesHook;
 
-    static TArray<UUWECraftingRecipe*> GetRecipesHook();
+    static RC::Unreal::TArray<UUWECraftingRecipe*> GetRecipesHook();
 
     static uintptr_t ScanCall(uintptr_t address, int ordinal);
 

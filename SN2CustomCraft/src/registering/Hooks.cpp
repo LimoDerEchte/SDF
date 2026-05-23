@@ -15,9 +15,9 @@ getRecipeT Hooks::originalGetRecipes = nullptr;
 
 std::unique_ptr<PLH::Detour> Hooks::getRecipesHook = nullptr;
 
-TArray<UUWECraftingRecipe*> Hooks::GetRecipesHook() {
+RC::Unreal::TArray<UUWECraftingRecipe*> Hooks::GetRecipesHook() {
     auto recipes = originalGetRecipes();
-        Log::Verbose("Adding recipes");
+    Log::Verbose("Adding recipes");
     for (const UUWECraftingRecipe* recipe : RecipeFactory::getAllRegisteredRecipes()) {
         Log::Verbose("Adding recipe");
         recipes.Add(const_cast<UUWECraftingRecipe*>(recipe));

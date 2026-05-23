@@ -36,9 +36,13 @@ public:
     static void Startup() {
         Hooks::RegisterHooks();
 
-        RecipeFactory recipe("CustomRecipe", "Limos Recipe", "This is a custom recipe :)");
+        RecipeFactory recipe("CustomRecipe", "Limos Test Recipe", "This is a custom test recipe :)");
+        recipe.setCategory("SustenanceCookedFood");
+
         recipe.addIngredient("PowerCell", 1);
+        recipe.addIngredient("Grease", 3);
         recipe.addOutput("CopperIngot", 2);
+
         recipe.registerRecipe();
     }
 };
