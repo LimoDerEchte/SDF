@@ -25,6 +25,8 @@ class RecipeFactory {
     static UUWEItemType *searchItem(const std::string &itemId);
     static UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
 
+    friend class CategoryFactory;
+
 public:
     explicit RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription);
 
@@ -41,7 +43,7 @@ public:
     bool addOutput(const std::string &itemId, int32_t amount);
     bool addOutput(UUWEItemType *item, int32_t amount);
 
-    void registerRecipe() const;
+    UUWECraftingRecipe* registerRecipe() const;
 
     static std::vector<UUWECraftingRecipe*> getAllRegisteredRecipes();
 };

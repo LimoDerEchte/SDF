@@ -91,20 +91,21 @@ bool RecipeFactory::addOutput(UUWEItemType *item, const int32_t amount) {
     return true;
 }
 
-void RecipeFactory::registerRecipe() const {
+UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     const auto base = reinterpret_cast<UUWECraftingRecipe*>(UObjectGlobals::FindObject(L"UWECraftingRecipe", L"DA_MetalSalvageRecipe"));
     if (base == nullptr)
-        return;
+        return nullptr;
 
     const auto recipe = reinterpret_cast<UUWECraftingRecipe*>(UGameplayStatics::SpawnObject(UUWECraftingRecipe::StaticClass(), base->Outer));
     if (recipe == nullptr)
-        return;
+        return nullptr;
 
     recipe->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}_CustomCraftRecipe", recipeId)).c_str());
     recipe->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
 
     recipe->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeName).c_str());
     recipe->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeDescription).c_str());
+    recipe->Thumbnail = recipeTexture;
     recipe->Category = recipeCategory == nullptr ? base->Category : static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(recipeCategory));
 
     const auto requirements = reinterpret_cast<Unreal::TArray<FCraftingRecipeRequirement>*>(&recipe->Requirements);
@@ -116,10 +117,10 @@ void RecipeFactory::registerRecipe() const {
     for (const auto& out : outputs) {
         output->Add(out);
     }
-    recipe->Thumbnail = recipeTexture;
 
     registeredRecipes.push_back(recipe);
     Log::Verbose("Recipe registered: {}", recipeId);
+    return recipe;
 }
 
 std::vector<UUWECraftingRecipe*> RecipeFactory::getAllRegisteredRecipes() {

@@ -4,6 +4,7 @@
 #include <DynamicOutput/Output.hpp>
 #include <Mod/CppUserModBase.hpp>
 
+#include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
 
 using namespace RC;
@@ -36,9 +37,19 @@ public:
     static void Startup() {
         Hooks::RegisterHooks();
 
+        CategoryFactory upperCategory("UpperCategory", "Upper Category", "This is an upper category", ECrafterType::Fabricator);
+        upperCategory.setIconFromItem("MetalSalvage");
+        const auto upperCatPtr = upperCategory.registerCategory();
+
+        CategoryFactory category("CustomCategory", "Custom Category", "This is a custom category :)", ECrafterType::Fabricator);
+        category.setParent("Sustenance");
+        category.setIconFromItem("CopperIngot");
+        const auto catPtr = category.registerCategory();
+        //catPtr->OrderingIndex = 50;
+
         RecipeFactory recipe("CustomRecipe", "Copper Ingot", "This is a custom test recipe :)");
         recipe.setIconFromItem("CopperIngot");
-        recipe.setCategory("SustenanceCookedFood");
+        recipe.setCategory(catPtr);
 
         recipe.addIngredient("PowerCell", 1);
         recipe.addIngredient("Grease", 3);

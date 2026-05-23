@@ -9,6 +9,7 @@ add_library(${TARGET} SHARED
         src/Mod.cpp
         src/registering/Hooks.cpp
         src/registering/RecipeFactory.cpp
+        src/registering/CategoryFactory.cpp
         src/util/Log.hpp
 
         ../libs/CppSDK/SDK/Basic.cpp
