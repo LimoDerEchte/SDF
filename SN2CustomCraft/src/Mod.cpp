@@ -36,7 +36,8 @@ public:
     static void Startup() {
         Hooks::RegisterHooks();
 
-        RecipeFactory recipe("CustomRecipe", "Limos Test Recipe", "This is a custom test recipe :)");
+        RecipeFactory recipe("CustomRecipe", "Copper Ingot", "This is a custom test recipe :)");
+        recipe.setIconFromItem("CopperIngot");
         recipe.setCategory("SustenanceCookedFood");
 
         recipe.addIngredient("PowerCell", 1);

@@ -15,7 +15,9 @@ class RecipeFactory {
     static std::vector<UUWECraftingRecipe*> registeredRecipes;
 
     std::string recipeId, recipeName, recipeDescription;
+
     UUWECraftingRecipeCategory* recipeCategory = nullptr;
+    TSoftObjectPtr<UTexture2D> recipeTexture;
 
     std::vector<FCraftingRecipeRequirement> ingredients{};
     std::vector<FCraftingRecipeOutput> outputs{};
@@ -28,6 +30,10 @@ public:
 
     bool setCategory(const std::string &categoryId);
     bool setCategory(UUWECraftingRecipeCategory *category);
+
+    bool setIconFromItem(const std::string &itemId);
+    bool setIconFromItem(const UUWEItemType *item);
+    bool setIcon(UTexture2D *icon);
 
     bool addIngredient(const std::string &itemId, int32_t amount);
     bool addIngredient(UUWEItemType *item, int32_t amount);

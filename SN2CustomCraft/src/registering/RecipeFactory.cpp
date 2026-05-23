@@ -28,6 +28,9 @@ UUWECraftingRecipeCategory * RecipeFactory::searchRecipeCategory(const std::stri
 
 RecipeFactory::RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription)
     : recipeId(std::move(recipeId)), recipeName(std::move(recipeName)), recipeDescription(std::move(recipeDescription)) {
+
+    const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
+    setIcon(defaultTex);
 }
 
 bool RecipeFactory::setCategory(const std::string &categoryId) {
@@ -38,6 +41,24 @@ bool RecipeFactory::setCategory(UUWECraftingRecipeCategory *category) {
     if (category == nullptr)
         return false;
     recipeCategory = category;
+    return true;
+}
+
+bool RecipeFactory::setIconFromItem(const std::string &itemId) {
+    return setIconFromItem(searchItem(itemId));
+}
+
+bool RecipeFactory::setIconFromItem(const UUWEItemType *item) {
+    if (item == nullptr)
+        return false;
+    recipeTexture = item->Thumbnail;
+    return true;
+}
+
+bool RecipeFactory::setIcon(UTexture2D *icon) {
+    if (icon == nullptr)
+        return false;
+    recipeTexture = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
     return true;
 }
 
@@ -84,9 +105,7 @@ void RecipeFactory::registerRecipe() const {
 
     recipe->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeName).c_str());
     recipe->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeDescription).c_str());
-
-    const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
-    recipe->Thumbnail = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(defaultTex));
+    recipe->Category = recipeCategory == nullptr ? base->Category : static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(recipeCategory));
 
     const auto requirements = reinterpret_cast<Unreal::TArray<FCraftingRecipeRequirement>*>(&recipe->Requirements);
     for (const auto& ingredient: ingredients) {
@@ -97,9 +116,7 @@ void RecipeFactory::registerRecipe() const {
     for (const auto& out : outputs) {
         output->Add(out);
     }
-
-    recipe->Category = recipeCategory == nullptr ? base->Category : static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>
-                                                    (UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(recipeCategory));
+    recipe->Thumbnail = recipeTexture;
 
     registeredRecipes.push_back(recipe);
     Log::Verbose("Recipe registered: {}", recipeId);
