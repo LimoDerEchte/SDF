@@ -7,12 +7,8 @@ description = "This is a custom and data driven recipe"
 category = "CustomCategory"
 icon = "ITEM CookedBluemoon" # This will use the thumbnail from the given item
 
-ingredients = {
-    "CopperIngot" = 2
-}
-outputs = {
-    "CookedBluemoon" = 6
-}
+ingredients = { CopperIngot = 2 }
+outputs = { CookedBluemoon = 6 }
 crafting_time = 5.0 # Floating point crafting time in seconds
 
 
@@ -21,14 +17,9 @@ id = "CustomProcessorRecipe"
 
 name = "Custom Processor Recipe"
 description = "This is a custom recipe that can be crafted using a Processor"
-category = "ProcessorBiofuel"
-icon = "DEFAULT" # Default is the "Alterra Cicada" logo, used in the game as a placeholder
+category = "ProcessorBiofuel" # Where something is crafted is entirely decided by the category
+icon = "DEFAULT" # Optional, default is the "Alterra Cicada" logo, used in the game as a placeholder
 
-ingredients = {
-    "CookedBluemoon" = 3,
-    "CookedHalfmoon" = 3
-}
-outputs = {
-    "BiofuelBlock" = 3
-}
+ingredients = { CookedBluemoon = 3, CookedHalfmoon = 3 }
+outputs = { BiofuelBlock = 3 }
 crafting_time = 15.0

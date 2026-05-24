@@ -77,7 +77,7 @@ void CategoryParser::parseFile(std::string file, const toml::table &table) {
         categories.insert(std::make_pair(categoryId, result));
 }
 
-void CategoryParser::ParseCategories() {
+void CategoryParser::parseCategories() {
     for (const auto&[path, toml] : FileTraversal::categoryTables) {
         if (!toml["category"].is_array()) {
             Log::Warning("Malformed category file {}", path);

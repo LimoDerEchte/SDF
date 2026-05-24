@@ -10,11 +10,11 @@
 
 using namespace SDK;
 
-class CategoryParser {
-    static std::map<std::string, UUWECraftingRecipeCategory*> categories;
+class RecipeParser {
+    static std::map<std::string, UUWECraftingRecipe*> recipies;
 
     static void parseFile(std::string file, const toml::table &table);
 
 public:
-    static void parseCategories();
+    static void parseRecipes();
 };

@@ -21,6 +21,7 @@ class RecipeFactory {
 
     std::vector<FCraftingRecipeRequirement> ingredients{};
     std::vector<FCraftingRecipeOutput> outputs{};
+    float craftingTime = 2.0f;
 
     static UUWEItemType *searchItem(const std::string &itemId);
     static UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
@@ -43,7 +44,9 @@ public:
     bool addOutput(const std::string &itemId, int32_t amount);
     bool addOutput(UUWEItemType *item, int32_t amount);
 
-    UUWECraftingRecipe* registerRecipe() const;
+    void setCraftingTime(float time);
+
+    [[nodiscard]] UUWECraftingRecipe* registerRecipe() const;
 
     static std::vector<UUWECraftingRecipe*> getAllRegisteredRecipes();
 };

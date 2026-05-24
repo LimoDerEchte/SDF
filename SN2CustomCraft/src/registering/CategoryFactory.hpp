@@ -27,5 +27,5 @@ public:
     bool setIconFromItem(const UUWEItemType *item);
     bool setIcon(UTexture2D *icon);
 
-    UUWECraftingRecipeCategory* registerCategory();
+    [[nodiscard]] UUWECraftingRecipeCategory* registerCategory() const;
 };

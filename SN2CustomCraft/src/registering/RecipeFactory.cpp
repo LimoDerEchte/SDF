@@ -91,6 +91,10 @@ bool RecipeFactory::addOutput(UUWEItemType *item, const int32_t amount) {
     return true;
 }
 
+void RecipeFactory::setCraftingTime(const float time) {
+    craftingTime = time;
+}
+
 UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     const auto base = reinterpret_cast<UUWECraftingRecipe*>(UObjectGlobals::FindObject(L"UWECraftingRecipe", L"DA_MetalSalvageRecipe"));
     if (base == nullptr)
@@ -117,6 +121,8 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     for (const auto& out : outputs) {
         output->Add(out);
     }
+
+    recipe->CraftingTime = craftingTime;
 
     registeredRecipes.push_back(recipe);
     Log::Verbose("Recipe registered: {}", recipeId);

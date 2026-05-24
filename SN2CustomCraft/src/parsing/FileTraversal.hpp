@@ -16,6 +16,7 @@ class FileTraversal {
     static std::vector<ScannedFile> recipeTables;
 
     friend class CategoryParser;
+    friend class RecipeParser;
 
 public:
     static void ScanFiles();

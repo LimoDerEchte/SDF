@@ -6,6 +6,7 @@
 
 #include "parsing/CategoryParser.hpp"
 #include "parsing/FileTraversal.hpp"
+#include "parsing/RecipeParser.hpp"
 #include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
 
@@ -40,21 +41,12 @@ public:
         Hooks::RegisterHooks();
 
         FileTraversal::ScanFiles();
-        CategoryParser::ParseCategories();
+        CategoryParser::parseCategories();
+        RecipeParser::parseRecipes();
 
-        CategoryFactory upperCategory("UpperCategory", "Upper Category", "This is an upper category", ECrafterType::Fabricator);
-        upperCategory.setIconFromItem("MetalSalvage");
-        const auto upperCatPtr = upperCategory.registerCategory();
-
-        RecipeFactory recipe("CustomRecipe", "Copper Ingot", "This is a custom test recipe :)");
-        recipe.setIconFromItem("CopperIngot");
-        recipe.setCategory("CustomCategory");
-
-        recipe.addIngredient("PowerCell", 1);
-        recipe.addIngredient("Grease", 3);
-        recipe.addOutput("CopperIngot", 2);
-
-        recipe.registerRecipe();
+        //CategoryFactory upperCategory("UpperCategory", "Upper Category", "This is an upper category", ECrafterType::Fabricator);
+        //upperCategory.setIconFromItem("MetalSalvage");
+        //const auto upperCatPtr = upperCategory.registerCategory();
     }
 };
 
