@@ -54,28 +54,42 @@ void RecipeParser::parseFile(std::string file, const toml::table &table) {
         }
     }
 
-    if (table.contains("ingredients") && table["ingredients"].is_table()) {
-        for (const auto&[first, second] : *table["ingredients"].as_table()) {
-            if (!second.is_integer()) {
-                Log::Warning("Recipe {} has malformed amount for ingredient {}", recipeId, first.str());
+    if (table.contains("ingredients") && table["ingredients"].is_array() && table["ingredients"].as_array()->size() > 0) {
+        for (const auto& ingredientTable : *table["ingredients"].as_array()) {
+            if (!ingredientTable.is_table()) {
+                Log::Warning("Recipe {} has malformed entry for ingredients", recipeId);
                 return;
             }
-            if (const auto count = static_cast<int32_t>(second.as_integer()->get());
-                !factory.addIngredient(std::string(first.begin(), first.end()), count))
-                Log::Warning("Failed to add ingredient {} to recipe {}", first.str(), recipeId);
+            for (const auto&[first, second] : *ingredientTable.as_table()) {
+                if (!second.is_integer()) {
+                    Log::Warning("Recipe {} has malformed amount for ingredient {}", recipeId, first.str());
+                    return;
+                }
+                if (const auto count = static_cast<int32_t>(second.as_integer()->get());
+                    !factory.addIngredient(std::string(first.begin(), first.end()), count))
+                    Log::Warning("Failed to add ingredient {} to recipe {}", first.str(), recipeId);
+            }
         }
     } else
         Log::Warning("Recipe {} has no ingredients", recipeId);
 
-    if (table.contains("outputs") && table["outputs"].is_table()) {
-        for (const auto&[first, second] : *table["outputs"].as_table()) {
-            if (!second.is_integer()) {
-                Log::Warning("Recipe {} has malformed amount for output {}", recipeId, first.str());
+    if (table.contains("outputs") && table["outputs"].is_array() && table["outputs"].as_array()->size() > 0) {
+        for (const auto& outputTable : *table["outputs"].as_array()) {
+            if (!outputTable.is_table()) {
+                Log::Warning("Recipe {} has malformed entry for outputs", recipeId);
                 return;
             }
-            if (const auto count = static_cast<int32_t>(second.as_integer()->get());
-                !factory.addOutput(std::string(first.begin(), first.end()), count))
-                Log::Warning("Failed to add output {} to recipe {}", first.str(), recipeId);
+            for (const auto&[first, second] : *outputTable.as_table()) {
+                if (!second.is_integer()) {
+                    if (!second.is_integer()) {
+                        Log::Warning("Recipe {} has malformed amount for output {}", recipeId, first.str());
+                        return;
+                    }
+                    if (const auto count = static_cast<int32_t>(second.as_integer()->get());
+                        !factory.addOutput(std::string(first.begin(), first.end()), count))
+                        Log::Warning("Failed to add output {} to recipe {}", first.str(), recipeId);
+                }
+            }
         }
     } else
         Log::Warning("Recipe {} has no outputs", recipeId);

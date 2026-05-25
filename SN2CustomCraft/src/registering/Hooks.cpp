@@ -16,10 +16,11 @@ getRecipeT Hooks::originalGetRecipes = nullptr;
 std::unique_ptr<PLH::Detour> Hooks::getRecipesHook = nullptr;
 
 RC::Unreal::TArray<UUWECraftingRecipe*> Hooks::GetRecipesHook() {
+    const auto registered = RecipeFactory::getAllRegisteredRecipes();
     auto recipes = originalGetRecipes();
-    Log::Verbose("Adding recipes");
-    for (const UUWECraftingRecipe* recipe : RecipeFactory::getAllRegisteredRecipes()) {
-        Log::Verbose("Adding recipe");
+
+    recipes.ResizeTo(static_cast<int32_t>(recipes.Num() + registered.size()));
+    for (const UUWECraftingRecipe* recipe : registered) {
         recipes.Add(const_cast<UUWECraftingRecipe*>(recipe));
     }
     return recipes;
