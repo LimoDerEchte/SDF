@@ -6,13 +6,16 @@
 
 #include "util/Log.hpp"
 #include "UObjectGlobals.hpp"
+#include "UObject.hpp"
 
+using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
 using EF = SDK::EObjectFlags;
 
 std::vector<UUWECraftingRecipe*> RecipeFactory::registeredRecipes;
+std::vector<UUWECraftingRecipe*> RecipeFactory::registeredRecipesLifePod;
 
 UUWEItemType *RecipeFactory::searchItem(const std::string &itemId) {
     const std::string trueExpr = "DA_" + itemId + "_ItemType";
@@ -30,6 +33,13 @@ UUWEScanData *RecipeFactory::searchScanData(const std::string &scanId) {
     const std::string trueExpr = "DA_" + scanId + "_ScanData";
     const auto item = UObjectGlobals::FindObject(L"UWEScanData", UtfN::StringToWString(trueExpr).c_str());
     return reinterpret_cast<UUWEScanData*>(item);
+}
+
+void RecipeFactory::unregisterAllRecipes() {
+    registeredRecipesLifePod.clear();
+    for (const auto& registered_recipe : registeredRecipes)
+        reinterpret_cast<Unreal::UObject*>(registered_recipe)->BeginDestroy();
+    registeredRecipes.clear();
 }
 
 RecipeFactory::RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription)
@@ -140,12 +150,16 @@ void RecipeFactory::setCraftingTime(const float time) {
     craftingTime = time;
 }
 
+void RecipeFactory::makeAvailableInLifePod() {
+    availableInLifePod = true;
+}
+
 UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     const auto base = reinterpret_cast<UUWECraftingRecipe*>(UObjectGlobals::FindObject(L"UWECraftingRecipe", L"DA_MetalSalvageRecipe"));
     if (base == nullptr)
         return nullptr;
 
-    const auto recipe = reinterpret_cast<UUWECraftingRecipe*>(UGameplayStatics::SpawnObject(UUWECraftingRecipe::StaticClass(), base->Outer));
+    const auto recipe = static_cast<UUWECraftingRecipe*>(UGameplayStatics::SpawnObject(UUWECraftingRecipe::StaticClass(), base->Outer));
     if (recipe == nullptr)
         return nullptr;
 
@@ -189,6 +203,9 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     }
 
     registeredRecipes.push_back(recipe);
+    if (availableInLifePod)
+        registeredRecipesLifePod.push_back(recipe);
+
     Log::Verbose("Recipe registered: {}", recipeId);
     return recipe;
 }

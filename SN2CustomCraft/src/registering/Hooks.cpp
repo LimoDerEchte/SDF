@@ -61,3 +61,10 @@ void Hooks::RegisterHooks() {
     else
         Log::Error("Failed to hook recipe registry!");
 }
+
+void Hooks::UnregisterHooks() {
+    if (getRecipesHook->unHook())
+        Log::Verbose("Successfully unhooked recipe registry");
+    else
+        Log::Error("Failed to unhook recipe registry!");
+}

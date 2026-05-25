@@ -146,6 +146,11 @@ void RecipeParser::parseFile(std::string file, const toml::table &table) {
     } else
         Log::Warning("Recipe {} has no crafting time", recipeId);
 
+    if (table.contains("available_in_lifepod") && table["available_in_lifepod"].is_boolean()) {
+        if (table["available_in_lifepod"].as_boolean()->get())
+            factory.makeAvailableInLifePod();
+    }
+
     if (const auto result = factory.registerRecipe(); result == nullptr)
         Log::Warning("Recipe {} failed to register for an unknown reason", recipeId);
     else

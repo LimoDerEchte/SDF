@@ -23,4 +23,5 @@ class Hooks {
 
 public:
     static void RegisterHooks();
+    static void UnregisterHooks();
 };

@@ -4,6 +4,7 @@ id = "CustomRecipe"
 name = "Custom Recipe"
 description = "This is a custom and data driven recipe"
 
+available_in_lifepod = true # Optional; only when set to true will this actually do something
 category = "CustomCategory"
 icon = "ITEM CookedBluemoon" # This will use the thumbnail from the given item
 crafting_time = 5.0 # Floating point crafting time in seconds

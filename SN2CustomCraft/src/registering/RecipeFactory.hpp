@@ -11,54 +11,58 @@
 #include "SDK/UWEInventory_classes.hpp"
 #include "SDK/UWEScanner_classes.hpp"
 
-using namespace SDK;
-
 class RecipeFactory {
-    static std::vector<UUWECraftingRecipe*> registeredRecipes;
+    static std::vector<SDK::UUWECraftingRecipe*> registeredRecipes;
+    static std::vector<SDK::UUWECraftingRecipe*> registeredRecipesLifePod;
 
     std::string recipeId, recipeName, recipeDescription;
 
-    UUWECraftingRecipeCategory* recipeCategory = nullptr;
-    TSoftObjectPtr<UTexture2D> recipeTexture;
+    bool availableInLifePod = false;
+    SDK::UUWECraftingRecipeCategory* recipeCategory = nullptr;
+    SDK::TSoftObjectPtr<SDK::UTexture2D> recipeTexture;
 
-    std::vector<FCraftingRecipeRequirement> ingredients{};
-    std::vector<FCraftingRecipeOutput> outputs{};
-    std::map<std::string, std::vector<FUWERecipeUnlockRuleEntry>> unlockingRules{};
+    std::vector<SDK::FCraftingRecipeRequirement> ingredients{};
+    std::vector<SDK::FCraftingRecipeOutput> outputs{};
+    std::map<std::string, std::vector<SDK::FUWERecipeUnlockRuleEntry>> unlockingRules{};
     float craftingTime = 2.0f;
 
-    static UUWEItemType *searchItem(const std::string &itemId);
-    static UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
-    static UUWEScanData *searchScanData(const std::string &scanId);
+    static SDK::UUWEItemType *searchItem(const std::string &itemId);
+    static SDK::UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
+    static SDK::UUWEScanData *searchScanData(const std::string &scanId);
 
     friend class CategoryFactory;
+    friend class SN2CustomCraft;
+
+    static void unregisterAllRecipes();
 
 public:
     explicit RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription);
 
     bool setCategory(const std::string &categoryId);
-    bool setCategory(UUWECraftingRecipeCategory *category);
+    bool setCategory(SDK::UUWECraftingRecipeCategory *category);
 
     bool setIconFromItem(const std::string &itemId);
-    bool setIconFromItem(const UUWEItemType *item);
-    bool setIcon(UTexture2D *icon);
+    bool setIconFromItem(const SDK::UUWEItemType *item);
+    bool setIcon(SDK::UTexture2D *icon);
 
     bool addIngredient(const std::string &itemId, int32_t amount);
-    bool addIngredient(UUWEItemType *item, int32_t amount);
+    bool addIngredient(SDK::UUWEItemType *item, int32_t amount);
 
     bool addOutput(const std::string &itemId, int32_t amount);
-    bool addOutput(UUWEItemType *item, int32_t amount);
+    bool addOutput(SDK::UUWEItemType *item, int32_t amount);
 
     bool addUnlockingRequirementPickup(const std::string &ruleSet, const std::string &itemId);
-    bool addUnlockingRequirementPickup(const std::string &ruleSet, UUWEItemType *item);
+    bool addUnlockingRequirementPickup(const std::string &ruleSet, SDK::UUWEItemType *item);
 
     bool addUnlockingRequirementScanData(const std::string &ruleSet, const std::string &dataId);
-    bool addUnlockingRequirementScanData(const std::string &ruleSet, UUWEScanData* data);
+    bool addUnlockingRequirementScanData(const std::string &ruleSet, SDK::UUWEScanData* data);
 
-    bool addUnlockingRequirement(const std::string &ruleSet, FUWERecipeUnlockRuleEntry entry);
+    bool addUnlockingRequirement(const std::string &ruleSet, SDK::FUWERecipeUnlockRuleEntry entry);
 
     void setCraftingTime(float time);
+    void makeAvailableInLifePod();
 
-    [[nodiscard]] UUWECraftingRecipe* registerRecipe() const;
+    [[nodiscard]] SDK::UUWECraftingRecipe* registerRecipe() const;
 
-    static std::vector<UUWECraftingRecipe*> getAllRegisteredRecipes();
+    static std::vector<SDK::UUWECraftingRecipe*> getAllRegisteredRecipes();
 };

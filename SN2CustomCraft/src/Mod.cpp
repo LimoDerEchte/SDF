@@ -24,7 +24,13 @@ public:
 
         Log::Verbose("Initialized");
     }
-    ~SN2CustomCraft() override = default;
+    ~SN2CustomCraft() override {
+        if (scanning)
+            return;
+        Hooks::UnregisterHooks();
+        RecipeFactory::unregisterAllRecipes();
+        CategoryFactory::unregisterAllCategories();
+    }
 
     auto on_update() -> void override {
         if (!scanning)

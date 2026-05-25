@@ -7,11 +7,21 @@
 #include "RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Log.hpp"
+#include "UObject.hpp"
 
+using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
 using EF = SDK::EObjectFlags;
+
+std::vector<UUWECraftingRecipeCategory*> CategoryFactory::registeredCategories;
+
+void CategoryFactory::unregisterAllCategories() {
+    for (const auto& registered_recipe : registeredCategories)
+        reinterpret_cast<Unreal::UObject*>(registered_recipe)->BeginDestroy();
+    registeredCategories.clear();
+}
 
 CategoryFactory::CategoryFactory(std::string categoryId, std::string categoryName, std::string categoryDescription, const ECrafterType crafterType)
     : categoryId(std::move(categoryId)), categoryName(std::move(categoryName)), categoryDescription(std::move(categoryDescription)), crafterType(crafterType) {
@@ -74,7 +84,7 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
     if (base == nullptr)
         return nullptr;
 
-    const auto recipe = reinterpret_cast<UUWECraftingRecipeCategory*>(UGameplayStatics::SpawnObject(UUWECraftingRecipeCategory::StaticClass(), base->Outer));
+    const auto recipe = static_cast<UUWECraftingRecipeCategory*>(UGameplayStatics::SpawnObject(UUWECraftingRecipeCategory::StaticClass(), base->Outer));
     if (recipe == nullptr)
         return nullptr;
 
@@ -89,6 +99,7 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
     if (categoryParent != nullptr)
         recipe->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
 
+    registeredCategories.push_back(recipe);
     Log::Verbose("Recipe category registered: {}", categoryId);
     return recipe;
 }

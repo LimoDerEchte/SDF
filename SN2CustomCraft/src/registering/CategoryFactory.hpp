@@ -8,24 +8,28 @@
 
 #include "SDK/UWECrafting_classes.hpp"
 
-using namespace SDK;
-
 class CategoryFactory {
-    std::string categoryId, categoryName, categoryDescription;
-    ECrafterType crafterType;
+    static std::vector<SDK::UUWECraftingRecipeCategory*> registeredCategories;
 
-    UUWECraftingRecipeCategory* categoryParent = nullptr;
-    TSoftObjectPtr<UTexture2D> categoryTexture;
+    std::string categoryId, categoryName, categoryDescription;
+    SDK::ECrafterType crafterType;
+
+    SDK::UUWECraftingRecipeCategory* categoryParent = nullptr;
+    SDK::TSoftObjectPtr<SDK::UTexture2D> categoryTexture;
+
+    friend class SN2CustomCraft;
+
+    static void unregisterAllCategories();
 
 public:
-    CategoryFactory(std::string categoryId, std::string categoryName, std::string categoryDescription, ECrafterType crafterType);
+    CategoryFactory(std::string categoryId, std::string categoryName, std::string categoryDescription, SDK::ECrafterType crafterType);
 
     bool setParent(const std::string &categoryId);
-    bool setParent(UUWECraftingRecipeCategory *category);
+    bool setParent(SDK::UUWECraftingRecipeCategory *category);
 
     bool setIconFromItem(const std::string &itemId);
-    bool setIconFromItem(const UUWEItemType *item);
-    bool setIcon(UTexture2D *icon);
+    bool setIconFromItem(const SDK::UUWEItemType *item);
+    bool setIcon(SDK::UTexture2D *icon);
 
-    [[nodiscard]] UUWECraftingRecipeCategory* registerCategory() const;
+    [[nodiscard]] SDK::UUWECraftingRecipeCategory* registerCategory() const;
 };
