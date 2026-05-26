@@ -13,37 +13,30 @@
 #include "Hooks/Hooks.hpp"
 
 #include "BuilderActionFactory.hpp"
+#include "ItemTypeFactory.hpp"
 #include "UnrealDef.hpp"
 
 using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
-getRecipeT Hooks::originalGetRecipes = nullptr;
-getActionsT Hooks::originalGetActions = nullptr;
-
-std::unique_ptr<PLH::Detour> Hooks::getRecipesHook = nullptr;
-std::unique_ptr<PLH::Detour> Hooks::getActionsHook = nullptr;
-
-Unreal::TArray<UUWECraftingRecipe*> Hooks::GetRecipesHook() {
-    auto recipes = originalGetRecipes();
-    recipes.ResizeTo(recipes.Num() + static_cast<int32_t>(RecipeFactory::registeredRecipes.size()));
-
-    for (const UUWECraftingRecipe* recipe : RecipeFactory::registeredRecipes) {
-        recipes.Add(const_cast<UUWECraftingRecipe*>(recipe));
+#define HookDefStatic(type, name, list) \
+    Hooks::get##name##T Hooks::originalGet##name = nullptr; \
+    std::unique_ptr<PLH::Detour> Hooks::get##name##Hook = nullptr; \
+    \
+    Unreal::TArray<type*> Hooks::Get##name##Hook() { \
+        auto entries = originalGet##name(); \
+        entries.ResizeTo(entries.Num() + static_cast<int32_t>(list.size())); \
+        \
+        for (const type* entry : list) { \
+            entries.Add(const_cast<type*>(entry)); \
+        } \
+        return entries; \
     }
-    return recipes;
-}
 
-Unreal::TArray<USN2BuilderActionData*> Hooks::GetActionsHook() {
-    auto actions = originalGetActions();
-    actions.ResizeTo(actions.Num() + static_cast<int32_t>(BuilderActionFactory::registeredActions.size()));
-
-    for (const USN2BuilderActionData* action : BuilderActionFactory::registeredActions) {
-        actions.Add(const_cast<USN2BuilderActionData*>(action));
-    }
-    return actions;
-}
+HookDefStatic(UUWECraftingRecipe, Recipes, RecipeFactory::registeredRecipes)
+HookDefStatic(USN2BuilderActionData, BuilderActions, BuilderActionFactory::registeredActions)
+HookDefStatic(UUWEItemType, ItemTypes, ItemTypeFactory::registeredItemTypes)
 
 uintptr_t Hooks::ScanCall(uintptr_t address, int ordinal) {
     while (true) {
@@ -60,52 +53,39 @@ uintptr_t Hooks::ScanCall(uintptr_t address, int ordinal) {
     }
 }
 
+#define HookDefScanAndHook(name, funcName) \
+    const auto funcGet##name = USN2AssetRegistry::StaticClass()->GetFunction("SN2AssetRegistry", funcName); \
+    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->ExecFunction); \
+    const auto internalPtrGet##name = ScanCall(funcPtrGet##name, 1); \
+    Log::Verbose("Found "#name" registry getter at {:p}", reinterpret_cast<void*>(internalPtrGet##name)); \
+    \
+    get##name##Hook = std::make_unique<PLH::x64Detour>( \
+        internalPtrGet##name, \
+        reinterpret_cast<uint64_t>(&Get##name##Hook), \
+        reinterpret_cast<uint64_t*>(&originalGet##name) \
+    ); \
+    \
+    if (get##name##Hook->hook()) \
+        Log::Verbose("Successfully hooked "#name" registry getter"); \
+    else \
+        Log::Error("Failed to hook "#name" registry getter!");
+
 void Hooks::RegisterHooks() {
     Log::Verbose("Scanning internal functions");
 
-    const auto recipeFunc = USN2AssetRegistry::StaticClass()->GetFunction("SN2AssetRegistry", "GetAllCraftingRecipes");
-    const auto recipeFuncPtr = reinterpret_cast<uintptr_t>(*recipeFunc->ExecFunction);
-    const auto recipeInternalPtr = ScanCall(recipeFuncPtr, 1);
-    Log::Verbose("Found recipe registry getter at {:p}", reinterpret_cast<void*>(recipeInternalPtr));
-
-    const auto actionFunc = USN2AssetRegistry::StaticClass()->GetFunction("SN2AssetRegistry", "GetAllBuilderActions");
-    const auto actionFuncPtr = reinterpret_cast<uintptr_t>(*actionFunc->ExecFunction);
-    const auto actionInternalPtr = ScanCall(actionFuncPtr, 1);
-    Log::Verbose("Found builder action registry getter at {:p}", reinterpret_cast<void*>(actionInternalPtr));
-
-    Log::Verbose("Hooking internal functions");
-
-    getRecipesHook = std::make_unique<PLH::x64Detour>(
-        recipeInternalPtr,
-        reinterpret_cast<uint64_t>(&GetRecipesHook),
-        reinterpret_cast<uint64_t*>(&originalGetRecipes)
-    );
-
-    if (getRecipesHook->hook())
-        Log::Verbose("Successfully hooked recipe registry");
-    else
-        Log::Error("Failed to hook recipe registry!");
-
-    getActionsHook = std::make_unique<PLH::x64Detour>(
-        actionInternalPtr,
-        reinterpret_cast<uint64_t>(&GetActionsHook),
-        reinterpret_cast<uint64_t*>(&originalGetActions)
-    );
-
-    if (getActionsHook->hook())
-        Log::Verbose("Successfully hooked builder action registry");
-    else
-        Log::Error("Failed to hook builder action registry!");
+    HookDefScanAndHook(Recipes, "GetAllCraftingRecipes");
+    HookDefScanAndHook(BuilderActions, "GetAllBuilderActions");
+    HookDefScanAndHook(ItemTypes, "GetAllItemTypes");
 }
 
-void Hooks::UnregisterHooks() {
-    if (getRecipesHook->unHook())
-        Log::Verbose("Successfully unhooked recipe registry");
-    else
-        Log::Error("Failed to unhook recipe registry!");
+#define HookDefUnhook(name) \
+    if (get##name##Hook->unHook()) \
+        Log::Verbose("Successfully unhooked "#name" registry getter"); \
+    else \
+        Log::Error("Failed to unhook "#name" registry getter!");
 
-    if (getActionsHook->unHook())
-        Log::Verbose("Successfully unhooked builder action registry");
-    else
-        Log::Error("Failed to unhook builder action registry!");
+void Hooks::UnregisterHooks() {
+    HookDefUnhook(Recipes);
+    HookDefUnhook(BuilderActions);
+    HookDefUnhook(ItemTypes);
 }

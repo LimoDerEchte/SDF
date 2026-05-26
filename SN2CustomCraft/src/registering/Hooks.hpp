@@ -9,18 +9,16 @@
 #include "polyhook2/Detour/x64Detour.hpp"
 #include "Containers/Array.hpp"
 
-using getRecipeT = RC::Unreal::TArray<SDK::UUWECraftingRecipe*>(*)();
-using getActionsT = RC::Unreal::TArray<SDK::USN2BuilderActionData*>(*)();
+#define HookDefHeader(type, name) \
+    using get##name##T = RC::Unreal::TArray<type*>(*)(); \
+    static get##name##T originalGet##name; \
+    static std::unique_ptr<PLH::Detour> get##name##Hook; \
+    static RC::Unreal::TArray<type*> Get##name##Hook(); \
 
 class Hooks {
-    static getRecipeT originalGetRecipes;
-    static getActionsT originalGetActions;
-
-    static std::unique_ptr<PLH::Detour> getRecipesHook;
-    static std::unique_ptr<PLH::Detour> getActionsHook;
-
-    static RC::Unreal::TArray<SDK::UUWECraftingRecipe*> GetRecipesHook();
-    static RC::Unreal::TArray<SDK::USN2BuilderActionData*> GetActionsHook();
+    HookDefHeader(SDK::UUWECraftingRecipe, Recipes)
+    HookDefHeader(SDK::USN2BuilderActionData, BuilderActions)
+    HookDefHeader(SDK::UUWEItemType, ItemTypes)
 
     static uintptr_t ScanCall(uintptr_t address, int ordinal);
 
