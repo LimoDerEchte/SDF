@@ -15,12 +15,16 @@ add_library(${TARGET} SHARED
         src/parsing/FileTraversal.cpp
         src/parsing/CategoryParser.cpp
         src/parsing/RecipeParser.cpp
+        src/util/IconBuilder.cpp
+        src/util/Finders.cpp
         src/util/Log.hpp
 
         ../libs/CppSDK/SDK/Basic.cpp
         ../libs/CppSDK/SDK/CoreUObject_functions.cpp
         ../libs/CppSDK/SDK/Engine_functions.cpp
         ../libs/CppSDK/SDK/AssetRegistry_functions.cpp
+        ../libs/CppSDK/SDK/UWEAssetRegistry_functions.cpp
+        ../libs/CppSDK/SDK/Subnautica2_functions.cpp
 )
 
 target_link_libraries(${TARGET} PUBLIC UE4SS)

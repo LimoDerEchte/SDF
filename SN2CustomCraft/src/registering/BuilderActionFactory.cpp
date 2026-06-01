@@ -6,6 +6,7 @@
 
 #include "RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
+#include "util/Finders.hpp"
 #include "util/Log.hpp"
 
 using namespace SDK;
@@ -15,12 +16,6 @@ using namespace Unreal;
 using EF = SDK::EObjectFlags;
 
 std::vector<USN2BuilderActionData*> BuilderActionFactory::registeredActions;
-
-USN2BuilderActionData *BuilderActionFactory::searchBuilderAction(const std::string &dataId) {
-    const std::string trueExpr = "DA_" + dataId;
-    const auto item = UObjectGlobals::FindObject(L"SN2BuilderConstructActionData", UtfN::StringToWString(trueExpr).c_str());
-    return reinterpret_cast<USN2BuilderActionData*>(item);
-}
 
 BuilderActionFactory::BuilderActionFactory(std::string recipeId)
     : recipeId(std::move(recipeId)) {
@@ -35,11 +30,11 @@ void BuilderActionFactory::addPowerGenerationText(std::string text) {
 }
 
 USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() const {
-    const auto base = static_cast<USN2BuilderConstructActionData*>(searchBuilderAction("Table_DiningConstructData"));
+    const auto base = static_cast<USN2BuilderConstructActionData*>(Finders::searchBuilderAction("Table_DiningConstructData"));
     if (base == nullptr)
         return nullptr;
 
-    const auto recipe = RecipeFactory::searchRecipe(recipeId);
+    const auto recipe = Finders::searchRecipe(recipeId);
     if (recipe == nullptr) {
         Log::Warning("Couldn't find reference recipe {}", recipeId);
         return nullptr;

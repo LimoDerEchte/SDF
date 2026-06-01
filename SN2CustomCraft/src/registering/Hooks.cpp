@@ -12,6 +12,7 @@
 #include "SDK/Subnautica2_classes.hpp"
 #include "Hooks/Hooks.hpp"
 #include "BuilderActionFactory.hpp"
+#include "ItemTypeFactory.hpp"
 #include "UnrealDef.hpp"
 #include "LuaMadeSimple/LuaMadeSimple.hpp"
 #include "SDK/AssetRegistry_classes.hpp"
@@ -40,6 +41,9 @@ HookDefStatic(USN2BuilderActionData, BuilderActions, BuilderActionFactory::regis
 Hooks::getAssetsT Hooks::originalGetAssets = nullptr;
 std::unique_ptr<PLH::Detour> Hooks::getAssetsHook = nullptr;
 
+Hooks::getEnumerateAssetsT Hooks::originalGetEnumerateAssets = nullptr;
+std::unique_ptr<PLH::Detour> Hooks::getEnumerateAssetsHook = nullptr;
+
 bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, Unreal::TArray<SDK::FAssetData> *out, const bool bSkipARFilteredAsset) {
     bool ret = originalGetAssets(self, filter, out, bSkipARFilteredAsset);
 
@@ -48,11 +52,22 @@ bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, Unreal::TArray<SD
     else
         Log::Warning("Invalid result array");
 
-    for (const auto name : filter->ClassNames)
-        Log::Warning("Scanning for classname: {}", name.ToString());
+    //for (const auto name : filter->ClassNames)
+    //    Log::Warning("Scanning for classname: {}", name.ToString());
 
-    for (const auto asset : filter->ClassPaths)
+    for (const auto asset : filter->ClassPaths) {
         Log::Warning("Scanning for classpath: {} {}", asset.PackageName.ToString(), asset.AssetName.ToString());
+        if (asset.AssetName.ToString() == "UWEPrimaryDataAssetBase") {
+            for (const auto entry : *out) {
+                //Log::Warning("Class found: {}", entry.AssetClassPath.AssetName.ToString());
+            }
+
+            for (auto itemType : ItemTypeFactory::registeredItemTypes) {
+                out->Add(SDK::UAssetRegistryHelpers::CreateAssetData(itemType, true));
+                Log::Warning("Item type added! :D");
+            }
+        }
+    }
 
     for (const auto name : filter->PackageNames)
         Log::Warning("Scanning for packagename: {}", name.ToString());
@@ -61,6 +76,11 @@ bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, Unreal::TArray<SD
         Log::Warning("Scanning for packagepath: {}", name.ToString());
 
     return ret;
+}
+
+bool Hooks::GetEnumerateAssetsHook(void *self, const FARFilter *filter, TFunctionRef<bool(const SDK::FAssetData&)> *out, bool bSkipARFilteredAsset) {
+    Log::Warning("Enumerating Assets");
+    return originalGetEnumerateAssets(self, filter, out, bSkipARFilteredAsset);
 }
 
 uintptr_t Hooks::ScanCall(uintptr_t address, int ordinal) {
@@ -118,16 +138,23 @@ void Hooks::RegisterHooks() {
     HookDefScan(Recipes, "GetAllCraftingRecipes", 1);
     HookDefScan(BuilderActions, "GetAllBuilderActions", 1);
 
-    const auto internalPtrGetAssets = (*static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer))[10];
+    const auto assetRegistryVTable = *static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);
+
+    const auto internalPtrGetAssets = assetRegistryVTable[10];
     Log::Verbose("Found Assets registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGetAssets), reinterpret_cast<void*>(internalPtrGetAssets - moduleBase));
+
+    const auto internalPtrGetEnumerateAssets = assetRegistryVTable[15];
+    Log::Verbose("Found EnumerateAssets at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGetEnumerateAssets), reinterpret_cast<void*>(internalPtrGetEnumerateAssets - moduleBase));
 
     HookDefHook(Recipes);
     HookDefHook(BuilderActions);
     HookDefHook(Assets);
+    HookDefHook(EnumerateAssets);
 }
 
 void Hooks::UnregisterHooks() {
     HookDefUnhook(Recipes);
     HookDefUnhook(BuilderActions);
     HookDefUnhook(Assets);
+    HookDefUnhook(EnumerateAssets);
 }

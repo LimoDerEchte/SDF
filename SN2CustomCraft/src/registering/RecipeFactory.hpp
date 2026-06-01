@@ -30,15 +30,6 @@ class RecipeFactory {
     std::map<std::string, std::vector<SDK::FUWERecipeUnlockRuleEntry>> unlockingRules{};
     float craftingTime = 2.0f;
 
-    static SDK::UUWEItemType *searchItem(const std::string &itemId);
-    static SDK::UUWECraftingRecipe *searchRecipe(const std::string &recipeId);
-    static SDK::UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
-    static SDK::UUWEScanData *searchScanData(const std::string &scanId);
-
-    friend class ItemTypeFactory;
-    friend class BuilderActionFactory;
-    friend class CategoryFactory;
-    friend class SN2CustomCraft;
     friend class Hooks;
 
     static void unregisterAllRecipes();

@@ -12,8 +12,6 @@ class BuilderActionFactory {
     std::string recipeId;
     std::optional<std::string> powerDrainText, powerGenerationText;
 
-    static SDK::USN2BuilderActionData *searchBuilderAction(const std::string &dataId);
-
     friend class Hooks;
 
 public:

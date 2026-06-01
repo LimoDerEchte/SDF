@@ -8,6 +8,7 @@
 #include "UObjectGlobals.hpp"
 #include "util/Log.hpp"
 #include "UObject.hpp"
+#include "util/Finders.hpp"
 
 using namespace SDK;
 using namespace RC;
@@ -51,7 +52,7 @@ CategoryFactory::CategoryFactory(std::string categoryId, std::string categoryNam
 }
 
 bool CategoryFactory::setParent(const std::string &categoryId) {
-    return setParent(RecipeFactory::searchRecipeCategory(categoryId));
+    return setParent(Finders::searchRecipeCategory(categoryId));
 }
 
 bool CategoryFactory::setParent(UUWECraftingRecipeCategory *category) {
@@ -62,7 +63,7 @@ bool CategoryFactory::setParent(UUWECraftingRecipeCategory *category) {
 }
 
 bool CategoryFactory::setIconFromItem(const std::string &itemId) {
-    return setIconFromItem(RecipeFactory::searchItem(itemId));
+    return setIconFromItem(Finders::searchItem(itemId));
 }
 
 bool CategoryFactory::setIconFromItem(const UUWEItemType *item) {

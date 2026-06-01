@@ -79,3 +79,17 @@ Copper = 1
 
 [[recipe.outputs]]
 TableDining = 1
+
+
+[[recipe]]
+id = "ItemTestRecipe"
+name = "Item Test Recipe"
+description = "Nope"
+
+category = "CustomCategory"
+
+[[recipe.ingredients]]
+Titanium = 1
+
+[[recipe.outputs]]
+CustomItem = 1

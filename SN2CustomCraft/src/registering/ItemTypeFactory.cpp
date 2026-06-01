@@ -6,6 +6,8 @@
 
 #include "RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
+#include "SDK/AssetRegistry_classes.hpp"
+#include "util/Finders.hpp"
 #include "util/Log.hpp"
 
 using namespace SDK;
@@ -24,7 +26,7 @@ ItemTypeFactory::ItemTypeFactory(std::string itemId, std::string itemName, std::
 }
 
 bool ItemTypeFactory::setIconFromItem(const std::string &itemId) {
-    return setIconFromItem(RecipeFactory::searchItem(itemId));
+    return setIconFromItem(Finders::searchItem(itemId));
 }
 
 bool ItemTypeFactory::setIconFromItem(const UUWEItemType *item) {
@@ -42,7 +44,7 @@ bool ItemTypeFactory::setIcon(UTexture2D *icon) {
 }
 
 UUWEItemType* ItemTypeFactory::registerItemType() const {
-    const auto base = RecipeFactory::searchItem("MetalSalvage");
+    const auto base = Finders::searchItem("Titanium");
     if (base == nullptr)
         return nullptr;
 
@@ -50,14 +52,27 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     if (itemType == nullptr)
         return nullptr;
 
-    itemType->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}", itemId)).c_str());
+    itemType->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}_ItemType", itemId)).c_str());
     itemType->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
 
     itemType->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(itemName).c_str());
     itemType->ItemDescription = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(itemDescription).c_str());
     itemType->Thumbnail = itemTexture;
 
+    itemType->FabricationPreviewMaterialInstance = base->FabricationPreviewMaterialInstance;
+    itemType->FabricationPreviewMeshData = base->FabricationPreviewMeshData;
+
+    itemType->ActorClass = base->ActorClass;
+
     registeredItemTypes.push_back(itemType);
+
+    const auto assetData = UAssetRegistryHelpers::CreateAssetData(itemType, true);
+    if (UAssetRegistryHelpers::GetAsset(assetData)) {
+        Log::Verbose("Yippie");
+    } else {
+        Log::Verbose("Not yippie");
+    }
+
     Log::Verbose("Item type registered: {}", itemId);
     return itemType;
 }

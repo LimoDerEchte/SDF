@@ -7,6 +7,7 @@
 #include "util/Log.hpp"
 #include "UObjectGlobals.hpp"
 #include "UObject.hpp"
+#include "util/Finders.hpp"
 
 using namespace SDK;
 using namespace RC;
@@ -16,30 +17,6 @@ using EF = SDK::EObjectFlags;
 
 std::vector<UUWECraftingRecipe*> RecipeFactory::registeredRecipes;
 std::vector<UUWECraftingRecipe*> RecipeFactory::registeredRecipesLifePod;
-
-UUWEItemType *RecipeFactory::searchItem(const std::string &itemId) {
-    const std::string trueExpr = "DA_" + itemId + "_ItemType";
-    const auto item = UObjectGlobals::FindObject(L"UWEItemType", UtfN::StringToWString(trueExpr).c_str());
-    return reinterpret_cast<UUWEItemType*>(item);
-}
-
-UUWECraftingRecipe *RecipeFactory::searchRecipe(const std::string &recipeId) {
-    const std::string trueExpr = "DA_" + recipeId + "Recipe";
-    const auto item = UObjectGlobals::FindObject(L"UWECraftingRecipe", UtfN::StringToWString(trueExpr).c_str());
-    return reinterpret_cast<UUWECraftingRecipe*>(item);
-}
-
-UUWECraftingRecipeCategory *RecipeFactory::searchRecipeCategory(const std::string &categoryId) {
-    const std::string trueExpr = "DA_" + categoryId;
-    const auto item = UObjectGlobals::FindObject(L"UWECraftingRecipeCategory", UtfN::StringToWString(trueExpr).c_str());
-    return reinterpret_cast<UUWECraftingRecipeCategory*>(item);
-}
-
-UUWEScanData *RecipeFactory::searchScanData(const std::string &scanId) {
-    const std::string trueExpr = "DA_" + scanId + "_ScanData";
-    const auto item = UObjectGlobals::FindObject(L"UWEScanData", UtfN::StringToWString(trueExpr).c_str());
-    return reinterpret_cast<UUWEScanData*>(item);
-}
 
 void RecipeFactory::unregisterAllRecipes() {
     registeredRecipesLifePod.clear();
@@ -62,7 +39,7 @@ RecipeFactory::RecipeFactory(std::string recipeId)
 }
 
 bool RecipeFactory::setCategory(const std::string &categoryId) {
-    return setCategory(searchRecipeCategory(categoryId));
+    return setCategory(Finders::searchRecipeCategory(categoryId));
 }
 
 bool RecipeFactory::setCategory(UUWECraftingRecipeCategory *category) {
@@ -73,7 +50,7 @@ bool RecipeFactory::setCategory(UUWECraftingRecipeCategory *category) {
 }
 
 bool RecipeFactory::setIconFromItem(const std::string &itemId) {
-    return setIconFromItem(searchItem(itemId));
+    return setIconFromItem(Finders::searchItem(itemId));
 }
 
 bool RecipeFactory::setIconFromItem(const UUWEItemType *item) {
@@ -91,7 +68,7 @@ bool RecipeFactory::setIcon(UTexture2D *icon) {
 }
 
 bool RecipeFactory::addIngredient(const std::string &itemId, const int32_t amount) {
-    return addIngredient(searchItem(itemId), amount);
+    return addIngredient(Finders::searchItem(itemId), amount);
 }
 
 bool RecipeFactory::addIngredient(UUWEItemType *item, const int32_t amount) {
@@ -105,7 +82,7 @@ bool RecipeFactory::addIngredient(UUWEItemType *item, const int32_t amount) {
 }
 
 bool RecipeFactory::addOutput(const std::string &itemId, const int32_t amount) {
-    return addOutput(searchItem(itemId), amount);
+    return addOutput(Finders::searchItem(itemId), amount);
 }
 
 bool RecipeFactory::addOutput(UUWEItemType *item, const int32_t amount) {
@@ -120,7 +97,7 @@ bool RecipeFactory::addOutput(UUWEItemType *item, const int32_t amount) {
 }
 
 bool RecipeFactory::addUnlockingRequirementPickup(const std::string &ruleSet, const std::string &itemId) {
-    return addUnlockingRequirementPickup(ruleSet, searchItem(itemId));
+    return addUnlockingRequirementPickup(ruleSet, Finders::searchItem(itemId));
 }
 
 bool RecipeFactory::addUnlockingRequirementPickup(const std::string &ruleSet, UUWEItemType *item) {
@@ -135,7 +112,7 @@ bool RecipeFactory::addUnlockingRequirementPickup(const std::string &ruleSet, UU
 }
 
 bool RecipeFactory::addUnlockingRequirementScanData(const std::string &ruleSet, const std::string &dataId) {
-    return addUnlockingRequirementScanData(ruleSet, searchScanData(dataId));
+    return addUnlockingRequirementScanData(ruleSet, Finders::searchScanData(dataId));
 }
 
 bool RecipeFactory::addUnlockingRequirementScanData(const std::string &ruleSet, UUWEScanData *data) {
@@ -172,11 +149,11 @@ void RecipeFactory::setAvailableInLifepod(const bool available) {
 }
 
 UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
-    const auto base = searchRecipe("MetalSalvage");
+    const auto base = Finders::searchRecipe("MetalSalvage");
     if (base == nullptr)
         return nullptr;
 
-    const auto recipe = modifyMode ? searchRecipe(recipeId) : static_cast<UUWECraftingRecipe*>(UGameplayStatics::SpawnObject(UUWECraftingRecipe::StaticClass(), base->Outer));
+    const auto recipe = modifyMode ? Finders::searchRecipe(recipeId) : static_cast<UUWECraftingRecipe*>(UGameplayStatics::SpawnObject(UUWECraftingRecipe::StaticClass(), base->Outer));
     if (recipe == nullptr)
         return nullptr;
 
