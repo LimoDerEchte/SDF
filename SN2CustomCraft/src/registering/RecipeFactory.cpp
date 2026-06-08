@@ -25,17 +25,23 @@ void RecipeFactory::unregisterAllRecipes() {
     registeredRecipes.clear();
 }
 
-RecipeFactory::RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription)
-    : recipeId(std::move(recipeId)), recipeName(std::move(recipeName)), recipeDescription(std::move(recipeDescription)) {
-
-    const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
-    setIcon(defaultTex);
+RecipeFactory::RecipeFactory(std::string recipeId, const bool isModify)
+    : recipeId(std::move(recipeId)), recipeName("Empty"), recipeDescription("Empty"), recipeTexture() {
+    modifyMode = isModify;
+    if (isModify) {
+        craftingTime = -1;
+    } else {
+        const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
+        setIcon(defaultTex);
+    }
 }
 
-RecipeFactory::RecipeFactory(std::string recipeId)
-    : recipeId(std::move(recipeId)), recipeName(""), recipeDescription(""), recipeTexture() {
-    modifyMode = true;
-    craftingTime = -1;
+void RecipeFactory::setName(const std::string &recipeName) {
+    this->recipeName = recipeName;
+}
+
+void RecipeFactory::setDescription(const std::string &recipeDescription) {
+    this->recipeDescription = recipeDescription;
 }
 
 bool RecipeFactory::setCategory(const std::string &categoryId) {
@@ -63,6 +69,7 @@ bool RecipeFactory::setIconFromItem(const UUWEItemType *item) {
 bool RecipeFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
+    recipeTextureModified = true;
     recipeTexture = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
     return true;
 }
@@ -160,11 +167,14 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     if (!modifyMode) {
         recipe->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}Recipe", recipeId)).c_str());
         recipe->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
-
-        recipe->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeName).c_str());
-        recipe->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeDescription).c_str());
-        recipe->Thumbnail = recipeTexture;
     }
+
+    if (recipeTextureModified)
+        recipe->Thumbnail = recipeTexture;
+    if (!modifyMode || recipeName != "Empty")
+        recipe->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeName).c_str());
+    if (!modifyMode || recipeDescription != "Empty")
+        recipe->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(recipeDescription).c_str());
 
     if (!modifyMode || recipeCategory != nullptr)
         recipe->Category = recipeCategory == nullptr ? base->Category : static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(recipeCategory));

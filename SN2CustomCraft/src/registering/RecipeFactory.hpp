@@ -23,6 +23,7 @@ class RecipeFactory {
 
     bool availableInLifePod = false;
     SDK::UUWECraftingRecipeCategory* recipeCategory = nullptr;
+    bool recipeTextureModified = false;
     SDK::TSoftObjectPtr<SDK::UTexture2D> recipeTexture;
 
     std::vector<SDK::FCraftingRecipeRequirement> ingredients{};
@@ -35,8 +36,10 @@ class RecipeFactory {
     static void unregisterAllRecipes();
 
 public:
-    explicit RecipeFactory(std::string recipeId, std::string recipeName, std::string recipeDescription);
-    explicit RecipeFactory(std::string recipeId);
+    explicit RecipeFactory(std::string recipeId, bool isModify);
+
+    void setName(const std::string& recipeName);
+    void setDescription(const std::string& recipeDescription);
 
     bool setCategory(const std::string &categoryId);
     bool setCategory(SDK::UUWECraftingRecipeCategory *category);

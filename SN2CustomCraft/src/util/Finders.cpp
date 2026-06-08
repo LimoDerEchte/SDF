@@ -4,6 +4,7 @@
 
 #include "Finders.hpp"
 
+#include "UObject.hpp"
 #include "UObjectGlobals.hpp"
 
 using namespace SDK;
@@ -36,4 +37,10 @@ USN2BuilderActionData *Finders::searchBuilderAction(const std::string &dataId) {
     const std::string trueExpr = "DA_" + dataId;
     const auto item = RC::Unreal::UObjectGlobals::FindObject(L"SN2BuilderConstructActionData", UtfN::StringToWString(trueExpr).c_str());
     return reinterpret_cast<USN2BuilderActionData*>(item);
+}
+
+UUWECrafterComponent *Finders::searchComponent(const std::string &componentPath) {
+    const std::string trueExpr = "/Game/Blueprints/" + componentPath;
+    const auto item = RC::Unreal::UObjectGlobals::StaticFindObject(nullptr, nullptr, UtfN::StringToWString(trueExpr).c_str());
+    return reinterpret_cast<UUWECrafterComponent*>(item);
 }

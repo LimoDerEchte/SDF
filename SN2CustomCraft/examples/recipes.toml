@@ -5,6 +5,7 @@ id = "Flashlight"
 
 [[recipe_modify]]
 id = "MetalSalvage"
+description = "This is a modified description :)"
 available_in_lifepod = false # You can override the lifepod state
 
 [[recipe_modify.ingredients]]
@@ -27,7 +28,7 @@ description = "This is a custom and data driven recipe"
 
 available_in_lifepod = true # Optional; only when set to true will this actually do something
 category = "CustomCategory"
-icon = "ITEM CookedBluemoon" # This will use the thumbnail from the given item
+icon = "ITEM CookedBluemoon" # This will use the thumbnail from the given item; optional, default is the "Alterra Cicada" logo, used in the game as a placeholder
 crafting_time = 5.0 # Floating point crafting time in seconds
 
 [[recipe.ingredients]]
@@ -55,7 +56,6 @@ name = "Custom Processor Recipe"
 description = "This is a custom recipe that can be crafted using a Processor"
 
 category = "ProcessorBiofuel" # Where something is crafted is entirely decided by the category
-icon = "DEFAULT" # Optional, default is the "Alterra Cicada" logo, used in the game as a placeholder
 crafting_time = 15.0
 
 [[recipe.ingredients]]

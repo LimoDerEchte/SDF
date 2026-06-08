@@ -6,7 +6,7 @@ description = "Custom and data driven food category"
 
 crafted_by = "Fabricator"
 parent_category = "Sustenance" # Optional; a parent category is currently necessary for everything but Processor categories
-icon = "DEFAULT" # Optional; placeholder Alterra Cicada icon => not sure where this icon is actually used
+icon = "ITEM Titanium" # Optional; placeholder Alterra Cicada icon => not sure where this icon is actually used
 
 
 [[category]]
@@ -16,3 +16,20 @@ description = "This category is for testing custom builder actions"
 
 crafted_by = "BuilderTool"
 parent_category = "BuilderBaseObjectCategory"
+
+
+[[category]]
+id = "CustomRootCategory"
+name = "Custom Root Category"
+description = "This category lives in a fabricators root"
+
+crafted_by = "Fabricator"
+
+
+[[category_modify]]
+id = "Sustenance"
+name = "Cooked stuff or sum"
+
+
+[[category_delete]]
+id = "Consumables"

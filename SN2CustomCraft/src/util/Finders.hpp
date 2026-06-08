@@ -15,4 +15,5 @@ public:
     static SDK::UUWECraftingRecipeCategory *searchRecipeCategory(const std::string &categoryId);
     static SDK::UUWEScanData *searchScanData(const std::string &scanId);
     static SDK::USN2BuilderActionData *searchBuilderAction(const std::string &dataId);
+    static SDK::UUWECrafterComponent *searchComponent(const std::string &componentPath);
 };

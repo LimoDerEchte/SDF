@@ -24,24 +24,44 @@ void CategoryFactory::unregisterAllCategories() {
     registeredCategories.clear();
 }
 
-CategoryFactory::CategoryFactory(std::string categoryId, std::string categoryName, std::string categoryDescription, const ECrafterType crafterType)
-    : categoryId(std::move(categoryId)), categoryName(std::move(categoryName)), categoryDescription(std::move(categoryDescription)), crafterType(crafterType) {
+CategoryFactory::CategoryFactory(std::string categoryId, const bool modifyMode)
+    : categoryId(std::move(categoryId)), categoryName(std::move("Empty")), categoryDescription(std::move("Empty")), crafterType(ECrafterType::Undefined), modifyMode(modifyMode) {
+    if (!modifyMode) {
+        const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
+        setIcon(defaultTex);
+    }
+}
 
-    const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
-    setIcon(defaultTex);
+void CategoryFactory::setName(const std::string &categoryName) {
+    this->categoryName = categoryName;
+}
+
+void CategoryFactory::setDescription(const std::string &categoryDescription) {
+    this->categoryDescription = categoryDescription;
+}
+
+void CategoryFactory::setCrafterType(const ECrafterType crafterType) {
+    this->crafterType = crafterType;
+    modifyCrafterType = true;
+
+    if (modifyMode)
+        return;
 
     switch (crafterType) {
         case ECrafterType::Fabricator:
             setParent("Fabricator");
+            rootCategory = true;
             break;
         case ECrafterType::Refinery:
             setParent("Processor");
             break;
         case ECrafterType::ModificationStation:
             setParent("ModificationStation");
+            rootCategory = true;
             break;
         case ECrafterType::VehicleFabricator:
             setParent("VehicleBay_Category");
+            rootCategory = true;
             break;
         case ECrafterType::BuilderTool:
             setParent("BuilderToolCategory");
@@ -59,6 +79,7 @@ bool CategoryFactory::setParent(UUWECraftingRecipeCategory *category) {
     if (category == nullptr)
         return false;
     categoryParent = category;
+    rootCategory = false;
     return true;
 }
 
@@ -76,6 +97,7 @@ bool CategoryFactory::setIconFromItem(const UUWEItemType *item) {
 bool CategoryFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
+    categoryTextureModified = true;
     categoryTexture = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
     return true;
 }
@@ -85,22 +107,39 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
     if (base == nullptr)
         return nullptr;
 
-    const auto recipe = static_cast<UUWECraftingRecipeCategory*>(UGameplayStatics::SpawnObject(UUWECraftingRecipeCategory::StaticClass(), base->Outer));
-    if (recipe == nullptr)
+    const auto recipeCategory = modifyMode ? Finders::searchRecipeCategory(categoryId) : static_cast<UUWECraftingRecipeCategory*>(UGameplayStatics::SpawnObject(UUWECraftingRecipeCategory::StaticClass(), base->Outer));
+    if (recipeCategory == nullptr)
         return nullptr;
 
-    recipe->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}", categoryId)).c_str());
-    recipe->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
+    if (!modifyMode) {
+        recipeCategory->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}", categoryId)).c_str());
+        recipeCategory->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
+    }
 
-    recipe->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
-    recipe->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
-    recipe->Thumbnail = categoryTexture;
-    recipe->CraftedBy = crafterType;
+    if (!modifyMode || categoryName != "Empty")
+        recipeCategory->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
+    if (!modifyMode || categoryDescription != "Empty")
+    recipeCategory->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
+    if (categoryTextureModified)
+        recipeCategory->Thumbnail = categoryTexture;
+    if (modifyCrafterType)
+        recipeCategory->CraftedBy = crafterType;
 
     if (categoryParent != nullptr)
-        recipe->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
+        recipeCategory->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
 
-    registeredCategories.push_back(recipe);
-    Log::Verbose("Recipe category registered: {}", categoryId);
-    return recipe;
+    if (rootCategory && !modifyMode) {
+        Log::Verbose("Registering root category to UWECrafterComponent");
+        std::string searchString = "Crafting/BP_Fabricator.Default__BP_Fabricator_C:Crafter";
+        auto comp = Finders::searchComponent(searchString);
+        if (comp != nullptr) {
+            const auto categories = reinterpret_cast<Unreal::TArray<TSoftObjectPtr<UUWECraftingRecipeCategory>>*>(&comp->AllowedRecipeCategories);
+            categories->Emplace(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(recipeCategory));
+        } else
+            Log::Warning("Finders::searchComponent failed: {}", searchString);
+    }
+
+    registeredCategories.push_back(recipeCategory);
+    Log::Verbose("Recipe category {}: {}", modifyMode ? "modified" : "registered", categoryId);
+    return recipeCategory;
 }

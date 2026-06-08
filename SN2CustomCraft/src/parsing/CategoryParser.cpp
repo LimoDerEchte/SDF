@@ -18,38 +18,43 @@ const std::map<std::string, ECrafterType> craftedByMap = {
     { "VehicleFabricator", ECrafterType::VehicleFabricator }
 };
 
-void CategoryParser::parseFile(std::string file, const toml::table &table) {
+void CategoryParser::parseFile(std::string file, const toml::table &table, const bool modifyMode) {
     if (!table.contains("id") || !table["id"].is_string()) {
         Log::Warning("File {} has a category without an id", file);
         return;
     }
     const auto categoryId = table["id"].as_string()->get();
 
-    if (!table.contains("name") || !table["name"].is_string()) {
+    if (!modifyMode && (!table.contains("name") || !table["name"].is_string())) {
         Log::Warning("Category {} is missing a name", categoryId);
         return;
     }
-    const auto categoryName = table["name"].as_string()->get();
+    const auto categoryName = table.contains("name") ? table["name"].as_string()->get() : "Empty";
 
-    if (!table.contains("description") || !table["description"].is_string()) {
+    if (!modifyMode && (!table.contains("description") || !table["description"].is_string())) {
         Log::Warning("Category {} is missing a description", categoryId);
         return;
     }
-    const auto categoryDescription = table["description"].as_string()->get();
+    const auto categoryDescription = table.contains("description") ? table["description"].as_string()->get() : "Empty";
 
-    if (!table.contains("crafted_by") || !table["crafted_by"].is_string()) {
+    if (!modifyMode && (!table.contains("crafted_by") || !table["crafted_by"].is_string())) {
         Log::Warning("Category {} is missing the crafted_by attribute", categoryId);
         return;
     }
-    const auto craftedByString = table["crafted_by"].as_string()->get();
+    const auto craftedByString = table.contains("crafted_by") ? table["crafted_by"].as_string()->get() : "Empty";
 
-    if (!craftedByMap.contains(craftedByString)) {
+    if (craftedByString != "Empty" && !craftedByMap.contains(craftedByString)) {
         Log::Warning("Category {} has invalid value '{}' for crafted_by attribute", categoryId, craftedByString);
         return;
     }
-    const auto craftedBy = craftedByMap.at(craftedByString);
 
-    CategoryFactory factory(categoryId, categoryName, categoryDescription, craftedBy);
+    CategoryFactory factory(categoryId, modifyMode);
+    if (categoryName != "Empty")
+        factory.setName(categoryName);
+    if (categoryDescription != "Empty")
+        factory.setDescription(categoryDescription);
+    if (craftedByString != "Empty")
+        factory.setCrafterType(craftedByMap.at(craftedByString));
 
     if (table.contains("parent_category") && table["parent_category"].is_string()) {
         if (const auto parentCategory = table["parent_category"].as_string()->get(); !factory.setParent(parentCategory)) {
@@ -58,9 +63,7 @@ void CategoryParser::parseFile(std::string file, const toml::table &table) {
     }
 
     if (table.contains("icon") && table["icon"].is_string()) {
-        if (const auto iconPath = table["icon"].as_string()->get(); iconPath == "DEFAULT")
-            factory.setIcon(nullptr);
-        else if (iconPath.starts_with("ITEM ")) {
+        if (const auto iconPath = table["icon"].as_string()->get(); iconPath.starts_with("ITEM ")) {
             if (!factory.setIconFromItem(iconPath.substr(5))) {
                 Log::Warning("Category {} has invalid item icon path '{}'", categoryId, iconPath);
                 return;
@@ -79,17 +82,59 @@ void CategoryParser::parseFile(std::string file, const toml::table &table) {
 
 void CategoryParser::ParseCategories() {
     for (const auto&[path, toml] : FileTraversal::categoryTables) {
-        if (!toml["category"].is_array()) {
-            Log::Warning("Malformed category file {}", path);
-            return;
-        }
-
-        for (const auto& category : *toml["category"].as_array()) {
-            if (!category.is_table()) {
+        if (toml.contains("category")) {
+            if (!toml["category"].is_array()) {
                 Log::Warning("Malformed category file {}", path);
                 return;
             }
-            parseFile(path, *category.as_table());
+
+            for (const auto& category : *toml["category"].as_array()) {
+                if (!category.is_table()) {
+                    Log::Warning("Malformed category file {}", path);
+                    return;
+                }
+                parseFile(path, *category.as_table(), false);
+            }
+        }
+
+        if (toml.contains("category_modify")) {
+            if (!toml["category_modify"].is_array()) {
+                Log::Warning("Malformed category file {}", path);
+                return;
+            }
+
+            for (const auto& category : *toml["category_modify"].as_array()) {
+                if (!category.is_table()) {
+                    Log::Warning("Malformed category file {}", path);
+                    return;
+                }
+                parseFile(path, *category.as_table(), true);
+            }
+        }
+
+        if (toml.contains("category_delete")) {
+            if (!toml["category_delete"].is_array()) {
+                Log::Warning("Malformed category file {}", path);
+                return;
+            }
+
+            for (const auto& category : *toml["category_delete"].as_array()) {
+                if (!category.is_table()) {
+                    Log::Warning("Malformed category file {}", path);
+                    return;
+                }
+                const auto table = *category.as_table();
+
+                if (!table.contains("id") || !table["id"].is_string()) {
+                    Log::Warning("File {} has a category_delete without an id", path);
+                    return;
+                }
+                const auto recipeId = table["id"].as_string()->get();
+
+                CategoryFactory factory(recipeId, true);
+                const auto cat = factory.registerCategory();
+                cat->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr));
+            }
         }
     }
 }

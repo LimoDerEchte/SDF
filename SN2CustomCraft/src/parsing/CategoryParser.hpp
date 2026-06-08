@@ -13,7 +13,7 @@ using namespace SDK;
 class CategoryParser {
     static std::map<std::string, UUWECraftingRecipeCategory*> categories;
 
-    static void parseFile(std::string file, const toml::table &table);
+    static void parseFile(std::string file, const toml::table &table, bool modifyMode);
 
 public:
     static void ParseCategories();

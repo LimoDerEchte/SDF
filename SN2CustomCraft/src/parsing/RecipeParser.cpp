@@ -10,7 +10,7 @@
 
 std::map<std::string, UUWECraftingRecipe*> RecipeParser::recipies{};
 
-void RecipeParser::parseFile(std::string file, const toml::table &table, bool modifyMode) {
+void RecipeParser::parseFile(std::string file, const toml::table &table, const bool modifyMode) {
     if (!table.contains("id") || !table["id"].is_string()) {
         Log::Warning("File {} has a recipe without an id", file);
         return;
@@ -21,19 +21,23 @@ void RecipeParser::parseFile(std::string file, const toml::table &table, bool mo
         Log::Warning("Recipe {} is missing a name", recipeId);
         return;
     }
-    const auto recipeName = modifyMode ? "" : table["name"].as_string()->get();
+    const auto recipeName = !table.contains("name") ? "Empty" : table["name"].as_string()->get();
 
     if (!modifyMode && (!table.contains("description") || !table["description"].is_string())) {
         Log::Warning("Recipe {} is missing a description", recipeId);
         return;
     }
-    const auto recipeDescription = modifyMode ? "" : table["description"].as_string()->get();
+    const auto recipeDescription = !table.contains("description") ? "Empty" : table["description"].as_string()->get();
 
     if (!modifyMode && (!table.contains("category") || !table["category"].is_string())) {
         Log::Warning("Recipe {} is missing a category", recipeId);
     }
 
-    RecipeFactory factory = modifyMode ? RecipeFactory(recipeId) : RecipeFactory(recipeId, recipeName, recipeDescription);
+    auto factory = RecipeFactory(recipeId, modifyMode);
+    if (recipeName != "Empty")
+        factory.setName(recipeName);
+    if (recipeDescription != "Empty")
+        factory.setDescription(recipeDescription);
 
     if (!modifyMode || table.contains("category")) {
         if (const auto parentCategory = table["category"].as_string()->get(); !factory.setCategory(parentCategory)) {
@@ -43,9 +47,7 @@ void RecipeParser::parseFile(std::string file, const toml::table &table, bool mo
     }
 
     if (table.contains("icon") && table["icon"].is_string()) {
-        if (const auto iconPath = table["icon"].as_string()->get(); iconPath == "DEFAULT")
-            factory.setIcon(nullptr);
-        else if (iconPath.starts_with("ITEM ")) {
+        if (const auto iconPath = table["icon"].as_string()->get(); iconPath.starts_with("ITEM ")) {
             if (!factory.setIconFromItem(iconPath.substr(5))) {
                 Log::Warning("Recipe {} has invalid item icon path '{}'", recipeId, iconPath);
                 return;
@@ -211,7 +213,7 @@ void RecipeParser::ParseRecipes() {
                 }
                 const auto recipeId = table["id"].as_string()->get();
 
-                RecipeFactory factory(recipeId);
+                RecipeFactory factory(recipeId, true);
                 factory.setCategory("Fabricator");
                 const auto _ = factory.registerRecipe();
             }
