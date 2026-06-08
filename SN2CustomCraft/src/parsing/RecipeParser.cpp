@@ -145,8 +145,7 @@ void RecipeParser::parseFile(std::string file, const toml::table &table, const b
     if (table.contains("crafting_time") && table["crafting_time"].is_number()) {
         const auto time = static_cast<float>(table["crafting_time"].as_floating_point()->get());
         factory.setCraftingTime(time);
-    } else if (!modifyMode)
-        Log::Warning("Recipe {} has no crafting time", recipeId);
+    }
 
     if (table.contains("available_in_lifepod") && table["available_in_lifepod"].is_boolean()) {
         factory.setAvailableInLifepod(table["available_in_lifepod"].as_boolean()->get());

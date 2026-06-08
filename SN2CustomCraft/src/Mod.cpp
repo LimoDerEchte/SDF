@@ -16,16 +16,17 @@
 using namespace RC;
 using namespace Unreal;
 
+#define SDFModVersion "0.1.0-alpha"
+#define W(x) STR(x)
+
 class SN2CustomCraft : public CppUserModBase {
     bool scanning = true;
 public:
     SN2CustomCraft() {
-        ModVersion = STR("0.1");
-        ModName = STR("Subnautica Data Framework");
-        ModAuthors = STR("Limo");
-        ModDescription = STR("A Subnautica 2 framework that allows for data driven content mods");
-
-        Log::Verbose("Initialized");
+        ModVersion = W(SDFModVersion);
+        ModName = L"Subnautica Data Framework";
+        ModAuthors = L"Limo";
+        ModDescription = L"A Subnautica 2 framework that allows for data driven content mods";
     }
     ~SN2CustomCraft() override {
         if (scanning)
@@ -49,18 +50,23 @@ public:
     }
 
     static void Startup() {
+        Log::Verbose("SDF Version {} Initialized", SDFModVersion);
+
         Hooks::RegisterHooks();
 
+#ifdef DEVELOPMENT
         ItemTypeFactory type("CustomItem", "Custom Item Type", "This is a custom item type because why tf not");
         type.setIconFromItem("CopperIngot");
         UUWEPrimaryDataAssetBase* item = type.registerItemType();
         if (!item)
             Log::Error("What in the skibidi");
+#endif
 
         FileTraversal::ScanFiles();
         CategoryParser::ParseCategories();
         RecipeParser::ParseRecipes();
 
+#ifdef DEVELOPMENT
         //RecipeFactory recipe("TestRec", "Test Recipe", "This is a recipe for testing dynamic icons");
         //recipe.setCategory("CustomCategory");
         //recipe.addIngredient("Titanium", 2);
@@ -109,6 +115,7 @@ public:
 
         // Step 2 (Research)
         USN2AssetRegistry::RebuildAssetRegistryCachedData();
+#endif
     }
 };
 

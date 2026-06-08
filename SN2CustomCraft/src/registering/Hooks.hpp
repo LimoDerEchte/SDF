@@ -19,6 +19,8 @@
 class Hooks {
     HookDefHeader(SDK::UUWECraftingRecipe, Recipes)
     HookDefHeader(SDK::USN2BuilderActionData, BuilderActions)
+
+#ifdef DEVELOPMENT
     HookDefHeader(SDK::UUWEItemType, ItemTypes)
 
     using getAssetsT = bool(*)(void*, const SDK::FARFilter*, RC::Unreal::TArray<SDK::FAssetData>*, bool);
@@ -26,6 +28,7 @@ class Hooks {
     static getAssetsT originalGetAssets;
     static std::unique_ptr<PLH::Detour> getAssetsHook;
     static bool GetAssetsHook(void* self, const SDK::FARFilter* filter, RC::Unreal::TArray<SDK::FAssetData>* out, bool bSkipARFilteredAsset);
+#endif
 
     static uintptr_t ScanCall(uintptr_t address, int ordinal);
     static uintptr_t ScanCallMultiPass(uintptr_t address, const std::vector<int>& ordinals);

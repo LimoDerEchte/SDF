@@ -128,6 +128,8 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
     if (categoryParent != nullptr)
         recipeCategory->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
 
+
+#ifdef DEVELOPMENT
     if (rootCategory && !modifyMode) {
         Log::Verbose("Registering root category to UWECrafterComponent");
         std::string searchString = "Crafting/BP_Fabricator.Default__BP_Fabricator_C:Crafter";
@@ -138,6 +140,7 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
         } else
             Log::Warning("Finders::searchComponent failed: {}", searchString);
     }
+#endif
 
     registeredCategories.push_back(recipeCategory);
     Log::Verbose("Recipe category {}: {}", modifyMode ? "modified" : "registered", categoryId);

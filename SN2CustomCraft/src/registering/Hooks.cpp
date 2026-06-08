@@ -40,6 +40,8 @@ using namespace Unreal;
 
 HookDefStatic(UUWECraftingRecipe, Recipes, RecipeFactory::registeredRecipes, false)
 HookDefStatic(USN2BuilderActionData, BuilderActions, BuilderActionFactory::registeredActions, false)
+
+#ifdef DEVELOPMENT
 HookDefStatic(UUWEItemType, ItemTypes, ItemTypeFactory::registeredItemTypes, true)
 
 Hooks::getAssetsT Hooks::originalGetAssets = nullptr;
@@ -78,6 +80,7 @@ bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, Unreal::TArray<SD
 
     return ret;
 }
+#endif
 
 uintptr_t Hooks::ScanCall(uintptr_t address, int ordinal) {
     while (true) {
@@ -133,25 +136,31 @@ void Hooks::RegisterHooks() {
 
     HookDefScan(Recipes, "GetAllCraftingRecipes", 1);
     HookDefScan(BuilderActions, "GetAllBuilderActions", 1);
+
+#ifdef DEVELOPMENT
     HookDefScan(ItemTypes, "GetAllItemTypes", 1);
 
     const auto assetRegistryVTable = *static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);
 
     const auto internalPtrGetAssets = assetRegistryVTable[10];
     Log::Verbose("Found Assets registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGetAssets), reinterpret_cast<void*>(internalPtrGetAssets - moduleBase));
-
-    const auto internalPtrGetEnumerateAssets = assetRegistryVTable[15];
-    Log::Verbose("Found EnumerateAssets at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGetEnumerateAssets), reinterpret_cast<void*>(internalPtrGetEnumerateAssets - moduleBase));
+#endif
 
     HookDefHook(Recipes);
     HookDefHook(BuilderActions);
+
+#ifdef DEVELOPMENT
     HookDefHook(ItemTypes);
     HookDefHook(Assets);
+#endif
 }
 
 void Hooks::UnregisterHooks() {
     HookDefUnhook(Recipes);
     HookDefUnhook(BuilderActions);
+
+#ifdef DEVELOPMENT
     HookDefUnhook(ItemTypes);
     HookDefUnhook(Assets);
+#endif
 }
