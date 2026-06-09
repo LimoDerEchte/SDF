@@ -5,12 +5,13 @@
 #include "RecipeParser.hpp"
 
 #include "FileTraversal.hpp"
+#include "IconParser.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "util/Log.hpp"
 
 std::map<std::string, UUWECraftingRecipe*> RecipeParser::recipies{};
 
-void RecipeParser::parseFile(std::string file, const toml::table &table, const bool modifyMode) {
+void RecipeParser::parseFile(const std::string &mod, const std::string &file, const toml::table &table, const bool modifyMode) {
     if (!table.contains("id") || !table["id"].is_string()) {
         Log::Warning("File {} has a recipe without an id", file);
         return;
@@ -46,15 +47,20 @@ void RecipeParser::parseFile(std::string file, const toml::table &table, const b
         }
     }
 
-    if (table.contains("icon") && table["icon"].is_string()) {
-        if (const auto iconPath = table["icon"].as_string()->get(); iconPath.starts_with("ITEM ")) {
-            if (!factory.setIconFromItem(iconPath.substr(5))) {
-                Log::Warning("Recipe {} has invalid item icon path '{}'", recipeId, iconPath);
-                return;
-            }
-        } else {
-            Log::Warning("Recipe {} has invalid icon path '{}'", recipeId, iconPath);
-            return;
+    if (table.contains("icon")) {
+        switch (const IconParser iconParser(table["icon"], mod); iconParser.getResult()) {
+            case InvalidToml:
+                Log::Warning("Recipe {} has malformed icon", recipeId);
+                break;
+            case FailedMessage:
+                Log::Warning("Recipe {} failed to read icon: {}", recipeId, iconParser.getErrorMessage());
+                break;
+            case FailedUnexpected:
+                Log::Warning("Recipe {} failed to read icon unexpectedly", recipeId);
+                break;
+            case Success:
+                factory.setIcon(iconParser.getTexture());
+                break;
         }
     }
 
@@ -166,7 +172,7 @@ void RecipeParser::parseFile(std::string file, const toml::table &table, const b
 }
 
 void RecipeParser::ParseRecipes() {
-    for (const auto&[path, toml] : FileTraversal::recipeTables) {
+    for (const auto&[mod, path, toml] : FileTraversal::recipeTables) {
         if (toml.contains("recipe")) {
             if (!toml["recipe"].is_array()) {
                 Log::Warning("Malformed recipe file {}", path);
@@ -178,7 +184,7 @@ void RecipeParser::ParseRecipes() {
                     Log::Warning("Malformed recipe file {}", path);
                     return;
                 }
-                parseFile(path, *recipe.as_table(), false);
+                parseFile(mod, path, *recipe.as_table(), false);
             }
         }
 
@@ -193,7 +199,7 @@ void RecipeParser::ParseRecipes() {
                     Log::Warning("Malformed recipe file {}", path);
                     return;
                 }
-                parseFile(path, *recipe.as_table(), true);
+                parseFile(mod, path, *recipe.as_table(), true);
             }
         }
 

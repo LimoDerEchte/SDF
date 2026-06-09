@@ -7,6 +7,7 @@
 #include "toml++/toml.hpp"
 
 struct ScannedFile {
+    std::string mod;
     std::string path;
     toml::table toml;
 };

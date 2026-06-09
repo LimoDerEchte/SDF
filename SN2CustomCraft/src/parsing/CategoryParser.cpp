@@ -5,6 +5,7 @@
 #include "CategoryParser.hpp"
 
 #include "FileTraversal.hpp"
+#include "IconParser.hpp"
 #include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
 
@@ -18,7 +19,7 @@ const std::map<std::string, ECrafterType> craftedByMap = {
     { "VehicleFabricator", ECrafterType::VehicleFabricator }
 };
 
-void CategoryParser::parseFile(std::string file, const toml::table &table, const bool modifyMode) {
+void CategoryParser::parseFile(const std::string &mod, const std::string &file, const toml::table &table, const bool modifyMode) {
     if (!table.contains("id") || !table["id"].is_string()) {
         Log::Warning("File {} has a category without an id", file);
         return;
@@ -63,15 +64,20 @@ void CategoryParser::parseFile(std::string file, const toml::table &table, const
         }
     }
 
-    if (table.contains("icon") && table["icon"].is_string()) {
-        if (const auto iconPath = table["icon"].as_string()->get(); iconPath.starts_with("ITEM ")) {
-            if (!factory.setIconFromItem(iconPath.substr(5))) {
-                Log::Warning("Category {} has invalid item icon path '{}'", categoryId, iconPath);
-                return;
-            }
-        } else {
-            Log::Warning("Category {} has invalid icon path '{}'", categoryId, iconPath);
-            return;
+    if (table.contains("icon")) {
+        switch (const IconParser iconParser(table["icon"], mod); iconParser.getResult()) {
+            case InvalidToml:
+                Log::Warning("Category {} has malformed icon", categoryId);
+                break;
+            case FailedMessage:
+                Log::Warning("Category {} failed to read icon: {}", categoryId, iconParser.getErrorMessage());
+                break;
+            case FailedUnexpected:
+                Log::Warning("Category {} failed to read icon unexpectedly", categoryId);
+                break;
+            case Success:
+                factory.setIcon(iconParser.getTexture());
+                break;
         }
     }
 
@@ -90,7 +96,7 @@ void CategoryParser::parseFile(std::string file, const toml::table &table, const
 }
 
 void CategoryParser::ParseCategories() {
-    for (const auto&[path, toml] : FileTraversal::categoryTables) {
+    for (const auto&[mod, path, toml] : FileTraversal::categoryTables) {
         if (toml.contains("category")) {
             if (!toml["category"].is_array()) {
                 Log::Warning("Malformed category file {}", path);
@@ -102,7 +108,7 @@ void CategoryParser::ParseCategories() {
                     Log::Warning("Malformed category file {}", path);
                     return;
                 }
-                parseFile(path, *category.as_table(), false);
+                parseFile(mod, path, *category.as_table(), false);
             }
         }
 
@@ -117,7 +123,7 @@ void CategoryParser::ParseCategories() {
                     Log::Warning("Malformed category file {}", path);
                     return;
                 }
-                parseFile(path, *category.as_table(), true);
+                parseFile(mod, path, *category.as_table(), true);
             }
         }
 

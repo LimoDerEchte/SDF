@@ -62,7 +62,7 @@ void FileTraversal::ScanFiles() {
 
             try {
                 toml::table toml = toml::parse_file(file.path().string());
-                ScannedFile scan(file.path().string(), toml);
+                ScannedFile scan(modName, file.path().string(), toml);
 
                 if (toml.contains("category") || toml.contains("category_modify") || toml.contains("category_delete"))
                     categoryTables.push_back(scan);

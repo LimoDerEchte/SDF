@@ -12,6 +12,7 @@ add_library(${TARGET} SHARED
         src/registering/ItemTypeFactory.cpp
         src/registering/BuilderActionFactory.cpp
         src/registering/CategoryFactory.cpp
+        src/parsing/IconParser.cpp
         src/parsing/FileTraversal.cpp
         src/parsing/CategoryParser.cpp
         src/parsing/RecipeParser.cpp

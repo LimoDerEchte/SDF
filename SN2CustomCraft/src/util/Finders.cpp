@@ -48,3 +48,7 @@ UUWECrafterComponent *Finders::searchComponent(const std::string &componentPath)
     const auto item = RC::Unreal::UObjectGlobals::StaticFindObject(nullptr, nullptr, UtfN::StringToWString(trueExpr).c_str());
     return reinterpret_cast<UUWECrafterComponent*>(item);
 }
+
+UTexture2D *Finders::findCicadaTexture() {
+    return reinterpret_cast<UTexture2D*>(RC::Unreal::UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
+}
