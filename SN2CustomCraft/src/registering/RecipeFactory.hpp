@@ -49,6 +49,7 @@ public:
     bool setIconFromItem(const std::string &itemId);
     bool setIconFromItem(const SDK::UUWEItemType *item);
     bool setIcon(SDK::UTexture2D *icon);
+    void setIcon(const SDK::TSoftObjectPtr<SDK::UTexture2D> &icon);
 
     bool addIngredient(const std::string &itemId, int32_t amount);
     bool addIngredient(SDK::UUWEItemType *item, int32_t amount);

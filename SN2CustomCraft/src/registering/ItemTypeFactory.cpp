@@ -44,6 +44,10 @@ bool ItemTypeFactory::setIcon(UTexture2D *icon) {
     return true;
 }
 
+void ItemTypeFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
+    itemTexture = icon;
+}
+
 UUWEItemType* ItemTypeFactory::registerItemType() const {
     const auto base = Finders::searchItem("Titanium");
     if (base == nullptr)

@@ -113,6 +113,11 @@ bool CategoryFactory::setIcon(UTexture2D *icon) {
     return true;
 }
 
+void CategoryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
+    categoryTextureModified = true;
+    categoryTexture = icon;
+}
+
 UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
     const auto base = reinterpret_cast<UUWECraftingRecipeCategory*>(UObjectGlobals::FindObject(L"UWECraftingRecipeCategory", L"DA_Processor"));
     if (base == nullptr)

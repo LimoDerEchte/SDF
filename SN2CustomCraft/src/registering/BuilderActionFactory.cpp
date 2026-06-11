@@ -8,6 +8,7 @@
 #include "UObjectGlobals.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
+#include "util/RegistryHelper.hpp"
 
 using namespace SDK;
 using namespace RC;
@@ -70,8 +71,11 @@ USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() co
 
     action->GhostMeshOverride = base->GhostMeshOverride;
     action->PlacementParams = base->PlacementParams;
+    action->bSpawnAsDynamicItem = true;
 
     registeredActions.push_back(action);
+    RegistryHelper::AddToRegistry(action, "SN2BuilderConstructActionData");
+
     Log::Verbose("Builder action registered: {}", recipeId);
     return action;
 }

@@ -11,8 +11,10 @@
 
 namespace fs = std::filesystem;
 
+using namespace SDK;
+
 IconParser::IconParser(toml::node_view<const toml::node> node, const std::string& modName)
-    : errorMessage(""), texture(nullptr), result(FailedUnexpected) {
+    : texture(), result(FailedUnexpected) {
 
     if (!node.is_string()) {
         result = InvalidToml;
@@ -22,18 +24,19 @@ IconParser::IconParser(toml::node_view<const toml::node> node, const std::string
 
     // Default Icon
     if (content == "DEFAULT") {
-        texture = Finders::findCicadaTexture();
+        const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(Finders::findCicadaTexture());
+        texture = *reinterpret_cast<const TSoftObjectPtr<UTexture2D>*>(&temp);
         result = Success;
         return;
     }
 
     // Copy Item Icon
     if (content.starts_with("ITEM ")) {
-        if (const auto item = Finders::searchItem(content.substr(5)); item == nullptr || item->Thumbnail.Get() == nullptr) {
+        if (const auto item = Finders::searchItem(content.substr(5)); item == nullptr) {
             errorMessage = "Could not find item: " + content.substr(5);
             result = FailedMessage;
         } else {
-            texture = item->Thumbnail.Get();
+            texture = item->Thumbnail;
             result = Success;
         }
         return;
@@ -65,12 +68,13 @@ IconParser::IconParser(toml::node_view<const toml::node> node, const std::string
             return;
         }
 
-        const auto worldContext = SDK::UWorld::GetWorld();
-        if (const auto tex = SDK::UKismetRenderingLibrary::ImportFileAsTexture2D(worldContext, UtfN::StringToWString(absolute(actualPath).string()).c_str()); tex == nullptr) {
+        const auto worldContext = UWorld::GetWorld();
+        if (const auto tex = UKismetRenderingLibrary::ImportFileAsTexture2D(worldContext, UtfN::StringToWString(absolute(actualPath).string()).c_str()); tex == nullptr) {
             errorMessage = "Could not read file: " + actualPath.string();
             result = FailedMessage;
         } else {
-            texture = tex;
+            const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(tex);
+            texture = *reinterpret_cast<const TSoftObjectPtr<UTexture2D>*>(&temp);
             result = Success;
         }
         return;
@@ -88,6 +92,6 @@ std::string IconParser::getErrorMessage() const {
     return errorMessage;
 }
 
-SDK::UTexture2D *IconParser::getTexture() const {
+TSoftObjectPtr<UTexture2D> IconParser::getTexture() const {
     return texture;
 }

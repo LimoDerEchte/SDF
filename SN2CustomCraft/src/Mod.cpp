@@ -80,8 +80,8 @@ public:
         //recipe.setIcon(icon.build());
         //const auto _ = recipe.registerRecipe();
 
-        BuilderActionFactory factory("CustomBuilderRecipe");
-        factory.addPowerDrainText("-1 Aura");
+        BuilderActionFactory factory("CustomBuilderRecipeRecipe");
+        //factory.addPowerDrainText("-1 Aura");
         if (!factory.registerBuilderAction())
             Log::Error("Errm what the sigma");
 

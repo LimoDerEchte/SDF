@@ -74,6 +74,11 @@ bool RecipeFactory::setIcon(UTexture2D *icon) {
     return true;
 }
 
+void RecipeFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
+    recipeTextureModified = true;
+    recipeTexture = icon;
+}
+
 bool RecipeFactory::addIngredient(const std::string &itemId, const int32_t amount) {
     return addIngredient(Finders::searchItem(itemId), amount);
 }
