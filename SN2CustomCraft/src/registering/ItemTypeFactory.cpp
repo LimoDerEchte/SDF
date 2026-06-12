@@ -53,12 +53,21 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     if (base == nullptr)
         return nullptr;
 
-    const auto itemType = static_cast<UUWEItemType*>(UGameplayStatics::SpawnObject(UUWEItemType::StaticClass(), base->Outer));
+    FStaticConstructObjectParameters params(
+        reinterpret_cast<Unreal::UClass*>(base->Class),
+        reinterpret_cast<Unreal::UObject*>(base->Outer)
+    );
+    params.Name = Unreal::FName(UtfN::StringToWString(std::format("DA_{}_ItemType", itemId)).c_str());
+    params.SetFlags = static_cast<Unreal::EObjectFlags>(EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted);
+    params.Template = reinterpret_cast<Unreal::UObject*>(base);
+
+    //const auto itemType = static_cast<UUWEItemType*>(UGameplayStatics::SpawnObject(UUWEItemType::StaticClass(), base->Outer));
+    const auto itemType = reinterpret_cast<UUWEItemType*>(UObjectGlobals::StaticConstructObject(params));
     if (itemType == nullptr)
         return nullptr;
 
-    itemType->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}_ItemType", itemId)).c_str());
-    itemType->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
+    //itemType->Name = UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("DA_{}_ItemType", itemId)).c_str());
+    //itemType->Flags = EF::MarkAsRootSet | EF::Public | EF::Standalone | EF::Transactional | EF::WasLoaded | EF::LoadCompleted;
 
     itemType->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(itemName).c_str());
     itemType->ItemDescription = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(itemDescription).c_str());
@@ -73,7 +82,7 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     itemType->GameplayTags = base->GameplayTags;
     itemType->TunableData = base->TunableData;
 
-    registeredItemTypes.push_back(itemType);
+    //registeredItemTypes.push_back(itemType);
     RegistryHelper::AddToRegistry(itemType, "ItemType");
 
     Log::Verbose("Item type registered: {}", itemId);

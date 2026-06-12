@@ -65,8 +65,8 @@ bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, Unreal::TArray<SD
             }
 
             for (auto itemType : ItemTypeFactory::registeredItemTypes) {
-                out->Add(SDK::UAssetRegistryHelpers::CreateAssetData(itemType, true));
-                Log::Warning("Item type added! :D");
+                //out->Add(SDK::UAssetRegistryHelpers::CreateAssetData(itemType, true));
+                //Log::Warning("Item type added! :D");
             }
         }
     }
@@ -149,8 +149,8 @@ void Hooks::RegisterHooks() {
     HookDefHook(BuilderActions);
 
 #ifdef DEVELOPMENT
-    HookDefHook(ItemTypes);
-    HookDefHook(Assets);
+    //HookDefHook(ItemTypes);
+    //HookDefHook(Assets);
 #endif
 }
 
@@ -159,7 +159,7 @@ void Hooks::UnregisterHooks() {
     HookDefUnhook(BuilderActions);
 
 #ifdef DEVELOPMENT
-    HookDefUnhook(ItemTypes);
-    HookDefUnhook(Assets);
+    //HookDefUnhook(ItemTypes);
+    //HookDefUnhook(Assets);
 #endif
 }

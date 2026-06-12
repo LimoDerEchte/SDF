@@ -14,7 +14,7 @@ void SN2CustomCraft::startup() {
 #ifdef DEVELOPMENT
     ItemTypeFactory type("CustomItem", "Custom Item Type", "This is a custom item type because why tf not");
     type.setIconFromItem("CopperIngot");
-    UUWEPrimaryDataAssetBase* item = type.registerItemType();
+    SDK::UUWEPrimaryDataAssetBase* item = type.registerItemType();
     if (!item)
         Log::Error("What in the skibidi");
 #endif
@@ -37,6 +37,13 @@ void SN2CustomCraft::startup() {
     //recipe.setIcon(icon.build());
     //const auto _ = recipe.registerRecipe();
 
+
+    //const struct FDataRegistryType& RegistryType, TArray<struct FDataRegistryId>* OutIdList
+
+
+
+
+
     BuilderActionFactory factory("CustomBuilderRecipeRecipe");
     //factory.addPowerDrainText("-1 Aura");
     if (!factory.registerBuilderAction())
@@ -48,7 +55,7 @@ void SN2CustomCraft::startup() {
     RC::UObjectGlobals::FindAllOf(L"UWEAssetRegistrySubsystem", list);
 
     // Research
-    USN2AssetRegistry::RebuildAssetRegistryCachedData();
+    SDK::USN2AssetRegistry::RebuildAssetRegistryCachedData();
 
     std::vector<Unreal::UObject*> list2{};
     UObjectGlobals::FindAllOf(L"SN2FabricatorViewModel", list2);
@@ -57,7 +64,7 @@ void SN2CustomCraft::startup() {
         if (!obj->GetFullName().contains(L"/Engine/Transient."))
             continue;
 
-        const auto test = reinterpret_cast<USN2FabricatorViewModel*>(obj);
+        const auto test = reinterpret_cast<SDK::USN2FabricatorViewModel*>(obj);
         for (const auto entry : test->CategoryViewModelsByCategory) {
             Log::Warning("Test {}", entry.Second->GetCrafterText().ToString());
         }

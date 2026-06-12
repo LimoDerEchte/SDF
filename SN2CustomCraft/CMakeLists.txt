@@ -31,7 +31,7 @@ add_library(${TARGET} SHARED
 target_link_libraries(${TARGET} PUBLIC UE4SS)
 target_include_directories(${TARGET} PRIVATE src include/private include/public ${SDK_INCLUDE} ${HEADER_ONLY_INCLUDE})
 
-#target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
+target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
 
 message(STATUS "${CMAKE_CONFIGURATION_TYPES}")
 
