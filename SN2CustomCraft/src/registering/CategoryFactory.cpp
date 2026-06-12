@@ -2,9 +2,9 @@
 // Created by Limo on 23/05/2026.
 //
 
-#include "CategoryFactory.hpp"
+#include "registering/CategoryFactory.hpp"
 
-#include "RecipeFactory.hpp"
+#include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Log.hpp"
 #include "UObject.hpp"

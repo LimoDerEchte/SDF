@@ -2,7 +2,7 @@
 // Created by Limo on 09/06/2026.
 //
 
-#include "IconParser.hpp"
+#include "parsing/IconParser.hpp"
 
 #include <filesystem>
 

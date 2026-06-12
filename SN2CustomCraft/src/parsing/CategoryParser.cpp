@@ -2,12 +2,14 @@
 // Created by Limo on 23/05/2026.
 //
 
-#include "CategoryParser.hpp"
+#include "parsing/CategoryParser.hpp"
 
-#include "FileTraversal.hpp"
-#include "IconParser.hpp"
+#include "parsing/FileTraversal.hpp"
+#include "parsing/IconParser.hpp"
 #include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
+
+using namespace SDK;
 
 std::map<std::string, UUWECraftingRecipeCategory*> CategoryParser::categories{};
 

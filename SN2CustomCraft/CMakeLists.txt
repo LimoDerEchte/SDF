@@ -17,9 +17,8 @@ add_library(${TARGET} SHARED
         src/parsing/CategoryParser.cpp
         src/parsing/RecipeParser.cpp
         src/util/RegistryHelper.cpp
-        src/util/IconBuilder.cpp
+        #src/util/IconBuilder.cpp
         src/util/Finders.cpp
-        src/util/Log.hpp
 
         ../libs/CppSDK/SDK/Basic.cpp
         ../libs/CppSDK/SDK/CoreUObject_functions.cpp
@@ -32,7 +31,7 @@ add_library(${TARGET} SHARED
 target_link_libraries(${TARGET} PUBLIC UE4SS)
 target_include_directories(${TARGET} PRIVATE src include/private include/public ${SDK_INCLUDE} ${HEADER_ONLY_INCLUDE})
 
-target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
+#target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
 
 message(STATUS "${CMAKE_CONFIGURATION_TYPES}")
 

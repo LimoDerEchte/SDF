@@ -8,10 +8,8 @@
 #include "SDK/UWECrafting_classes.hpp"
 #include "toml++/impl/table.hpp"
 
-using namespace SDK;
-
 class RecipeParser {
-    static std::map<std::string, UUWECraftingRecipe*> recipies;
+    static std::map<std::string, SDK::UUWECraftingRecipe*> recipies;
 
     static void parseFile(const std::string &mod, const std::string &file, const toml::table &table, bool modifyMode);
 

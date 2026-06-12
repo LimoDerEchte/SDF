@@ -2,7 +2,7 @@
 // Created by Limo on 28/05/2026.
 //
 
-#include "Finders.hpp"
+#include "util/Finders.hpp"
 
 #include "UObject.hpp"
 #include "UObjectGlobals.hpp"

@@ -2,7 +2,7 @@
 // Created by Limo on 23/05/2026.
 //
 
-#include "FileTraversal.hpp"
+#include "parsing/FileTraversal.hpp"
 
 #include "util/Log.hpp"
 

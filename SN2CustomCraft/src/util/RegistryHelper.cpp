@@ -2,9 +2,9 @@
 // Created by Limo on 09/06/2026.
 //
 
-#include "RegistryHelper.hpp"
+#include "util/RegistryHelper.hpp"
 
-#include "Log.hpp"
+#include "util/Log.hpp"
 #include "UObject.hpp"
 #include "UObjectGlobals.hpp"
 

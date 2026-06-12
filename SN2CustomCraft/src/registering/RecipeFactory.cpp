@@ -2,7 +2,7 @@
 // Created by Limo on 21/05/2026.
 //
 
-#include "RecipeFactory.hpp"
+#include "registering/RecipeFactory.hpp"
 
 #include "util/Log.hpp"
 #include "UObjectGlobals.hpp"

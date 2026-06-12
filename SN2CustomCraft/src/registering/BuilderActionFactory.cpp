@@ -2,9 +2,9 @@
 // Created by Limo on 25/05/2026.
 //
 
-#include "BuilderActionFactory.hpp"
+#include "registering/BuilderActionFactory.hpp"
 
-#include "RecipeFactory.hpp"
+#include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"

@@ -2,12 +2,14 @@
 // Created by Limo on 23/05/2026.
 //
 
-#include "RecipeParser.hpp"
+#include "parsing/RecipeParser.hpp"
 
-#include "FileTraversal.hpp"
-#include "IconParser.hpp"
+#include "parsing/FileTraversal.hpp"
+#include "parsing/IconParser.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "util/Log.hpp"
+
+using namespace SDK;
 
 std::map<std::string, UUWECraftingRecipe*> RecipeParser::recipies{};
 

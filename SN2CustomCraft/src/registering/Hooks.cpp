@@ -2,17 +2,16 @@
 // Created by Limo on 20/05/2026.
 //
 
-#include "Hooks.hpp"
+#include "registering/Hooks.hpp"
 
 #include <memory>
 
 #include "util/Log.hpp"
-#include "RecipeFactory.hpp"
+#include "registering/RecipeFactory.hpp"
 #include "polyhook2/Exceptions/AVehHook.hpp"
 #include "SDK/Subnautica2_classes.hpp"
-#include "Hooks/Hooks.hpp"
-#include "BuilderActionFactory.hpp"
-#include "ItemTypeFactory.hpp"
+#include "registering/BuilderActionFactory.hpp"
+#include "registering/ItemTypeFactory.hpp"
 #include "UnrealDef.hpp"
 #include "LuaMadeSimple/LuaMadeSimple.hpp"
 #include "SDK/AssetRegistry_classes.hpp"

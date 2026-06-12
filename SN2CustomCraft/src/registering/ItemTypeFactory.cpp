@@ -2,9 +2,9 @@
 // Created by Limo on 25/05/2026.
 //
 
-#include "ItemTypeFactory.hpp"
+#include "registering/ItemTypeFactory.hpp"
 
-#include "RecipeFactory.hpp"
+#include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "SDK/AssetRegistry_classes.hpp"
 #include "util/Finders.hpp"
