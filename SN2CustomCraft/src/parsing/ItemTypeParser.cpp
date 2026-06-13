@@ -56,6 +56,15 @@ void ItemTypeParser::parseFile(const std::string &mod, const std::string &file, 
         }
     }
 
+    if (table.contains("actor_path")) {
+        if (!table["actor_path"].is_string()) {
+            Log::Warning("Item type {} has malformed actor path", itemId);
+            return;
+        }
+        const auto actorPath = table["actor_path"].as_string()->get();
+        factory.setActor(actorPath);
+    }
+
     if (const auto result = factory.registerItemType(); result == nullptr)
         Log::Warning("Item type {} failed to register for an unknown reason", itemId);
     else
@@ -64,18 +73,50 @@ void ItemTypeParser::parseFile(const std::string &mod, const std::string &file, 
 
 void ItemTypeParser::ParseItemTypes() {
     for (const auto&[mod, path, toml] : FileTraversal::itemTypeTables) {
+        if (toml.contains("item_type_register")) {
+            if (!toml["item_type_register"].is_array()) {
+                Log::Warning("Malformed item type file {}", path);
+                return;
+            }
+
+            for (const auto& itemType : *toml["item_type_register"].as_array()) {
+                if (!itemType.is_table()) {
+                    Log::Warning("Malformed item type file {}", path);
+                    return;
+                }
+                const auto table = *itemType.as_table();
+
+                if (!table.contains("id") || !table["id"].is_string()) {
+                    Log::Warning("File {} has an item type registration without an id", path);
+                    return;
+                }
+                const auto itemId = table["id"].as_string()->get();
+
+                if (!table.contains("path") || !table["path"].is_string()) {
+                    Log::Warning("Item type {} is missing an asset path", itemId);
+                    return;
+                }
+                const auto assetPath = table["path"].as_string()->get();
+
+                if (const auto result = ItemTypeFactory::registerItemType(itemId, assetPath); result == nullptr)
+                    Log::Warning("Item type {} failed to register for an unknown reason", itemId);
+                else
+                    itemTypes.insert(std::make_pair(itemId, result));
+            }
+        }
+
         if (toml.contains("item_type")) {
             if (!toml["item_type"].is_array()) {
                 Log::Warning("Malformed item type file {}", path);
                 return;
             }
 
-            for (const auto& category : *toml["item_type"].as_array()) {
-                if (!category.is_table()) {
+            for (const auto& itemType : *toml["item_type"].as_array()) {
+                if (!itemType.is_table()) {
                     Log::Warning("Malformed item type file {}", path);
                     return;
                 }
-                parseFile(mod, path, *category.as_table(), false);
+                parseFile(mod, path, *itemType.as_table(), false);
             }
         }
 
@@ -85,12 +126,12 @@ void ItemTypeParser::ParseItemTypes() {
                 return;
             }
 
-            for (const auto& category : *toml["item_type_modify"].as_array()) {
-                if (!category.is_table()) {
+            for (const auto& itemType : *toml["item_type_modify"].as_array()) {
+                if (!itemType.is_table()) {
                     Log::Warning("Malformed item type file {}", path);
                     return;
                 }
-                parseFile(mod, path, *category.as_table(), true);
+                parseFile(mod, path, *itemType.as_table(), true);
             }
         }
     }

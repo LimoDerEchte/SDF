@@ -4,6 +4,7 @@
 
 #include "registering/ItemTypeFactory.hpp"
 
+#include "UObject.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "SDK/AssetRegistry_classes.hpp"
@@ -26,6 +27,25 @@ void ItemTypeFactory::setName(const std::string &itemName) {
 
 void ItemTypeFactory::setDescription(const std::string &itemDescription) {
     this->itemDescription = itemDescription;
+}
+
+bool ItemTypeFactory::setActor(const std::string &actorPath) {
+    const auto path = UKismetSystemLibrary::MakeSoftClassPath(UtfN::StringToWString(actorPath).c_str());
+    setActor(UKismetSystemLibrary::Conv_SoftClassPathToSoftClassRef(path));
+    return true;
+}
+
+bool ItemTypeFactory::setActor(SDK::UClass *actorClass) {
+    if (actorClass == nullptr)
+        return false;
+    actorClassModified = true;
+    this->actorClass = UKismetSystemLibrary::Conv_ClassToSoftClassReference(actorClass);
+    return true;
+}
+
+void ItemTypeFactory::setActor(const TSoftClassPtr<SDK::UClass> &actorClass) {
+    actorClassModified = true;
+    this->actorClass = actorClass;
 }
 
 bool ItemTypeFactory::setIconFromItem(const std::string &itemId) {
@@ -68,7 +88,10 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     itemType->FabricationPreviewMaterialInstance = base->FabricationPreviewMaterialInstance;
     itemType->FabricationPreviewMeshData = base->FabricationPreviewMeshData;
 
-    itemType->ActorClass = base->ActorClass;
+    if (actorClassModified)
+        itemType->ActorClass = actorClass;
+    else if (!modifyMode)
+        itemType->ActorClass = base->ActorClass;
 
     itemType->TypeTag = FGameplayTag(UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("ItemType.Custom.{}", itemId)).c_str()));
     itemType->GameplayTags = base->GameplayTags;
@@ -78,5 +101,13 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
 
     Log::Verbose("Item type registered: {}", itemId);
     return itemType;
+}
+
+UUWEItemType *ItemTypeFactory::registerItemType(const std::string &itemId, const std::string &path) {
+    const auto base = Finders::searchItem("Titanium");
+    if (base == nullptr)
+        return nullptr;
+
+    return base;
 }
 

@@ -137,7 +137,7 @@ void Hooks::RegisterHooks() {
     HookDefHook(BuilderActions);
 
 #ifdef DEVELOPMENT
-    HookDefHook(Assets);
+    //HookDefHook(Assets);
 #endif
 }
 
@@ -146,6 +146,6 @@ void Hooks::UnregisterHooks() {
     HookDefUnhook(BuilderActions);
 
 #ifdef DEVELOPMENT
-    HookDefUnhook(Assets);
+    //HookDefUnhook(Assets);
 #endif
 }
