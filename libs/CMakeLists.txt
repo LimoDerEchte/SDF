@@ -1,4 +1,3 @@
-
 add_subdirectory(RE-UE4SS)
 
 file(GLOB_RECURSE SDK_SOURCES CONFIGURE_DEPENDS

@@ -6,4 +6,4 @@
 	url = https://github.com/marzer/tomlplusplus.git
 [submodule "libs/SN2-SDK"]
 	path = libs/SN2-SDK
-	url = git@github-lab:LabrynthKing/SN2-SDK
+	url = https://github.com/LabrynthKing/SN2-SDK
