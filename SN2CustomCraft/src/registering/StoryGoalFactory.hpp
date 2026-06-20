@@ -55,8 +55,7 @@ class StoryGoalFactory {
     template <typename T, typename = std::enable_if_t<std::is_base_of_v<SDK::UUWEStoryGoalRule, T>>>
     static T* registerBase(std::string baseId, std::string id, int* incrementor, std::optional<SDK::UObject*> outer);
 
-    static void addToArray(UC::TArray<SDK::UUWEStoryGoalRule *> array, const std::vector<std::unique_ptr<StoryGoalRule>> &rules, int *incrementor, std::
-                           optional<SDK::UObject *> outer);
+    static void addToArray(UC::TArray<SDK::UUWEStoryGoalRule *> *array, const std::vector<std::unique_ptr<StoryGoalRule>> &rules, int *incrementor, std::optional<SDK::UObject*> outer);
 
     static SDK::UUWEStoryGoalRule* registerUnknown(const std::unique_ptr<StoryGoalRule> &rule, int* incrementor, std::optional<SDK::UObject*> outer);
     static SDK::UUWEStoryGoalRule* registerAnd(const StoryGoalRuleAnd *rule, int *incrementor, std::optional<SDK::UObject *> outer);

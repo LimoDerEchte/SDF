@@ -49,8 +49,12 @@ UUWEDatabankEntry * Finders::searchDatabankEntry(const std::string &scanId) {
 }
 
 UUWEStoryGoal *Finders::searchStoryGoal(const std::string &goalId) {
-    const std::string trueExpr = "DA_StoryGoal_" + goalId;
-    const auto item = RC::Unreal::UObjectGlobals::FindObject(L"UWEStoryGoal", UtfN::StringToWString(trueExpr).c_str());
+    std::string trueExpr = "DA_StoryGoal_" + goalId;
+    auto item = RC::Unreal::UObjectGlobals::FindObject(L"UWEStoryGoal", UtfN::StringToWString(trueExpr).c_str());
+    if (item == nullptr) {
+        trueExpr = "DA_" + goalId + "_StoryGoal";
+        item = RC::Unreal::UObjectGlobals::FindObject(L"UWEStoryGoal", UtfN::StringToWString(trueExpr).c_str());
+    }
     return reinterpret_cast<UUWEStoryGoal*>(item);
 }
 

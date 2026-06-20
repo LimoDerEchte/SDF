@@ -12,5 +12,5 @@ You should have received a copy of the GNU General Public License along with thi
 Place SDK generated using Dumper-7 into libs/CppSDK and init submodules of libs/RE-UE4SS
 
 ## Contributing
-Because of the alpha state the project is in, contributions are currently not accepted.
+Because of the alpha state the project is in, contributions are currently discouraged, tho they might be accepted if the changes properly align with the current codebase.
 

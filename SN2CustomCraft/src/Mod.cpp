@@ -63,7 +63,7 @@ void SN2CustomCraft::startup() {
     //recipe.setIcon(icon.build());
     //const auto _ = recipe.registerRecipe();
 
-    auto unlockedBy = StoryGoalFactory::registerStoryGoalRule(StoryGoalRuleParser::parse("TestStoryGoalRule", "And[Count[1; 'Rebreather_Crafted']]"));
+    auto unlockedBy = StoryGoalFactory::registerStoryGoalRule(StoryGoalRuleParser::parse("TestStoryGoalRule", "And[Count[1; 'Rebreather_Crafted']]", false));
 
     DatabankEntryFactory databank("TestDatabankEntry", false);
     databank.setTitle("Test Databank Entry");
