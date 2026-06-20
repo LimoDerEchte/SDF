@@ -13,6 +13,8 @@ add_library(${TARGET} SHARED
         src/registering/ItemTypeFactory.cpp
         src/registering/BuilderActionFactory.cpp
         src/registering/CategoryFactory.cpp
+        src/registering/DatabankEntryFactory.cpp
+        src/registering/StoryGoalFactory.cpp
 
         src/parsing/IconParser.cpp
         src/parsing/FileTraversal.cpp
