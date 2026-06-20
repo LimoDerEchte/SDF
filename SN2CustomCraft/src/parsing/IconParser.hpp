@@ -6,7 +6,6 @@
 
 #include "SDK/Engine_classes.hpp"
 #include "toml++/impl/node.hpp"
-#include "toml++/impl/node_view.hpp"
 
 enum IconParseResult {
     InvalidToml,

@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #include "registering/StoryGoalFactory.hpp"
 
 class StoryGoalRuleParser {

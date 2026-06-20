@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <string>
-#include <variant>
-
 #include "SDK/UWEStoryGoals_classes.hpp"
-#include "util/Finders.hpp"
 
 enum StoryGoalRuleType {
     And,

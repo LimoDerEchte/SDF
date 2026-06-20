@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "UnrealDef.hpp"
-#include "UnrealCoreStructs.hpp"
 #include "SDK/UWEDatabank_classes.hpp"
 
 class DatabankEntryFactory {

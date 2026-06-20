@@ -4,9 +4,15 @@
 
 #include "util/Finders.hpp"
 
+#include "UObjectGlobals.hpp"
 #include "UObject.hpp"
 
 using namespace SDK;
+
+uintptr_t Finders::searchFirstOfInternal(const std::string &typeId) {
+    const auto item = RC::Unreal::UObjectGlobals::FindFirstOf(UtfN::StringToWString(typeId).c_str());
+    return reinterpret_cast<uintptr_t>(item);
+}
 
 UUWEItemType *Finders::searchItem(const std::string &itemId) {
     const std::string trueExpr = "DA_" + itemId + "_ItemType";

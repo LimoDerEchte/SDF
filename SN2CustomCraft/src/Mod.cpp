@@ -1,13 +1,20 @@
 
 #include "Mod.hpp"
 
+#include "parsing/FileTraversal.hpp"
 #include "parsing/BuilderActionParser.hpp"
+#include "parsing/CategoryParser.hpp"
 #include "parsing/ItemTypeParser.hpp"
+#include "parsing/RecipeParser.hpp"
 #include "parsing/StoryGoalRuleParser.hpp"
+
+#include "registering/Hooks.hpp"
 #include "registering/DatabankEntryFactory.hpp"
 #include "registering/StoryGoalFactory.hpp"
 
 #include "SDF/Version.hpp"
+#include "util/Finders.hpp"
+#include "util/Log.hpp"
 
 using namespace RC;
 using namespace Unreal;

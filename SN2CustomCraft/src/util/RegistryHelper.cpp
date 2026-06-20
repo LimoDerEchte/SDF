@@ -28,6 +28,23 @@ void RegistryHelper::InitCache() {
     }
 }
 
+uintptr_t RegistryHelper::StaticConstructTemplateInternal(SDK::UObject *base, const std::string &name, const std::optional<SDK::UObject *> overrideOuter) {
+    FStaticConstructObjectParameters params(
+        reinterpret_cast<Unreal::UClass*>(base->Class),
+        reinterpret_cast<Unreal::UObject*>(overrideOuter.value_or(base->Outer))
+    );
+
+    params.Name = Unreal::FName(UtfN::StringToWString(name).c_str());
+    params.SetFlags = static_cast<Unreal::EObjectFlags>(
+        SDK::EObjectFlags::MarkAsRootSet |
+        SDK::EObjectFlags::Public |
+        SDK::EObjectFlags::Standalone |
+        SDK::EObjectFlags::Transactional |
+        SDK::EObjectFlags::WasLoaded |
+        SDK::EObjectFlags::LoadCompleted);
+    return reinterpret_cast<uintptr_t>(UObjectGlobals::StaticConstructObject(params));
+}
+
 void RegistryHelper::AddToRegistry(UUWEPrimaryDataAssetBase *asset, const std::string &type) {
     InitCache();
 

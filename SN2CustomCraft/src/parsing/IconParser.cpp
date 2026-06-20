@@ -6,6 +6,7 @@
 
 #include <filesystem>
 
+#include "toml++/impl/node_view.hpp"
 #include "toml++/impl/value.hpp"
 #include "util/Finders.hpp"
 

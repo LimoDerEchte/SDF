@@ -5,6 +5,7 @@
 #pragma once
 
 #include <map>
+
 #include "SDK/UWECrafting_classes.hpp"
 #include "toml++/impl/table.hpp"
 

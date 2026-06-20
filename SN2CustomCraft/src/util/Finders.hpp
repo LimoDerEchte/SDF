@@ -7,14 +7,14 @@
 #include "SDK/Subnautica2_classes.hpp"
 #include "SDK/UWECrafting_classes.hpp"
 #include "SDK/UWEScanner_classes.hpp"
-#include "UObjectGlobals.hpp"
 
 class Finders {
+    static uintptr_t searchFirstOfInternal(const std::string &typeId);
+
 public:
     template <typename T, typename = std::enable_if_t<std::is_base_of_v<SDK::UObject, T>>>
     static T* searchFirstOf(const std::string &typeId) {
-        const auto item = RC::Unreal::UObjectGlobals::FindFirstOf(UtfN::StringToWString(typeId).c_str());
-        return reinterpret_cast<T*>(item);
+        return reinterpret_cast<T*>(searchFirstOfInternal(typeId));
     }
 
     static SDK::UUWEItemType *searchItem(const std::string &itemId);
