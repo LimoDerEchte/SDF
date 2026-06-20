@@ -35,8 +35,6 @@ class RecipeFactory {
 
     friend class Hooks;
 
-    static void unregisterAllRecipes();
-
 public:
     explicit RecipeFactory(std::string recipeId, bool isModify);
 

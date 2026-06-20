@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "DatabankEntryFactory.hpp"
 #include "util/Log.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "polyhook2/Exceptions/AVehHook.hpp"
@@ -39,6 +40,7 @@ using namespace Unreal;
 
 HookDefStatic(UUWECraftingRecipe, Recipes, RecipeFactory::registeredRecipes, false)
 HookDefStatic(USN2BuilderActionData, BuilderActions, BuilderActionFactory::registeredActions, false)
+HookDefStatic(UUWEDatabankEntry, DatabankEntries, DatabankEntryFactory::registeredDatabankEntries, false)
 
 #ifdef DEVELOPMENT
 Hooks::getAssetsT Hooks::originalGetAssets = nullptr;
@@ -123,6 +125,7 @@ void Hooks::RegisterHooks() {
 
     HookDefScan(Recipes, "GetAllCraftingRecipes", 1);
     HookDefScan(BuilderActions, "GetAllBuilderActions", 1);
+    HookDefScan(DatabankEntries, "GetAllDatabankEntries", 1);
 
 #ifdef DEVELOPMENT
     HookDefScan(ItemTypes, "GetAllItemTypes", 1);
@@ -135,6 +138,7 @@ void Hooks::RegisterHooks() {
 
     HookDefHook(Recipes);
     HookDefHook(BuilderActions);
+    HookDefHook(DatabankEntries);
 
 #ifdef DEVELOPMENT
     //HookDefHook(Assets);
@@ -144,6 +148,7 @@ void Hooks::RegisterHooks() {
 void Hooks::UnregisterHooks() {
     HookDefUnhook(Recipes);
     HookDefUnhook(BuilderActions);
+    HookDefUnhook(DatabankEntries);
 
 #ifdef DEVELOPMENT
     //HookDefUnhook(Assets);

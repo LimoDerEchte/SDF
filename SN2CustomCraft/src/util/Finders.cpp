@@ -5,7 +5,6 @@
 #include "util/Finders.hpp"
 
 #include "UObject.hpp"
-#include "UObjectGlobals.hpp"
 
 using namespace SDK;
 
@@ -35,6 +34,24 @@ UUWEScanData *Finders::searchScanData(const std::string &scanId) {
     const std::string trueExpr = "DA_" + scanId + "_ScanData";
     const auto item = RC::Unreal::UObjectGlobals::FindObject(L"UWEScanData", UtfN::StringToWString(trueExpr).c_str());
     return reinterpret_cast<UUWEScanData*>(item);
+}
+
+UUWEDatabankEntry * Finders::searchDatabankEntry(const std::string &scanId) {
+    const std::string trueExpr = "DA_" + scanId + "_DatabankEntry";
+    const auto item = RC::Unreal::UObjectGlobals::FindObject(L"UWEDatabankEntry", UtfN::StringToWString(trueExpr).c_str());
+    return reinterpret_cast<UUWEDatabankEntry*>(item);
+}
+
+UUWEStoryGoal *Finders::searchStoryGoal(const std::string &goalId) {
+    const std::string trueExpr = "DA_StoryGoal_" + goalId;
+    const auto item = RC::Unreal::UObjectGlobals::FindObject(L"UWEStoryGoal", UtfN::StringToWString(trueExpr).c_str());
+    return reinterpret_cast<UUWEStoryGoal*>(item);
+}
+
+UUWEStoryGoalRule *Finders::searchStoryGoalRule(const std::string &ruleId) {
+    const std::string trueExpr = "DA_" + ruleId;
+    const auto item = RC::Unreal::UObjectGlobals::FindObject(L"UWEStoryGoalRule", UtfN::StringToWString(trueExpr).c_str());
+    return reinterpret_cast<UUWEStoryGoalRule*>(item);
 }
 
 USN2BuilderConstructActionData *Finders::searchBuilderAction(const std::string &dataId) {

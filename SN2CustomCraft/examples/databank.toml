@@ -1,0 +1,27 @@
+
+[[storygoal]]
+id = "CustomStoryGoal"
+
+
+[[storygoal_rule]]
+id = "CustomRule"
+rule = """
+
+"""
+
+
+[[databank_entry]]
+id = "CustomDatabankEntry"
+
+icon = "PATH /Game/UI/Materials_test/Glitch/T_UI_Alterra_LOgo.T_UI_Alterra_LOgo"
+title = "Custom Databank Entry"
+text = """
+This is a custom databank entry, that aims at testing the support for custom databank entries and, in the near future, custom story goals.
+
+This text is also supposed to test the multiline nature of databank entries and multiline toml text.
+
+Have fun with custom databank entries y'all!
+"""
+
+unlocked_by = "CustomRule"
+hidden_by = ""

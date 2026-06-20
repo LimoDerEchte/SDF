@@ -18,6 +18,7 @@
 class Hooks {
     HookDefHeader(SDK::UUWECraftingRecipe, Recipes)
     HookDefHeader(SDK::USN2BuilderActionData, BuilderActions)
+    HookDefHeader(SDK::UUWEDatabankEntry, DatabankEntries)
 
 #ifdef DEVELOPMENT
     using getAssetsT = bool(*)(void*, const SDK::FARFilter*, RC::Unreal::TArray<SDK::FAssetData>*, bool);

@@ -11,20 +11,9 @@
 #include "util/RegistryHelper.hpp"
 
 using namespace SDK;
-using namespace RC;
-using namespace Unreal;
-
-using EF = SDK::EObjectFlags;
 
 std::vector<UUWECraftingRecipe*> RecipeFactory::registeredRecipes;
 std::vector<UUWECraftingRecipe*> RecipeFactory::registeredRecipesLifePod;
-
-void RecipeFactory::unregisterAllRecipes() {
-    registeredRecipesLifePod.clear();
-    for (const auto& registered_recipe : registeredRecipes)
-        reinterpret_cast<Unreal::UObject*>(registered_recipe)->BeginDestroy();
-    registeredRecipes.clear();
-}
 
 RecipeFactory::RecipeFactory(std::string recipeId, const bool isModify)
     : recipeId(std::move(recipeId)), recipeName("Empty"), recipeDescription("Empty"), recipeTexture() {
@@ -32,8 +21,7 @@ RecipeFactory::RecipeFactory(std::string recipeId, const bool isModify)
     if (isModify) {
         craftingTime = -1;
     } else {
-        const auto defaultTex = reinterpret_cast<UTexture2D*>(UObjectGlobals::FindObject(L"Texture2D", L"T_DefaultImage"));
-        setIcon(defaultTex);
+        setIcon(Finders::findCicadaTexture());
     }
 }
 
@@ -194,27 +182,27 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     if (!modifyMode || craftingTime != -1)
         recipe->CraftingTime = craftingTime;
 
-    const auto requirements = reinterpret_cast<Unreal::TArray<FCraftingRecipeRequirement>*>(&recipe->Requirements);
+    const auto requirements = reinterpret_cast<RC::Unreal::TArray<FCraftingRecipeRequirement>*>(&recipe->Requirements);
     if (modifyMode && !ingredients.empty())
-        requirements->SetNum(0, EAllowShrinking::Yes);
+        requirements->SetNum(0, RC::Unreal::EAllowShrinking::Yes);
 
     requirements->ResizeTo(requirements->Num() + static_cast<int32_t>(ingredients.size()));
     for (const auto& ingredient: ingredients) {
         requirements->Add(ingredient);
     }
 
-    const auto output = reinterpret_cast<Unreal::TArray<FCraftingRecipeOutput>*>(&recipe->Output);
+    const auto output = reinterpret_cast<RC::Unreal::TArray<FCraftingRecipeOutput>*>(&recipe->Output);
     if (modifyMode && !outputs.empty())
-        output->SetNum(0, EAllowShrinking::Yes);
+        output->SetNum(0, RC::Unreal::EAllowShrinking::Yes);
 
     output->ResizeTo(output->Num() + static_cast<int32_t>(outputs.size()));
     for (const auto& out : outputs) {
         output->Add(out);
     }
 
-    const auto rules = reinterpret_cast<Unreal::TArray<FUWERecipeUnlockRules>*>(&recipe->UpdatedUnlockingRequirements);
-    if (modifyMode && (!unlockingRules.empty() ||removeRequirementsModify)) {
-        rules->SetNum(0, EAllowShrinking::Yes);
+    const auto rules = reinterpret_cast<RC::Unreal::TArray<FUWERecipeUnlockRules>*>(&recipe->UpdatedUnlockingRequirements);
+    if (modifyMode && (!unlockingRules.empty() || removeRequirementsModify)) {
+        rules->SetNum(0, RC::Unreal::EAllowShrinking::Yes);
         recipe->DefaultRecipeState = ERecipeState::Unlocked;
     }
 
@@ -224,7 +212,7 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
             .RuleName = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(first).c_str()),
             .Entries = UC::TArray<FUWERecipeUnlockRuleEntry>(),
         };
-        const auto entries = reinterpret_cast<Unreal::TArray<FUWERecipeUnlockRuleEntry>*>(&rule.Entries);
+        const auto entries = reinterpret_cast<RC::Unreal::TArray<FUWERecipeUnlockRuleEntry>*>(&rule.Entries);
         entries->ResizeTo(static_cast<int32_t>(second.size()));
         for (const auto& condition : second) {
             entries->Add(condition);
@@ -236,14 +224,14 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     RegistryHelper::AddToRegistry(recipe, "UWECraftingRecipe");
     registeredRecipes.push_back(recipe);
     if (availableInLifePodModify) {
-        const auto staticBrokenFabricator = UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Game/Blueprints/Crafting/BP_Fabricator_Lifepod.Default__BP_Fabricator_Lifepod_C:Crafter");
+        const auto staticBrokenFabricator = RC::Unreal::UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Game/Blueprints/Crafting/BP_Fabricator_Lifepod.Default__BP_Fabricator_Lifepod_C:Crafter");
         const auto lifepodCrafter = reinterpret_cast<UUWECrafterComponent*>(staticBrokenFabricator);
 
         if (lifepodCrafter == nullptr) {
             Log::Warning("Failed to find lifepod fabricator component");
             return recipe;
         }
-        const auto itemList = reinterpret_cast<Unreal::TArray<TSoftObjectPtr<SDK::UObject>>*>(&lifepodCrafter->AllowedRecipesOverride);
+        const auto itemList = reinterpret_cast<RC::Unreal::TArray<TSoftObjectPtr<UObject>>*>(&lifepodCrafter->AllowedRecipesOverride);
 
         if (availableInLifePod) {
             itemList->Add(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(recipe));
