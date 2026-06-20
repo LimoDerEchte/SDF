@@ -2,16 +2,19 @@
 // Created by Limo on 19/06/2026.
 //
 
-#include "StoryGoalFactory.hpp"
+#include "StoryGoalRuleFactory.hpp"
 
 #include "util/Finders.hpp"
 #include "util/RegistryHelper.hpp"
 #include "Containers/Array.hpp"
+#include "util/Log.hpp"
 
 using namespace SDK;
 
+std::vector<UUWEStoryGoal*> StoryGoalFactory::registeredStoryGoals{};
+
 template<typename T, typename>
-T *StoryGoalFactory::registerBase(const std::string baseId, std::string id, int *incrementor, const std::optional<UObject*> outer) {
+T *StoryGoalRuleFactory::registerBase(const std::string baseId, std::string id, int *incrementor, const std::optional<UObject*> outer) {
     const auto base = Finders::searchFirstOf<T>(baseId);
     if (base == nullptr)
         return nullptr;
@@ -23,7 +26,7 @@ T *StoryGoalFactory::registerBase(const std::string baseId, std::string id, int 
     return RegistryHelper::StaticConstructTemplate(base, name, outer);
 }
 
-void StoryGoalFactory::addToArray(TArray<UUWEStoryGoalRule*>* array, const std::vector<std::unique_ptr<StoryGoalRule>> &rules, int *incrementor, const std::optional<UObject*> outer) {
+void StoryGoalRuleFactory::addToArray(TArray<UUWEStoryGoalRule*>* array, const std::vector<std::unique_ptr<StoryGoalRule>> &rules, int *incrementor, const std::optional<UObject*> outer) {
     const auto ruleList = reinterpret_cast<RC::Unreal::TArray<UUWEStoryGoalRule*>*>(array);
     if (ruleList->Num() > 0)
         ruleList->Empty();
@@ -33,7 +36,7 @@ void StoryGoalFactory::addToArray(TArray<UUWEStoryGoalRule*>* array, const std::
         ruleList->Add(registerUnknown(ruleEntry, incrementor, outer));
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerUnknown(const std::unique_ptr<StoryGoalRule> &rule, int *incrementor, const std::optional<UObject*> outer) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerUnknown(const std::unique_ptr<StoryGoalRule> &rule, int *incrementor, const std::optional<UObject*> outer) {
     if (rule == nullptr)
         return nullptr;
     switch (rule->type()) {
@@ -51,38 +54,64 @@ UUWEStoryGoalRule *StoryGoalFactory::registerUnknown(const std::unique_ptr<Story
     return nullptr;
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerAnd(const StoryGoalRuleAnd *rule, int *incrementor, const std::optional<UObject*> outer) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerAnd(const StoryGoalRuleAnd *rule, int *incrementor, const std::optional<UObject*> outer) {
     const auto entry = registerBase<UUWEStoryGoalRuleAnd>("UWEStoryGoalRuleAnd", rule->goalId, incrementor, outer);
     addToArray(&entry->Rules, rule->rules, incrementor, outer.value_or(entry));
     return entry;
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerOr(const StoryGoalRuleOr *rule, int *incrementor, const std::optional<UObject*> outer) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerOr(const StoryGoalRuleOr *rule, int *incrementor, const std::optional<UObject*> outer) {
     const auto entry = registerBase<UUWEStoryGoalRuleOr>("UWEStoryGoalRuleOr", rule->goalId, incrementor, outer);
     addToArray(&entry->Rules, rule->rules, incrementor, outer.value_or(entry));
     return entry;
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerNegate(const StoryGoalRuleNegate *rule, int *incrementor, const std::optional<UObject*> outer) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerNegate(const StoryGoalRuleNegate *rule, int *incrementor, const std::optional<UObject*> outer) {
     const auto entry = registerBase<UUWEStoryGoalRuleNegate>("UWEStoryGoalRuleNegate", rule->goalId, incrementor, outer);
     entry->RuleToNegate = registerUnknown(rule->rule, incrementor, outer.value_or(entry));
     return entry;
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerCount(const StoryGoalRuleCount *rule, int *incrementor, const std::optional<UObject*> outer) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerCount(const StoryGoalRuleCount *rule, int *incrementor, const std::optional<UObject*> outer) {
     const auto entry = registerBase<UUWEStoryGoalRuleCount>("UWEStoryGoalRuleCount", rule->goalId, incrementor, outer);
     addToArray(&entry->Rules, rule->rules, incrementor, outer.value_or(entry));
     entry->MinimumCount = rule->count;
     return entry;
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerRequired(const StoryGoalRequiredRule *rule, int *incrementor, const std::optional<UObject*> outer) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerRequired(const StoryGoalRequiredRule *rule, int *incrementor, const std::optional<UObject*> outer) {
     const auto entry = registerBase<UUWERequiredStoryGoalRule>("UWERequiredStoryGoalRule", rule->goalId, incrementor, outer);
     entry->RequiredStoryGoalRef = rule->goal;
     return entry;
 }
 
-UUWEStoryGoalRule *StoryGoalFactory::registerStoryGoalRule(const std::unique_ptr<StoryGoalRule> &rule) {
+UUWEStoryGoalRule *StoryGoalRuleFactory::registerStoryGoalRule(const std::unique_ptr<StoryGoalRule> &rule) {
     int incrementor = 0;
     return registerUnknown(rule, &incrementor, std::nullopt);
+}
+
+StoryGoalFactory::StoryGoalFactory(const std::string &id)
+    : id(id) {
+}
+
+void StoryGoalFactory::setTargetType(const EStoryGoalTargetType type) {
+    this->type = type;
+}
+
+UUWEStoryGoal *StoryGoalFactory::registerStoryGoal() {
+    const auto base = Finders::searchFirstOf<UUWEStoryGoal>("UWEStoryGoal");
+    if (base == nullptr)
+        return nullptr;
+
+    const auto entry = RegistryHelper::StaticConstructTemplate(base, std::format("DA_StoryGoal_{}", id));
+    if (entry == nullptr)
+        return nullptr;
+
+    entry->StoryGoalType = type;
+
+    RegistryHelper::AddToRegistry(entry, "UWEStoryGoal");
+    registeredStoryGoals.push_back(entry);
+
+    Log::Verbose("Story goal registered: {}", id);
+    return entry;
 }

@@ -51,7 +51,7 @@ struct StoryGoalRequiredRule : StoryGoalRule {
     [[nodiscard]] StoryGoalRuleType type() const override { return Required; }
 };
 
-class StoryGoalFactory {
+class StoryGoalRuleFactory {
     template <typename T, typename = std::enable_if_t<std::is_base_of_v<SDK::UUWEStoryGoalRule, T>>>
     static T* registerBase(std::string baseId, std::string id, int* incrementor, std::optional<SDK::UObject*> outer);
 
@@ -66,4 +66,18 @@ class StoryGoalFactory {
 
 public:
     static SDK::UUWEStoryGoalRule* registerStoryGoalRule(const std::unique_ptr<StoryGoalRule> &rule);
+};
+
+class StoryGoalFactory {
+    static std::vector<SDK::UUWEStoryGoal*> registeredStoryGoals;
+
+    std::string id;
+    SDK::EStoryGoalTargetType type = SDK::EStoryGoalTargetType::NotSet;
+
+public:
+    explicit StoryGoalFactory(const std::string& id);
+
+    void setTargetType(SDK::EStoryGoalTargetType type);
+
+    SDK::UUWEStoryGoal* registerStoryGoal();
 };

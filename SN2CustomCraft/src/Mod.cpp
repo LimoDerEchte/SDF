@@ -4,11 +4,11 @@
 #include "parsing/CategoryParser.hpp"
 #include "parsing/ItemTypeParser.hpp"
 #include "parsing/RecipeParser.hpp"
-#include "parsing/StoryGoalRuleParser.hpp"
+#include "parsing/StoryGoalParser.hpp"
 
 #include "registering/Hooks.hpp"
 #include "registering/DatabankEntryFactory.hpp"
-#include "registering/StoryGoalFactory.hpp"
+#include "registering/StoryGoalRuleFactory.hpp"
 
 #include "SDF/Version.hpp"
 #include "util/Finders.hpp"
@@ -44,6 +44,7 @@ void SN2CustomCraft::startup() {
     Hooks::RegisterHooks();
 
     FileTraversal::ScanFiles();
+    StoryGoalParser::ParseStoryGoals();
     ItemTypeParser::ParseItemTypes();
     CategoryParser::ParseCategories();
     RecipeParser::ParseRecipes();
@@ -63,12 +64,14 @@ void SN2CustomCraft::startup() {
     //recipe.setIcon(icon.build());
     //const auto _ = recipe.registerRecipe();
 
-    auto unlockedBy = StoryGoalFactory::registerStoryGoalRule(StoryGoalRuleParser::parse("TestStoryGoalRule", "And[Count[1; 'Rebreather_Crafted']]", false));
+    auto unlockedBy = StoryGoalRuleFactory::registerStoryGoalRule(StoryGoalParser::ParseRule("TestStoryGoalRule", "And[Count[1; 'Rebreather_Crafted']]", false));
 
     DatabankEntryFactory databank("TestDatabankEntry", false);
     databank.setTitle("Test Databank Entry");
     databank.setText("This is a databank entry to test the DatabankEntryFactory and StoryGoalFactory");
     databank.setIcon(Finders::findCicadaTexture());
+    databank.addCategory("Custom Category");
+    databank.addCategory("Custom Category 2");
     databank.setUnlockCondition(unlockedBy);
     if (!databank.registerDatabankEntry())
         Log::Error("Failed to register databank entry");
