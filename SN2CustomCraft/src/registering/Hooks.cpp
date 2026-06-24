@@ -25,17 +25,18 @@ using namespace Unreal;
     Hooks::get##name##T Hooks::originalGet##name = nullptr; \
     std::unique_ptr<PLH::Detour> Hooks::get##name##Hook = nullptr; \
     \
-    Unreal::TArray<type*> Hooks::Get##name##Hook() { \
-        auto entries = originalGet##name(); \
-        entries.ResizeTo(entries.Num() + static_cast<int32_t>(list.size())); \
+    SDK::TArray<type*> Hooks::Get##name##Hook() { \
+        auto originalEntries = originalGet##name(); \
+        const auto entries = reinterpret_cast<Unreal::TArray<type*>*>(&originalEntries); \
+        entries->ResizeTo(entries->Num() + static_cast<int32_t>(list.size())); \
         \
         if(message) \
-            Log::Warning("{} {}", #name, entries.Num()); \
+            Log::Warning("{} {}", #name, entries->Num()); \
         \
         for (const type* entry : list) { \
-            entries.Add(const_cast<type*>(entry)); \
+            entries->Add(const_cast<type*>(entry)); \
         } \
-        return entries; \
+        return originalEntries; \
     }
 
 HookDefStatic(UUWECraftingRecipe, Recipes, RecipeFactory::registeredRecipes, false)
@@ -46,7 +47,7 @@ HookDefStatic(UUWEDatabankEntry, DatabankEntries, DatabankEntryFactory::register
 Hooks::getAssetsT Hooks::originalGetAssets = nullptr;
 std::unique_ptr<PLH::Detour> Hooks::getAssetsHook = nullptr;
 
-bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, Unreal::TArray<SDK::FAssetData> *out, const bool bSkipARFilteredAsset) {
+bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, SDK::TArray<SDK::FAssetData> *out, const bool bSkipARFilteredAsset) {
     bool ret = originalGetAssets(self, filter, out, bSkipARFilteredAsset);
 
     if (out)

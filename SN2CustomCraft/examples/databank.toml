@@ -1,13 +1,7 @@
 
-[[storygoal]]
+[[story_goal]]
 id = "CustomStoryGoal"
-
-
-[[storygoal_rule]]
-id = "CustomRule"
-rule = """
-
-"""
+type = "Databank"
 
 
 [[databank_entry]]
@@ -22,6 +16,10 @@ This text is also supposed to test the multiline nature of databank entries and 
 
 Have fun with custom databank entries y'all!
 """
+categories = [
+    "A Category",
+    "Another Category"
+]
 
-unlocked_by = "CustomRule"
-hidden_by = ""
+unlocked_by = "'CustomStoryGoal'"
+hidden_by = "Rebreather_Crafted"

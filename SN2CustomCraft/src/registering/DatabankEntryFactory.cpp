@@ -4,11 +4,13 @@
 
 #include "DatabankEntryFactory.hpp"
 
-#include "Containers/Array.hpp"
 #include "SDK/UWEStoryGoals_classes.hpp"
+
+#include "util/RegistryHelper.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
-#include "util/RegistryHelper.hpp"
+
+#include "Containers/Array.hpp"
 
 using namespace SDK;
 

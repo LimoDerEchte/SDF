@@ -6,14 +6,14 @@
 
 #include <map>
 
-#include "SDK/UWECrafting_classes.hpp"
+#include "SDK/UWEDatabank_classes.hpp"
 #include "toml++/impl/table.hpp"
 
-class ItemTypeParser {
-    static std::map<std::string, SDK::UUWEItemType*> itemTypes;
+class DatabankEntryParser {
+    static std::map<std::string, SDK::UUWEDatabankEntry*> databankEntries;
 
     static void parseFile(const std::string &mod, const std::string &file, const toml::table &table, bool modifyMode);
 
 public:
-    static void ParseItemTypes();
+    static void ParseDatabankEntries();
 };

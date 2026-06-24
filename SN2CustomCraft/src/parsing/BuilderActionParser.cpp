@@ -43,7 +43,7 @@ void BuilderActionParser::parseFile(const std::string &mod, const std::string &f
         factory.setRemovePowerText(true);
 
     if (const auto result = factory.registerBuilderAction(); result == nullptr)
-        Log::Warning("Builder action {} failed to register for an unknown reason", actionId);
+        Log::Warning("Builder action {} failed to {} for an unknown reason", modifyMode ? "modify" : "register", actionId);
     else
         builderActions.insert(std::make_pair(actionId, result));
 }

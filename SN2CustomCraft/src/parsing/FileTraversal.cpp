@@ -10,6 +10,8 @@ namespace fs = std::filesystem;
 
 std::vector<ScannedFile> FileTraversal::categoryTables;
 std::vector<ScannedFile> FileTraversal::recipeTables;
+std::vector<ScannedFile> FileTraversal::storyGoalTables;
+std::vector<ScannedFile> FileTraversal::databankEntryTables;
 std::vector<ScannedFile> FileTraversal::itemTypeTables;
 std::vector<ScannedFile> FileTraversal::builderActionTables;
 
@@ -74,6 +76,10 @@ void FileTraversal::ScanFiles() {
                     itemTypeTables.push_back(scan);
                 if (toml.contains("builder_action") || toml.contains("builder_action_modify"))
                     builderActionTables.push_back(scan);
+                if (toml.contains("databank_entry") || toml.contains("databank_entry_modify"))
+                    databankEntryTables.push_back(scan);
+                if (toml.contains("story_goal"))
+                    storyGoalTables.push_back(scan);
             } catch (const toml::parse_error& e) {
                 Log::Warning("Failed to parse file {}: {}", file.path().string(), e.what());
             }

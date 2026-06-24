@@ -66,7 +66,7 @@ void ItemTypeParser::parseFile(const std::string &mod, const std::string &file, 
     }
 
     if (const auto result = factory.registerItemType(); result == nullptr)
-        Log::Warning("Item type {} failed to register for an unknown reason", itemId);
+        Log::Warning("Item type {} failed to {} for an unknown reason", modifyMode ? "modify" : "register", itemId);
     else
         itemTypes.insert(std::make_pair(itemId, result));
 }

@@ -92,7 +92,7 @@ void CategoryParser::parseFile(const std::string &mod, const std::string &file, 
     }
 
     if (const auto result = factory.registerCategory(); result == nullptr)
-        Log::Warning("Category {} failed to register for an unknown reason", categoryId);
+        Log::Warning("Category {} failed to {} for an unknown reason", modifyMode ? "modify" : "register", categoryId);
     else
         categories.insert(std::make_pair(categoryId, result));
 }
