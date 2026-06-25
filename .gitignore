@@ -2,3 +2,4 @@
 cmake-build-*
 libs/CppSDK
 config.cmake
+SDF.zip

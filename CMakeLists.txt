@@ -1,15 +1,18 @@
 
 # Base Setup
-cmake_minimum_required(VERSION 4.2)
-
 if(UNIX)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libs/RE-UE4SS/cmake/toolchains/xwin-clang-cl-toolchain.cmake)
     add_compile_options("/clang:-Wno-c++11-narrowing")
     add_compile_options("/clang:-Wno-narrowing")
 endif()
 
+cmake_minimum_required(VERSION 4.2)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(TARGET SDF)
+project(${TARGET})
 
 add_subdirectory(libs)
 
@@ -28,10 +31,7 @@ endif()
 message(VERBOSE "SN2_LOCATION is set to ${SN2_LOCATION}")
 
 
-# SDF Target
-set(TARGET SDF)
-project(${TARGET})
-
+# SDF Project
 add_library(${TARGET} SHARED
         src/Mod.cpp
 
