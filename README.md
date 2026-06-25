@@ -1,5 +1,5 @@
-# Subnautica2Mods
-This is a collection of different Subnautica 2 Mods I made, including the Subnautica Data Framework (SDF).
+# SDF
+The Subnautica Data Framework (SDF) provides tooling to add content to Subnautica 2 in a data driven way with minimal usage of complex modding tools. It provides a simple TOML based file format for mod creators to use and will, in the future, also support a Lua and potentially a C++ API. Through these files custom content can be added as far as it is possible at runtime. Only some certain features might require the use of Unreal Engine in the future.
 
 ## Copyright notice
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

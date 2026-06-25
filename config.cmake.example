@@ -1,0 +1,2 @@
+# User specific project settings that will be added to the cmake build if present
+set(SN2_LOCATION "/home/limo/.local/share/Steam/steamapps/common/Subnautica2")
