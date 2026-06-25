@@ -134,6 +134,6 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
 
     RegistryHelper::AddToRegistry(recipeCategory, "UWECraftingRecipeCategory");
 
-    Log::Verbose("Recipe category {}: {}", modifyMode ? "modified" : "registered", categoryId);
+    Log::Verbose("Category {}: {}", modifyMode ? "modified" : "registered", categoryId);
     return recipeCategory;
 }
