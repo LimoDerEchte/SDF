@@ -16,6 +16,7 @@
 
 #include "Mod/CppUserModBase.hpp"
 #include "parsing/DatabankEntryParser.hpp"
+#include "registering/BioModFactory.hpp"
 
 using namespace RC;
 using namespace Unreal;
@@ -65,6 +66,13 @@ void SN2CustomCraft::startup() {
     //});
     //recipe.setIcon(icon.build());
     //const auto _ = recipe.registerRecipe();
+
+    BioModFactory bmf("CustomBioMod", true);
+    bmf.setName("Test Bio Mod");
+    bmf.setDescription("This bio mod is for testing the ability of SDF to create custom bio mods");
+    bmf.setType(SDK::EUWEBioAbilityType::Active);
+    if (!bmf.registerBioMod())
+        Log::Warning("Failed to register test biomod");
 #endif
 }
 

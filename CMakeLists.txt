@@ -5,6 +5,7 @@ if(UNIX)
     add_compile_options("/clang:-Wno-c++11-narrowing")
     add_compile_options("/clang:-Wno-narrowing")
 endif()
+add_compile_options("-w")
 
 cmake_minimum_required(VERSION 4.2)
 
@@ -42,6 +43,7 @@ add_library(${TARGET} SHARED
         src/registering/CategoryFactory.cpp
         src/registering/DatabankEntryFactory.cpp
         src/registering/StoryGoalRuleFactory.cpp
+        src/registering/BioModFactory.cpp
 
         src/parsing/IconParser.cpp
         src/parsing/FileTraversal.cpp
@@ -67,7 +69,7 @@ add_library(${TARGET} SHARED
 target_link_libraries(${TARGET} PUBLIC UE4SS)
 target_include_directories(${TARGET} PRIVATE src include ${SDK_INCLUDE} ${HEADER_ONLY_INCLUDE})
 
-# target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
+target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
 
 message(STATUS "${CMAKE_CONFIGURATION_TYPES}")
 

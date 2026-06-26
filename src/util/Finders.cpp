@@ -65,6 +65,10 @@ USN2BuilderConstructActionData *Finders::searchBuilderAction(const std::string &
     return findObject<USN2BuilderConstructActionData>(L"SN2BuilderConstructActionData", "DA_" + dataId);
 }
 
+UUWEBioAbilityData *Finders::searchBioAbilityData(const std::string &abilityName) {
+    return findObject<UUWEBioAbilityData>(L"UWEBioAbilityData", "DA_" + abilityName + "_BioAbilityData");
+}
+
 UUWECrafterComponent *Finders::searchCrafterComponent(const std::string &componentPath) {
     const std::string trueExpr = "/Game/Blueprints/" + componentPath;
     const auto item = RC::Unreal::UObjectGlobals::StaticFindObject(nullptr, nullptr, UtfN::StringToWString(trueExpr).c_str());

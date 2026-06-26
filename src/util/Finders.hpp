@@ -8,6 +8,7 @@
 #include "SDK/UWEStoryGoals_classes.hpp"
 #include "SDK/UWEDatabank_classes.hpp"
 #include "SDK/Subnautica2_classes.hpp"
+#include "SDK/UWEBiomods_classes.hpp"
 #include "SDK/UWEScanner_classes.hpp"
 
 template<typename T>
@@ -36,6 +37,7 @@ public:
     static SDK::UUWEStoryGoal *searchStoryGoal(const std::string &goalId);
     static SDK::UUWEStoryGoalRule *searchStoryGoalRule(const std::string &ruleId);
     static SDK::USN2BuilderConstructActionData *searchBuilderAction(const std::string &dataId);
+    static SDK::UUWEBioAbilityData *searchBioAbilityData(const std::string &abilityName);
     static SDK::UUWECrafterComponent *searchCrafterComponent(const std::string &componentPath);
     static SDK::UTexture2D *searchTexture(const std::string &textureName);
 };
