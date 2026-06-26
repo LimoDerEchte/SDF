@@ -18,7 +18,7 @@ using namespace Unreal;
 
 ItemTypeFactory::ItemTypeFactory(std::string itemId, const bool modifyMode) : itemId(std::move(itemId)) {
     if (!modifyMode)
-        setIcon(Finders::findCicadaTexture());
+        setIcon(Finders::searchTexture("T_DefaultImage"));
 }
 
 void ItemTypeFactory::setName(const std::string &itemName) {
@@ -73,7 +73,7 @@ void ItemTypeFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
 }
 
 UUWEItemType* ItemTypeFactory::registerItemType() const {
-    const auto base = Finders::searchItem("Titanium");
+    const auto base = Finders::searchFirstOf<UUWEItemType>("UWEItemType");
     if (base == nullptr)
         return nullptr;
 

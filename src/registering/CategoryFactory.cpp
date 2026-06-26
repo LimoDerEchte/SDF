@@ -18,7 +18,7 @@ using namespace Unreal;
 CategoryFactory::CategoryFactory(std::string categoryId, const bool modifyMode)
     : categoryId(std::move(categoryId)), categoryName(std::move("Empty")), categoryDescription(std::move("Empty")), crafterType(ECrafterType::Undefined), modifyMode(modifyMode) {
     if (!modifyMode)
-        setIcon(Finders::findCicadaTexture());
+        setIcon(Finders::searchTexture("T_DefaultImage"));
 }
 
 void CategoryFactory::setName(const std::string &categoryName) {
@@ -107,7 +107,7 @@ void CategoryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
 }
 
 UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
-    const auto base = reinterpret_cast<UUWECraftingRecipeCategory*>(UObjectGlobals::FindObject(L"UWECraftingRecipeCategory", L"DA_Processor"));
+    const auto base = Finders::searchFirstOf<UUWECraftingRecipeCategory>("UWECraftingRecipeCategory");
     if (base == nullptr)
         return nullptr;
 

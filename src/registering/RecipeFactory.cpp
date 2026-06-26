@@ -21,7 +21,7 @@ RecipeFactory::RecipeFactory(std::string recipeId, const bool isModify)
     if (isModify) {
         craftingTime = -1;
     } else {
-        setIcon(Finders::findCicadaTexture());
+        setIcon(Finders::searchTexture("T_DefaultImage"));
     }
 }
 
@@ -155,7 +155,7 @@ void RecipeFactory::setOrderingIndex(const int orderingIndex) {
 }
 
 UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
-    const auto base = Finders::searchRecipe("MetalSalvage");
+    const auto base = Finders::searchFirstOf<UUWECraftingRecipe>("UWECraftingRecipe");
     if (base == nullptr)
         return nullptr;
 

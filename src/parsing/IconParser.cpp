@@ -26,7 +26,7 @@ IconParser::IconParser(toml::node_view<const toml::node> node, const std::string
 
     // Default Icon
     if (content == "DEFAULT") {
-        const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(Finders::findCicadaTexture());
+        const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(Finders::searchTexture("T_DefaultImage"));
         texture = *reinterpret_cast<const TSoftObjectPtr<UTexture2D>*>(&temp);
         result = Success;
         return;

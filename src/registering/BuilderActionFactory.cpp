@@ -50,7 +50,7 @@ bool BuilderActionFactory::setRecipe(UUWECraftingRecipe *recipe) {
 }
 
 USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() const {
-    const auto base = Finders::searchBuilderAction("Table_DiningConstructData");
+    const auto base = Finders::searchFirstOf<USN2BuilderConstructActionData>("SN2BuilderConstructActionData");
     if (base == nullptr)
         return nullptr;
 
