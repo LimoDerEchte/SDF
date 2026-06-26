@@ -95,8 +95,8 @@ uintptr_t Hooks::ScanCallMultiPass(uintptr_t address, const std::vector<int> &or
 }
 
 
-#define HookDefScan(name, funcName, ...) \
-    const auto funcGet##name = USN2AssetRegistry::StaticClass()->GetFunction("SN2AssetRegistry", funcName); \
+#define HookDefScan(name, typeName, funcName, ...) \
+    const auto funcGet##name = U##typeName::StaticClass()->GetFunction(#typeName, funcName); \
     const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->ExecFunction); \
     const auto internalPtrGet##name = ScanCallMultiPass(funcPtrGet##name, std::vector{__VA_ARGS__}); \
     Log::Verbose("Found "#name" registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGet##name), reinterpret_cast<void*>(internalPtrGet##name - moduleBase)); \
@@ -124,12 +124,12 @@ void Hooks::RegisterHooks() {
 
     const auto moduleBase = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
 
-    HookDefScan(Recipes, "GetAllCraftingRecipes", 1);
-    HookDefScan(BuilderActions, "GetAllBuilderActions", 1);
-    HookDefScan(DatabankEntries, "GetAllDatabankEntries", 1);
+    HookDefScan(Recipes, SN2AssetRegistry, "GetAllCraftingRecipes", 1);
+    HookDefScan(BuilderActions, SN2AssetRegistry, "GetAllBuilderActions", 1);
+    HookDefScan(DatabankEntries, SN2AssetRegistry, "GetAllDatabankEntries", 1);
 
 #ifdef DEVELOPMENT
-    HookDefScan(ItemTypes, "GetAllItemTypes", 1);
+    HookDefScan(ItemTypes, SN2AssetRegistry, "GetAllItemTypes", 1);
 
     const auto assetRegistryVTable = *static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);
 
