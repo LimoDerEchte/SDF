@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <Windows.h>
 #include <UObject.hpp>
+#include <Windows.h>
 
 class SDF {
     typedef SDF*(*GetterFunc)();
@@ -29,9 +29,9 @@ public:
     typedef void(*EventCallback)(Event event);
     typedef void(*CreateAssetCallback)(AssetType type, const std::string& id, RC::Unreal::UObject* asset);
 
-    virtual uint64_t HookEvent(EventCallback callback);
-    virtual uint64_t HookCreateAsset(CreateAssetCallback callback);
-    virtual void Unhook(uint64_t hookId);
+    virtual uint64_t HookEvent(EventCallback callback) = 0;
+    virtual uint64_t HookCreateAsset(CreateAssetCallback callback) = 0;
+    virtual void Unhook(uint64_t hookId) = 0;
 
     static SDF* Get() {
         if (instance == nullptr) {

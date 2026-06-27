@@ -1,23 +1,21 @@
 
-#include "api/cpp/SDF.hpp"
+#include "registering/BioModFactory.hpp"
 #include "parsing/FileTraversal.hpp"
 #include "parsing/BuilderActionParser.hpp"
 #include "parsing/CategoryParser.hpp"
 #include "parsing/ItemTypeParser.hpp"
 #include "parsing/RecipeParser.hpp"
 #include "parsing/StoryGoalParser.hpp"
+#include "parsing/DatabankEntryParser.hpp"
 
 #include "util/Hooks.hpp"
-#include "registering/DatabankEntryFactory.hpp"
-#include "registering/StoryGoalRuleFactory.hpp"
 
 #include "SDF/Version.hpp"
-#include "util/Finders.hpp"
 #include "util/Log.hpp"
 
+#include "api/cpp/SDF.hpp"
+#include "api/lua/SDF.hpp"
 #include "Mod/CppUserModBase.hpp"
-#include "parsing/DatabankEntryParser.hpp"
-#include "registering/BioModFactory.hpp"
 
 using namespace RC;
 using namespace Unreal;
@@ -109,5 +107,6 @@ void SN2CustomCraft::on_update() {
 }
 
 void SN2CustomCraft::on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
-    // TODO: Future lua API will go here
+    SDF_Lua::RegisterLuaTypes(lua, main_lua, async_lua, hook_lua);
+    Log::Verbose("Lua API initialized");
 }

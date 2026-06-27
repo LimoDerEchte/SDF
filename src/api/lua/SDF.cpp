@@ -4,6 +4,15 @@
 
 #include "SDF.hpp"
 
-void SDF_Lua::RegisterLuaTypes(RC::LuaMadeSimple::Lua &lua, RC::LuaMadeSimple::Lua &main_lua, RC::LuaMadeSimple::Lua &async_lua, RC::LuaMadeSimple::Lua *hook_lua) {
-    // TODO: Implement Lua API
+using namespace RC;
+
+void SDF_Lua::RegisterLuaTypes(const LuaMadeSimple::Lua &lua, const LuaMadeSimple::Lua &main_lua, const LuaMadeSimple::Lua &async_lua, const LuaMadeSimple::Lua *hook_lua) {
+    const auto L = main_lua.get_lua_state();
+    lua_register(L, "HookEvent", Lua_HookEvent);
+}
+
+int SDF_Lua::Lua_HookEvent(lua_State *L) {
+    luaL_checktype(L, 1, LUA_TFUNCTION);
+
+    return 1;
 }

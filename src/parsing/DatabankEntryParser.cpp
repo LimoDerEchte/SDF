@@ -4,10 +4,10 @@
 
 #include "parsing/DatabankEntryParser.hpp"
 
-#include "StoryGoalParser.hpp"
 #include "fmt/std.h"
 #include "parsing/FileTraversal.hpp"
 #include "generic/IconParser.hpp"
+#include "generic/StoryGoalRuleParser.hpp"
 #include "registering/DatabankEntryFactory.hpp"
 #include "util/Log.hpp"
 
@@ -67,7 +67,7 @@ void DatabankEntryParser::parseFile(const std::string &mod, const std::string &f
     }
 
     if (table.contains("unlocked_by") && table["unlocked_by"].is_string()) {
-        const auto parsed = StoryGoalParser::ParseRule(id, table["unlocked_by"].as_string()->get());
+        const auto parsed = StoryGoalRuleParser::ParseRule(id, table["unlocked_by"].as_string()->get());
         if (parsed == nullptr) {
             Log::Warning("Failed to parse unlocked_by for story goal {}", id);
             return;

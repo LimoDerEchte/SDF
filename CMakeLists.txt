@@ -42,7 +42,6 @@ add_library(${TARGET} SHARED
 
         src/api/lua/SDF.cpp
 
-        src/registering/Hooks.cpp
         src/registering/RecipeFactory.cpp
         src/registering/ItemTypeFactory.cpp
         src/registering/BuilderActionFactory.cpp
@@ -51,7 +50,8 @@ add_library(${TARGET} SHARED
         src/registering/StoryGoalRuleFactory.cpp
         src/registering/BioModFactory.cpp
 
-        src/parsing/IconParser.cpp
+        src/parsing/generic/IconParser.cpp
+        src/parsing/generic/StoryGoalRuleParser.cpp
         src/parsing/FileTraversal.cpp
         src/parsing/CategoryParser.cpp
         src/parsing/RecipeParser.cpp
@@ -60,6 +60,7 @@ add_library(${TARGET} SHARED
         src/parsing/StoryGoalParser.cpp
         src/parsing/DatabankEntryParser.cpp
 
+        src/util/Hooks.cpp
         src/util/RegistryHelper.cpp
         # src/util/IconBuilder.cpp
         src/util/Finders.cpp
