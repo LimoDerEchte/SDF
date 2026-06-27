@@ -8,6 +8,7 @@
 #include "UObjectGlobals.hpp"
 #include "util/Log.hpp"
 #include "UObject.hpp"
+#include "api/cpp/SDF.hpp"
 #include "util/Finders.hpp"
 #include "util/RegistryHelper.hpp"
 
@@ -111,29 +112,30 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
     if (base == nullptr)
         return nullptr;
 
-    const auto recipeCategory = modifyMode ? Finders::searchRecipeCategory(categoryId) : RegistryHelper::StaticConstructTemplate(base, std::format("DA_{}", categoryId));
-    if (recipeCategory == nullptr)
+    const auto category = modifyMode ? Finders::searchRecipeCategory(categoryId) : RegistryHelper::StaticConstructTemplate(base, std::format("DA_{}", categoryId));
+    if (category == nullptr)
         return nullptr;
 
     if (orderingIndexModify)
-        recipeCategory->OrderingIndex = orderingIndex;
+        category->OrderingIndex = orderingIndex;
     if (showWhenEmptyModify)
-        recipeCategory->bShowWhenEmpty = showWhenEmpty;
+        category->bShowWhenEmpty = showWhenEmpty;
 
     if (!modifyMode || categoryName != "Empty")
-        recipeCategory->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
+        category->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
     if (!modifyMode || categoryDescription != "Empty")
-        recipeCategory->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
+        category->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
     if (categoryTextureModified)
-        recipeCategory->Thumbnail = categoryTexture;
+        category->Thumbnail = categoryTexture;
     if (modifyCrafterType)
-        recipeCategory->CraftedBy = crafterType;
+        category->CraftedBy = crafterType;
 
     if (categoryParent != nullptr)
-        recipeCategory->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
+        category->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
 
-    RegistryHelper::AddToRegistry(recipeCategory, "UWECraftingRecipeCategory");
+    RegistryHelper::AddToRegistry(category, "UWECraftingRecipeCategory");
 
     Log::Verbose("Category {}: {}", modifyMode ? "modified" : "registered", categoryId);
-    return recipeCategory;
+    SDF_Impl::TriggerCreateAsset(SDF::Category, categoryId, reinterpret_cast<Unreal::UObject*>(category));
+    return category;
 }

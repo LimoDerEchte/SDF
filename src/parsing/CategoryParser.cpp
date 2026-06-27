@@ -5,7 +5,7 @@
 #include "parsing/CategoryParser.hpp"
 
 #include "parsing/FileTraversal.hpp"
-#include "parsing/IconParser.hpp"
+#include "generic/IconParser.hpp"
 #include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
 

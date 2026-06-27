@@ -1,2 +1,3 @@
 
-This directory will at some point contain the C++ API for SDF
+## SDF C++ API
+This folder contains a work in progress API that can be used by SDF users to create more complex mods.

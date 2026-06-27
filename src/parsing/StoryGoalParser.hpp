@@ -13,10 +13,8 @@
 class StoryGoalParser {
     static std::map<std::string, SDK::UUWEStoryGoal*> storyGoals;
 
-    static std::unique_ptr<StoryGoalRule> parseRuleSegment(const std::string& id, std::string& content, bool debug);
     static void parseFile(const std::string &file, const toml::table &table);
 
 public:
-    static std::unique_ptr<StoryGoalRule> ParseRule(const std::string &id, std::string content, bool debug = false);
     static void ParseStoryGoals();
 };

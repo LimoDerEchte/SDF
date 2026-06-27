@@ -1,4 +1,5 @@
 
+#include "api/cpp/SDF.hpp"
 #include "parsing/FileTraversal.hpp"
 #include "parsing/BuilderActionParser.hpp"
 #include "parsing/CategoryParser.hpp"
@@ -48,8 +49,15 @@ void SN2CustomCraft::startup() {
     FileTraversal::ScanFiles();
     StoryGoalParser::ParseStoryGoals();
     ItemTypeParser::ParseItemTypes();
+
+    SDF_Impl::TriggerEvent(SDF::EventPreCategory);
     CategoryParser::ParseCategories();
+    SDF_Impl::TriggerEvent(SDF::EventPostCategory);
+
+    SDF_Impl::TriggerEvent(SDF::EventPreRecipe);
     RecipeParser::ParseRecipes();
+    SDF_Impl::TriggerEvent(SDF::EventPostRecipe);
+
     BuilderActionParser::ParseBuilderActions();
     DatabankEntryParser::ParseDatabankEntries();
 

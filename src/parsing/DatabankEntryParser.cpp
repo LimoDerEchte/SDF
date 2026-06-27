@@ -7,7 +7,7 @@
 #include "StoryGoalParser.hpp"
 #include "fmt/std.h"
 #include "parsing/FileTraversal.hpp"
-#include "parsing/IconParser.hpp"
+#include "generic/IconParser.hpp"
 #include "registering/DatabankEntryFactory.hpp"
 #include "util/Log.hpp"
 

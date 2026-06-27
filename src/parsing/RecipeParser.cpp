@@ -5,7 +5,7 @@
 #include "parsing/RecipeParser.hpp"
 
 #include "parsing/FileTraversal.hpp"
-#include "parsing/IconParser.hpp"
+#include "generic/IconParser.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "util/Log.hpp"
 

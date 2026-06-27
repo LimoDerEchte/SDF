@@ -5,7 +5,7 @@
 #include "parsing/BuilderActionParser.hpp"
 
 #include "parsing/FileTraversal.hpp"
-#include "parsing/IconParser.hpp"
+#include "generic/IconParser.hpp"
 #include "registering/BuilderActionFactory.hpp"
 #include "util/Log.hpp"
 

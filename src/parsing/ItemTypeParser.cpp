@@ -5,7 +5,7 @@
 #include "parsing/ItemTypeParser.hpp"
 
 #include "parsing/FileTraversal.hpp"
-#include "parsing/IconParser.hpp"
+#include "generic/IconParser.hpp"
 #include "registering/ItemTypeFactory.hpp"
 #include "util/Log.hpp"
 

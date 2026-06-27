@@ -38,6 +38,10 @@ message(VERBOSE "SN2_LOCATION is set to ${SN2_LOCATION}")
 add_library(${TARGET} SHARED
         src/Mod.cpp
 
+        src/api/cpp/SDF.cpp
+
+        src/api/lua/SDF.cpp
+
         src/registering/Hooks.cpp
         src/registering/RecipeFactory.cpp
         src/registering/ItemTypeFactory.cpp

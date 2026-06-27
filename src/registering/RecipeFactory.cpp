@@ -7,6 +7,7 @@
 #include "util/Log.hpp"
 #include "UObjectGlobals.hpp"
 #include "UObject.hpp"
+#include "api/cpp/SDF.hpp"
 #include "util/Finders.hpp"
 #include "util/RegistryHelper.hpp"
 
@@ -247,5 +248,6 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     }
 
     Log::Verbose("Recipe {}: {}", modifyMode ? "modified" : "registered", recipeId);
+    SDF_Impl::TriggerCreateAsset(SDF::Recipe, recipeId, reinterpret_cast<RC::Unreal::UObject*>(recipe));
     return recipe;
 }
