@@ -1,0 +1,6 @@
+
+[[bio_mod]]
+id = "ExampleBioMod"
+name = "Example Bio Mod"
+description = "This bio mod is a test of the bio mod registration provided by SDF"
+icon = "ITEM Titanium"

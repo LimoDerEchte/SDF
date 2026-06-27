@@ -55,8 +55,8 @@ bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, SDK::TArray<SDK::
     else
         Log::Warning("Invalid result array");
 
-    //for (const auto name : filter->ClassNames)
-    //    Log::Warning("Scanning for classname: {}", name.ToString());
+    for (const auto name : filter->ClassNames)
+        Log::Warning("Scanning for classname: {}", name.ToString());
 
     for (const auto asset : filter->ClassPaths) {
         Log::Warning("Scanning for classpath: {} {}", asset.PackageName.ToString(), asset.AssetName.ToString());
@@ -129,8 +129,6 @@ void Hooks::RegisterHooks() {
     HookDefScan(DatabankEntries, SN2AssetRegistry, "GetAllDatabankEntries", 1);
 
 #ifdef DEVELOPMENT
-    HookDefScan(ItemTypes, SN2AssetRegistry, "GetAllItemTypes", 1);
-
     const auto assetRegistryVTable = *static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);
 
     const auto internalPtrGetAssets = assetRegistryVTable[10];

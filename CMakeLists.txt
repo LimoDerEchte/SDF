@@ -4,8 +4,10 @@ if(UNIX)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libs/RE-UE4SS/cmake/toolchains/xwin-clang-cl-toolchain.cmake)
     add_compile_options("/clang:-Wno-c++11-narrowing")
     add_compile_options("/clang:-Wno-narrowing")
+    add_compile_options("-w")
+else()
+    add_compile_options("/w")
 endif()
-add_compile_options("-w")
 
 cmake_minimum_required(VERSION 4.2)
 

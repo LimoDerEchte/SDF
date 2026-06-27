@@ -34,6 +34,8 @@ UUWECraftingRecipe *Finders::searchRecipe(const std::string &recipeId) {
     UUWECraftingRecipe *recipe = nullptr;
     if (!tryFindObject(L"UWECraftingRecipe", "DA_" + recipeId + "Recipe", &recipe) && !recipeId.ends_with("_"))
         recipe = searchRecipe(recipeId + "_");
+    if (recipe == nullptr)
+        recipe = findObject<UUWECraftingRecipe>(L"UWECraftingRecipe", "DA_" + recipeId);
     return recipe;
 }
 
