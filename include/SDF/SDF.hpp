@@ -26,8 +26,8 @@ public:
 
     virtual ~SDF() = default;
 
-    typedef void(*EventCallback)(Event event);
-    typedef void(*CreateAssetCallback)(AssetType type, const std::string& id, RC::Unreal::UObject* asset);
+    typedef std::function<void(Event event)> EventCallback;
+    typedef std::function<void(AssetType type, const std::string& id, RC::Unreal::UObject* asset)> CreateAssetCallback;
 
     virtual uint64_t HookEvent(EventCallback callback) = 0;
     virtual uint64_t HookCreateAsset(CreateAssetCallback callback) = 0;

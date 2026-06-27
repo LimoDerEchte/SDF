@@ -8,11 +8,13 @@
 
 class SDF_Impl final : public SDF {
     static uint64_t incrementor;
+    static SDF_Impl* internalInstance;
 
     static std::unordered_map<uint64_t, EventCallback> eventHooks;
     static std::unordered_map<uint64_t, CreateAssetCallback> createAssetHooks;
 
 public:
+    static SDF_Impl* InternalInstance();
     static void TriggerEvent(Event event);
     static void TriggerCreateAsset(AssetType type, const std::string& id, RC::Unreal::UObject* asset);
 

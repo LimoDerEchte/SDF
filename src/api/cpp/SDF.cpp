@@ -5,9 +5,14 @@
 #include "SDF.hpp"
 
 uint64_t SDF_Impl::incrementor = 0;
+SDF_Impl *SDF_Impl::internalInstance = new SDF_Impl();
 
 std::unordered_map<uint64_t, SDF::EventCallback> SDF_Impl::eventHooks;
 std::unordered_map<uint64_t, SDF::CreateAssetCallback> SDF_Impl::createAssetHooks;
+
+SDF_Impl *SDF_Impl::InternalInstance() {
+    return internalInstance;
+}
 
 void SDF_Impl::TriggerEvent(const Event event) {
     for (const auto val: eventHooks | std::views::values)
@@ -36,7 +41,6 @@ void SDF_Impl::Unhook(const uint64_t hookId) {
     createAssetHooks.erase(hookId);
 }
 
-const auto instance = new SDF_Impl();
 extern "C" __declspec(dllexport) inline SDF_Impl* sdf_get_sdf() {
-    return instance;
+    return SDF_Impl::InternalInstance();
 }
