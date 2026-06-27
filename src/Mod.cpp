@@ -6,7 +6,7 @@
 #include "parsing/RecipeParser.hpp"
 #include "parsing/StoryGoalParser.hpp"
 
-#include "registering/Hooks.hpp"
+#include "util/Hooks.hpp"
 #include "registering/DatabankEntryFactory.hpp"
 #include "registering/StoryGoalRuleFactory.hpp"
 
