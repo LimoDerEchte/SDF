@@ -8,7 +8,11 @@
 
 #include <functional>
 #include <string>
+
 #include <Windows.h>
+#include <Psapi.h>
+
+#define SDF_HOOK_FAILED 0
 
 class SDF {
 public:
@@ -45,13 +49,25 @@ protected:
 
     static SDF* Get() {
         if (instance == nullptr) {
-            const HMODULE mod = GetModuleHandleA("SDF.dll");
-            if (mod == nullptr)
-                return nullptr;
-            const auto func = reinterpret_cast<GetterFunc>(GetProcAddress(mod, "sdf_get_sdf"));
-            if (func == nullptr)
-                return nullptr;
-            instance = func();
+            HMODULE mods[4096];
+            DWORD cb;
+
+            HANDLE currentProc = GetCurrentProcess();
+            EnumProcessModules(currentProc, mods, sizeof(mods), &cb);
+
+            for (unsigned i = 0; i < cb; i++) {
+                wchar_t modPath[MAX_PATH];
+                GetModuleFileNameExW(currentProc, mods[i], modPath, MAX_PATH);
+
+                if (!std::wstring(modPath).ends_with(L"Mods\\SDF\\dlls\\main.dll"))
+                    continue;
+
+                const auto func = reinterpret_cast<GetterFunc>(GetProcAddress(mods[i], "sdf_get_sdf"));
+                if (func == nullptr)
+                    return nullptr;
+
+                instance = func();
+            }
         }
         return instance;
     }
@@ -66,12 +82,16 @@ protected:
 
 public:
     static uint64_t HookEvent(EventCallback callback) {
+        if (Get() == nullptr)
+            return 0;
         const auto hookId = Get()->HookEventInternal(InvokeEvent);
         eventCallbacks[hookId] = std::move(callback);
         return hookId;
     }
 
     static uint64_t HookCreateAsset(CreateAssetCallback callback) {
+        if (Get() == nullptr)
+            return 0;
         const auto hookId = Get()->HookCreateAssetInternal(InvokeCreateAsset);
         createAssetCallbacks[hookId] = std::move(callback);
         return hookId;
