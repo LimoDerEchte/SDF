@@ -26,7 +26,7 @@ class FileTraversal {
     friend class StoryGoalParser;
     friend class DatabankEntryParser;
     friend class BuilderActionParser;
-    friend class SN2CustomCraft;
+    friend class SDF_Mod;
 
     static void ScanFiles();
     static void DeleteCache();

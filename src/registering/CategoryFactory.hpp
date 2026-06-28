@@ -26,8 +26,6 @@ class CategoryFactory {
     bool categoryTextureModified = false;
     SDK::TSoftObjectPtr<SDK::UTexture2D> categoryTexture;
 
-    friend class SN2CustomCraft;
-
 public:
     CategoryFactory(std::string categoryId, bool modifyMode);
 

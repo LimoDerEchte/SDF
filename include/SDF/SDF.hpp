@@ -18,14 +18,19 @@ class SDF {
 public:
     enum AssetType {
         Recipe,
-        Category
+        Category,
+        DatabankEntry,
     };
 
     enum Event {
-        EventPreRecipe,
-        EventPostRecipe,
-        EventPreCategory,
-        EventPostCategory,
+        PreTraverse,
+        PostTraverse,
+        PreCategory,
+        PostCategory,
+        PreRecipe,
+        PostRecipe,
+        PreDatabankEntry,
+        PostDatabankEntry,
     };
 
     typedef std::function<void(Event event)> EventCallback;

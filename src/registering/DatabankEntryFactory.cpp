@@ -11,8 +11,10 @@
 #include "util/Log.hpp"
 
 #include "Containers/Array.hpp"
+#include "api/cpp/SDF.hpp"
 
 using namespace SDK;
+using namespace RC;
 
 std::vector<UUWEDatabankEntry*> DatabankEntryFactory::registeredDatabankEntries;
 
@@ -105,5 +107,6 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
     registeredDatabankEntries.push_back(entry);
 
     Log::Verbose("Databank entry {}: {}", modifyMode ? "modified" : "registered", id);
+    SDF_Impl::TriggerCreateAsset(SDF::Category, id, reinterpret_cast<Unreal::UObject*>(entry));
     return entry;
 }

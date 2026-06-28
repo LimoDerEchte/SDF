@@ -20,44 +20,50 @@
 using namespace RC;
 using namespace Unreal;
 
-class SN2CustomCraft : public CppUserModBase {
+class SDF_Mod : public CppUserModBase {
     bool scanning = true;
 
     static void startup();
 
 public:
-    SN2CustomCraft();
-    ~SN2CustomCraft() override;
+    SDF_Mod();
+    ~SDF_Mod() override;
 
-    auto on_update() -> void override;
-    auto on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) -> void override;
+    void on_update() override;
+    void on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) override;
 };
 
 #define MOD_EXPORT __declspec(dllexport)
 extern "C" {
-MOD_EXPORT inline CppUserModBase* start_mod(){ return new SN2CustomCraft(); }
+MOD_EXPORT inline CppUserModBase* start_mod(){ return new SDF_Mod(); }
 MOD_EXPORT inline void uninstall_mod(const CppUserModBase* mod) { delete mod; }
 }
 
-void SN2CustomCraft::startup() {
+void SDF_Mod::startup() {
     Log::Verbose("SDF Version {} Initialized", SDFModVersion);
 
     Hooks::RegisterHooks();
 
+    SDF_Impl::TriggerEvent(SDF::Event::PreTraverse);
     FileTraversal::ScanFiles();
+    SDF_Impl::TriggerEvent(SDF::Event::PostTraverse);
+
     StoryGoalParser::ParseStoryGoals();
     ItemTypeParser::ParseItemTypes();
 
-    SDF_Impl::TriggerEvent(SDF::EventPreCategory);
+    SDF_Impl::TriggerEvent(SDF::Event::PreCategory);
     CategoryParser::ParseCategories();
-    SDF_Impl::TriggerEvent(SDF::EventPostCategory);
+    SDF_Impl::TriggerEvent(SDF::Event::PostCategory);
 
-    SDF_Impl::TriggerEvent(SDF::EventPreRecipe);
+    SDF_Impl::TriggerEvent(SDF::Event::PreRecipe);
     RecipeParser::ParseRecipes();
-    SDF_Impl::TriggerEvent(SDF::EventPostRecipe);
+    SDF_Impl::TriggerEvent(SDF::Event::PostRecipe);
 
     BuilderActionParser::ParseBuilderActions();
+
+    SDF_Impl::TriggerEvent(SDF::Event::PreDatabankEntry);
     DatabankEntryParser::ParseDatabankEntries();
+    SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
 
 #ifdef DEVELOPMENT
     //RecipeFactory recipe("TestRec", "Test Recipe", "This is a recipe for testing dynamic icons");
@@ -82,20 +88,20 @@ void SN2CustomCraft::startup() {
 #endif
 }
 
-SN2CustomCraft::SN2CustomCraft() {
+SDF_Mod::SDF_Mod() {
     ModVersion = W(SDFModVersion);
     ModName = L"Subnautica Data Framework";
     ModAuthors = L"Limo";
     ModDescription = L"A Subnautica 2 framework that allows for data driven content mods";
 }
 
-SN2CustomCraft::~SN2CustomCraft() {
+SDF_Mod::~SDF_Mod() {
     if (scanning)
         return;
     Hooks::UnregisterHooks();
 }
 
-void SN2CustomCraft::on_update() {
+void SDF_Mod::on_update() {
     if (!scanning)
         return;
     if (const auto world = SDK::UWorld::GetWorld()) {
@@ -106,7 +112,7 @@ void SN2CustomCraft::on_update() {
     }
 }
 
-void SN2CustomCraft::on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
-    SDF_Lua::RegisterLuaTypes(lua, main_lua, async_lua, hook_lua);
+void SDF_Mod::on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
+    //SDF_Lua::RegisterLuaTypes(lua, main_lua, async_lua, hook_lua);
     Log::Verbose("Lua API initialized");
 }
