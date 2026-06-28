@@ -12,11 +12,11 @@ public:
     static std::pair<LuaMadeSimple::Lua*, int> make_hook_state(LuaMod* mod);
 };
 
-class LuaType {
+class LuaTypeFactory {
     const LuaMadeSimple::Lua &lua;
 
 public:
-    explicit LuaType(const LuaMadeSimple::Lua &lua);
+    explicit LuaTypeFactory(const LuaMadeSimple::Lua &lua);
 
     void add_table(const std::string &key, const std::function<void(const LuaMadeSimple::Lua::Table &table)> &adder) const;
     void add_function(const std::string &key, const LuaMadeSimple::Lua::LuaFunction &function) const;
