@@ -6,7 +6,6 @@
 
 #include "api/cpp/SDF.hpp"
 
-#include "ExceptionHandling.hpp"
 #include "LuaStatics.hpp"
 #include "Mod/LuaMod.hpp"
 
@@ -15,8 +14,15 @@ using namespace Unreal;
 
 LuaMadeSimple::Lua *SDF_Lua::hook_lua = nullptr;
 
-void SDF_Lua::Lua_RegisterEvents(const LuaMadeSimple::Lua &lua) {
-    const auto table = lua.prepare_new_table();
+void SDF_Lua::Lua_BuildEventTable(const LuaMadeSimple::Lua::Table &table) {
+    table.add_pair("PreTraverse", 0);
+    table.add_pair("PostTraverse", 1);
+    table.add_pair("PreCategory", 2);
+    table.add_pair("PostCategory", 3);
+    table.add_pair("PreRecipe", 4);
+    table.add_pair("PostRecipe", 5);
+    table.add_pair("PreDatabankEntry", 6);
+    table.add_pair("PostDatabankEntry", 7);
 }
 
 int SDF_Lua::Lua_HookEvent(const LuaMadeSimple::Lua &lua) {
@@ -31,16 +37,14 @@ int SDF_Lua::Lua_HookEvent(const LuaMadeSimple::Lua &lua) {
 
     const auto funcRef = hook_lua->registry().make_ref();
 
-    const auto hookId = SDF::HookEvent([&](const SDF::Event event) {
-        TRY([&] {
-            hook_lua->registry().get_function_ref(funcRef);
-            hook_lua->set_integer(event);
-            hook_lua->call_function(1, 0);
-        });
+    const auto hookId = SDF::HookEvent([hook_lua, funcRef](const SDF::Event event) {
+        hook_lua->registry().get_function_ref(funcRef);
+        hook_lua->set_integer(event);
+        hook_lua->call_function(1, 0);
     });
 
     lua.set_integer(hookId);
-    return 0;
+    return 1;
 }
 
 int SDF_Lua::Lua_Unhook(const LuaMadeSimple::Lua &lua) {
@@ -53,6 +57,12 @@ int SDF_Lua::Lua_Unhook(const LuaMadeSimple::Lua &lua) {
 }
 
 void SDF_Lua::RegisterLuaTypes(const LuaMadeSimple::Lua &lua) {
-    lua.register_function("SDF_HookEvent", Lua_HookEvent);
-    lua.register_function("SDF_Unhook", Lua_Unhook);
+    const LuaType type(lua);
+
+    type.add_table("Event", Lua_BuildEventTable);
+
+    type.add_function("HookEvent", Lua_HookEvent);
+    type.add_function("Unhook", Lua_Unhook);
+
+    type.make_global("SDF");
 }

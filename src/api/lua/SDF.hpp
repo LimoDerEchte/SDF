@@ -9,7 +9,7 @@
 class SDF_Lua {
     static RC::LuaMadeSimple::Lua *hook_lua;
 
-    static void Lua_RegisterEvents(const RC::LuaMadeSimple::Lua &lua);
+    static void Lua_BuildEventTable(const RC::LuaMadeSimple::Lua::Table &table);
 
     static int Lua_HookEvent(const RC::LuaMadeSimple::Lua &lua);
     static int Lua_Unhook(const RC::LuaMadeSimple::Lua &lua);

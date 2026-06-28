@@ -10,8 +10,8 @@ class SDF_Impl final : public SDF {
     static int64_t incrementor;
     static SDF_Impl* internalInstance;
 
-    static std::unordered_map<uint64_t, EventCallbackC> eventHooks;
-    static std::unordered_map<uint64_t, CreateAssetCallbackC> createAssetHooks;
+    static std::unordered_map<int64_t, EventCallbackC> eventHooks;
+    static std::unordered_map<int64_t, CreateAssetCallbackC> createAssetHooks;
 
 protected:
     int64_t HookEventInternal(EventCallbackC callback) override;

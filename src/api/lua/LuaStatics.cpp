@@ -18,3 +18,27 @@ std::pair<LuaMadeSimple::Lua*, int> LuaStaticsSDF::make_hook_state(LuaMod *mod) 
     int thread_ref = ensure_hook_thread_exists(mod);
     return {mod->m_hook_lua, thread_ref};
 }
+
+LuaType::LuaType(const LuaMadeSimple::Lua &lua) : lua(lua) {
+    lua_createtable(lua.get_lua_state(), 0, 0);
+}
+
+void LuaType::add_table(const std::string &key, const std::function<void(const LuaMadeSimple::Lua::Table &table)> &adder) const {
+    const auto ta = lua.prepare_new_table();
+    adder(ta);
+    lua_setfield(lua.get_lua_state(), -2, key.c_str());
+}
+
+void LuaType::add_function(const std::string &key, const LuaMadeSimple::Lua::LuaFunction& function) const {
+    lua.register_function(key, function);
+
+    lua_getglobal(lua.get_lua_state(), key.c_str());
+    lua_setfield(lua.get_lua_state(), -2, key.c_str());
+
+    lua.set_nil();
+    lua_setglobal(lua.get_lua_state(), key.c_str());
+}
+
+void LuaType::make_global(const std::string &key) const {
+    lua_setglobal(lua.get_lua_state(), key.c_str());
+}

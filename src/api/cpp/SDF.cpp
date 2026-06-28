@@ -7,8 +7,8 @@
 int64_t SDF_Impl::incrementor = 0;
 SDF_Impl *SDF_Impl::internalInstance = new SDF_Impl();
 
-std::unordered_map<uint64_t, SDF::EventCallbackC> SDF_Impl::eventHooks;
-std::unordered_map<uint64_t, SDF::CreateAssetCallbackC> SDF_Impl::createAssetHooks;
+std::unordered_map<int64_t, SDF::EventCallbackC> SDF_Impl::eventHooks;
+std::unordered_map<int64_t, SDF::CreateAssetCallbackC> SDF_Impl::createAssetHooks;
 
 int64_t SDF_Impl::HookEventInternal(EventCallbackC callback) {
     const int64_t id = incrementor++;
