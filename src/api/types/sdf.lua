@@ -33,3 +33,14 @@ function SDF.HookCreateAsset(Callback) end
 
 ---@param HookId int64
 function SDF.Unhook(HookId) end
+
+---@param RecipeId string
+---@return SDFRecipe
+function SDF.CreateRecipe(RecipeId) end
+
+---@param RecipeId string
+---@return SDFRecipe
+function SDF.ModifyRecipe(RecipeId) end
+
+---@param RecipeId string
+function SDF.DeleteRecipe(RecipeId) end

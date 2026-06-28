@@ -9,6 +9,7 @@
 #include "api/cpp/SDF.hpp"
 
 #include "LuaStatics.hpp"
+#include "SDFRecipe.hpp"
 #include "Mod/LuaMod.hpp"
 
 using namespace RC;
@@ -16,22 +17,22 @@ using namespace Unreal;
 
 LuaMadeSimple::Lua *SDF_Lua::hook_lua = nullptr;
 
-void SDF_Lua::Lua_BuildEventTable(const LuaMadeSimple::Lua::Table &table) {
-    table.add_pair("PreTraverse", 0);
-    table.add_pair("PostTraverse", 1);
-    table.add_pair("PreCategory", 2);
-    table.add_pair("PostCategory", 3);
-    table.add_pair("PreRecipe", 4);
-    table.add_pair("PostRecipe", 5);
-    table.add_pair("PreDatabankEntry", 6);
-    table.add_pair("PostDatabankEntry", 7);
-}
+const auto EventTable = std::map<std::string, int>{
+    { "PreTraverse", 0 },
+    { "PostTraverse", 1 },
+    { "PreCategory", 2 },
+    { "PostCategory", 3 },
+    { "PreRecipe", 4 },
+    { "PostRecipe", 5 },
+    { "PreDatabankEntry", 6 },
+    { "PostDatabankEntry", 7 },
+};
 
-void SDF_Lua::Lua_BuildAssetTypeTable(const LuaMadeSimple::Lua::Table &table) {
-    table.add_pair("Recipe", 0);
-    table.add_pair("Category", 1);
-    table.add_pair("DatabankEntry", 2);
-}
+const auto AssetTypeTable = std::map<std::string, int>{
+    { "Recipe", 0 },
+    { "Category", 1 },
+    { "DatabankEntry", 2 },
+};
 
 int SDF_Lua::Lua_HookEvent(const LuaMadeSimple::Lua &lua) {
     if (!lua.is_function())
@@ -85,22 +86,50 @@ int SDF_Lua::Lua_HookCreateAsset(const LuaMadeSimple::Lua &lua) {
 
 int SDF_Lua::Lua_Unhook(const LuaMadeSimple::Lua &lua) {
     if (!lua.is_integer())
-        lua.throw_error("Parameter #1 for function 'SDF_Unhook' must be an integer");
+        lua.throw_error("Parameter #1 for function 'SDF.Unhook' must be an integer");
 
     const auto hookId = lua.get_integer();
     SDF::Unhook(hookId);
     return 0;
 }
 
+int SDF_Lua::Lua_CreateRecipe(const LuaMadeSimple::Lua &lua) {
+    if (!lua.is_string())
+        lua.throw_error("Parameter #1 for function 'SDF.CreateRecipe' must be a string");
+
+    SDFRecipe_Lua::construct(lua, SDF::CreateRecipe(std::string(lua.get_string())));
+    return 1;
+}
+
+int SDF_Lua::Lua_ModifyRecipe(const LuaMadeSimple::Lua &lua) {
+    if (!lua.is_string())
+        lua.throw_error("Parameter #1 for function 'SDF.ModifyRecipe' must be a string");
+
+    SDFRecipe_Lua::construct(lua, SDF::ModifyRecipe(std::string(lua.get_string())));
+    return 1;
+}
+
+int SDF_Lua::Lua_DeleteRecipe(const LuaMadeSimple::Lua &lua) {
+    if (!lua.is_string())
+        lua.throw_error("Parameter #1 for function 'SDF.ModifyRecipe' must be a string");
+
+    SDF::DeleteRecipe(std::string(lua.get_string()));
+    return 0;
+}
+
 void SDF_Lua::RegisterLuaTypes(const LuaMadeSimple::Lua &lua) {
     const LuaTypeFactory type(lua);
 
-    type.add_table("Event", Lua_BuildEventTable);
-    type.add_table("AssetType", Lua_BuildAssetTypeTable);
+    type.add_enum("Event", EventTable);
+    type.add_enum("AssetType", AssetTypeTable);
 
     type.add_function("HookEvent", Lua_HookEvent);
     type.add_function("HookCreateAsset", Lua_HookCreateAsset);
     type.add_function("Unhook", Lua_Unhook);
+
+    type.add_function("CreateRecipe", Lua_CreateRecipe);
+    type.add_function("ModifyRecipe", Lua_ModifyRecipe);
+    type.add_function("DeleteRecipe", Lua_DeleteRecipe);
 
     type.make_global("SDF");
 }

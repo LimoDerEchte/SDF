@@ -23,9 +23,12 @@ LuaTypeFactory::LuaTypeFactory(const LuaMadeSimple::Lua &lua) : lua(lua) {
     lua_createtable(lua.get_lua_state(), 0, 0);
 }
 
-void LuaTypeFactory::add_table(const std::string &key, const std::function<void(const LuaMadeSimple::Lua::Table &table)> &adder) const {
+void LuaTypeFactory::add_enum(const std::string &key, const std::map<std::string, int> &entries) const {
     const auto ta = lua.prepare_new_table();
-    adder(ta);
+
+    for (const auto&[key, value] : entries)
+        ta.add_pair(key.c_str(), value);
+
     lua_setfield(lua.get_lua_state(), -2, key.c_str());
 }
 

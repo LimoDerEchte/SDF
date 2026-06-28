@@ -18,7 +18,7 @@ class LuaTypeFactory {
 public:
     explicit LuaTypeFactory(const LuaMadeSimple::Lua &lua);
 
-    void add_table(const std::string &key, const std::function<void(const LuaMadeSimple::Lua::Table &table)> &adder) const;
+    void add_enum(const std::string &key, const std::map<std::string, int> &entries) const;
     void add_function(const std::string &key, const LuaMadeSimple::Lua::LuaFunction &function) const;
 
     void make_global(const std::string &key) const;

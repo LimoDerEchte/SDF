@@ -43,6 +43,7 @@ add_library(${TARGET} SHARED
 
         src/api/lua/LuaStatics.cpp
         src/api/lua/SDF.cpp
+        src/api/lua/SDFRecipe.cpp
 
         src/registering/RecipeFactory.cpp
         src/registering/ItemTypeFactory.cpp
