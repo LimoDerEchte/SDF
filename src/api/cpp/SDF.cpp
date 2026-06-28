@@ -4,25 +4,25 @@
 
 #include "SDF.hpp"
 
-uint64_t SDF_Impl::incrementor = 1;
+int64_t SDF_Impl::incrementor = 0;
 SDF_Impl *SDF_Impl::internalInstance = new SDF_Impl();
 
 std::unordered_map<uint64_t, SDF::EventCallbackC> SDF_Impl::eventHooks;
 std::unordered_map<uint64_t, SDF::CreateAssetCallbackC> SDF_Impl::createAssetHooks;
 
-uint64_t SDF_Impl::HookEventInternal(EventCallbackC callback) {
-    const uint64_t id = incrementor++;
+int64_t SDF_Impl::HookEventInternal(EventCallbackC callback) {
+    const int64_t id = incrementor++;
     eventHooks.emplace(id, callback);
     return id;
 }
 
-uint64_t SDF_Impl::HookCreateAssetInternal(CreateAssetCallbackC callback) {
-    const uint64_t id = incrementor++;
+int64_t SDF_Impl::HookCreateAssetInternal(CreateAssetCallbackC callback) {
+    const int64_t id = incrementor++;
     createAssetHooks.emplace(id, callback);
     return id;
 }
 
-void SDF_Impl::UnhookInternal(const uint64_t hookId) {
+void SDF_Impl::UnhookInternal(const int64_t hookId) {
     eventHooks.erase(hookId);
     createAssetHooks.erase(hookId);
 }

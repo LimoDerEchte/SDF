@@ -30,7 +30,7 @@ public:
     ~SDF_Mod() override;
 
     void on_update() override;
-    void on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) override;
+    auto on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) -> void override;
 };
 
 #define MOD_EXPORT __declspec(dllexport)
@@ -112,7 +112,7 @@ void SDF_Mod::on_update() {
     }
 }
 
-void SDF_Mod::on_lua_start(LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
-    //SDF_Lua::RegisterLuaTypes(lua, main_lua, async_lua, hook_lua);
+void SDF_Mod::on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
+    SDF_Lua::RegisterLuaTypes(lua);
     Log::Verbose("Lua API initialized");
 }

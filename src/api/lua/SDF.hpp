@@ -9,8 +9,11 @@
 class SDF_Lua {
     static RC::LuaMadeSimple::Lua *hook_lua;
 
-public:
-    static void RegisterLuaTypes(const RC::LuaMadeSimple::Lua &lua, const RC::LuaMadeSimple::Lua &main_lua, const RC::LuaMadeSimple::Lua &async_lua, RC::LuaMadeSimple::Lua *hook_lua);
+    static void Lua_RegisterEvents(const RC::LuaMadeSimple::Lua &lua);
 
-    static int Lua_HookEvent(lua_State *L);
+    static int Lua_HookEvent(const RC::LuaMadeSimple::Lua &lua);
+    static int Lua_Unhook(const RC::LuaMadeSimple::Lua &lua);
+
+public:
+    static void RegisterLuaTypes(const RC::LuaMadeSimple::Lua &lua);
 };
