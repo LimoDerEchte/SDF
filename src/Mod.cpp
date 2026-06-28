@@ -10,12 +10,12 @@
 
 #include "util/Hooks.hpp"
 
-#include "SDF/Version.hpp"
-#include "util/Log.hpp"
-
 #include "api/cpp/SDF.hpp"
 #include "api/lua/SDF.hpp"
 #include "Mod/CppUserModBase.hpp"
+
+#include "SDF/Version.hpp"
+#include "util/Log.hpp"
 
 using namespace RC;
 using namespace Unreal;
@@ -114,5 +114,4 @@ void SDF_Mod::on_update() {
 
 void SDF_Mod::on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
     SDF_Lua::RegisterLuaTypes(lua);
-    Log::Verbose("Lua API initialized");
 }

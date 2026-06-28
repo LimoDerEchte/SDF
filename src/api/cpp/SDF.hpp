@@ -18,6 +18,9 @@ protected:
     int64_t HookCreateAssetInternal(CreateAssetCallbackC callback) override;
     void UnhookInternal(int64_t hookId) override;
 
+    std::unique_ptr<SDFRecipe> CreateRecipeFactory(const std::string &id, bool modifyMode) override;
+    void DeleteCraftingRecipe(const std::string &id) override;
+
 public:
     static SDF_Impl* InternalInstance();
     static void TriggerEvent(Event event);

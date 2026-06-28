@@ -2,7 +2,13 @@
 // Created by Limo on 27/06/2026.
 //
 
+// Include SDK-relevant types first to prevent collisions
+#include "registering/RecipeFactory.hpp"
+
+// Normal headers start here
 #include "SDF.hpp"
+
+#include "SDFRecipe.hpp"
 
 int64_t SDF_Impl::incrementor = 0;
 SDF_Impl *SDF_Impl::internalInstance = new SDF_Impl();
@@ -25,6 +31,16 @@ int64_t SDF_Impl::HookCreateAssetInternal(CreateAssetCallbackC callback) {
 void SDF_Impl::UnhookInternal(const int64_t hookId) {
     eventHooks.erase(hookId);
     createAssetHooks.erase(hookId);
+}
+
+std::unique_ptr<SDFRecipe> SDF_Impl::CreateRecipeFactory(const std::string &id, bool modifyMode) {
+    return std::make_unique<SDFRecipe_Impl>(id, modifyMode);
+}
+
+void SDF_Impl::DeleteCraftingRecipe(const std::string &id) {
+    RecipeFactory factory(id, true);
+    factory.setCategory("Fabricator");
+    const auto _ = factory.registerRecipe();
 }
 
 SDF_Impl *SDF_Impl::InternalInstance() {

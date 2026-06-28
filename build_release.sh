@@ -6,13 +6,12 @@ cmake --build ./cmake-build-release --target SDF
 # Create Files
 mkdir SDF
 mkdir SDF/dlls
-mkdir SDF/types
 mkdir SDF/license
 touch SDF/enabled.txt
 
 # Move Files
 cp ./cmake-build-release/SDF.dll SDF/dlls/main.dll
-cp src/api/sdf.lua SDF/types/sdf.lua
+cp src/api/types SDF
 cp LICENSE SDF/license/LICENSE
 cp libs/tomlplusplus/LICENSE SDF/license/LICENSE_tomlplusplus
 

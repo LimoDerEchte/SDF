@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "SDFRecipe.hpp"
+
 #include <UObject.hpp>
 
 #include <functional>
@@ -11,8 +13,6 @@
 
 #include <Windows.h>
 #include <Psapi.h>
-
-#define SDF_HOOK_FAILED (-99)
 
 class SDF {
 public:
@@ -52,6 +52,9 @@ protected:
     virtual int64_t HookCreateAssetInternal(CreateAssetCallbackC callback) = 0;
     virtual void UnhookInternal(int64_t hookId) = 0;
 
+    virtual std::unique_ptr<SDFRecipe> CreateRecipeFactory(const std::string &id, bool modifyMode) = 0;
+    virtual void DeleteCraftingRecipe(const std::string &id) = 0;
+
     static SDF* Get() {
         if (instance == nullptr) {
             HMODULE mods[4096];
@@ -86,25 +89,61 @@ protected:
     }
 
 public:
+    /**
+     * Registers a callback to be invoked every time an SDF event is fired
+     * @param callback This callback is invoked on every event
+     * @return Returns a unique hook id used in SDF::Unhook
+     */
     static int64_t HookEvent(EventCallback callback) {
-        if (Get() == nullptr)
-            return SDF_HOOK_FAILED;
         const auto hookId = Get()->HookEventInternal(InvokeEvent);
         eventCallbacks[hookId] = std::move(callback);
         return hookId;
     }
 
+    /**
+     * Registers a callback to be invoked every time SDF has registered or modified an asset
+     * @param callback This callback is invoked on every event
+     * @return Returns a unique hook id used in SDF::Unhook
+     */
     static int64_t HookCreateAsset(CreateAssetCallback callback) {
-        if (Get() == nullptr)
-            return SDF_HOOK_FAILED;
         const auto hookId = Get()->HookCreateAssetInternal(InvokeCreateAsset);
         createAssetCallbacks[hookId] = std::move(callback);
         return hookId;
     }
 
+    /**
+     * Unregisters a previously registered hook and disposes of the callback
+     * @param hookId The previously obtained hook id
+     */
     static void Unhook(const int64_t hookId) {
         Get()->UnhookInternal(hookId);
         eventCallbacks.erase(hookId);
         createAssetCallbacks.erase(hookId);
+    }
+
+    /**
+     * Creates a builder that can be used for creating a new crafting recipe
+     * @param id The id of the new crafting recipe
+     * @return Returns a builder to construct the new recipe
+     */
+    static std::unique_ptr<SDFRecipe> CreateRecipe(const std::string &id) {
+        return Get()->CreateRecipeFactory(id, false);
+    }
+
+    /**
+     * Creates a builder that can be used for modifying an existing crafting recipe
+     * @param id The id of the existing crafting recipe according to the recipe notation: https://sn2-sdf.dev/generic/notations/#crafting-recipes
+     * @return Returns a builder to modify the existing recipe
+     */
+    static std::unique_ptr<SDFRecipe> ModifyRecipe(const std::string &id) {
+        return Get()->CreateRecipeFactory(id, true);
+    }
+
+    /**
+     * Moves an existing crafting recipe to an invalid category, effectively deleting it in the process
+     * @param id The id of the existing crafting recipe according to the recipe notation: https://sn2-sdf.dev/generic/notations/#crafting-recipes
+     */
+    static void DeleteRecipe(const std::string &id) {
+        Get()->DeleteCraftingRecipe(id);
     }
 };

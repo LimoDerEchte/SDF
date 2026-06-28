@@ -98,11 +98,11 @@ bool CategoryFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
     categoryTextureModified = true;
-    categoryTexture = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
+    categoryTexture = static_cast<SDK::TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
     return true;
 }
 
-void CategoryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
+void CategoryFactory::setIcon(const SDK::TSoftObjectPtr<UTexture2D> &icon) {
     categoryTextureModified = true;
     categoryTexture = icon;
 }
@@ -122,16 +122,16 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
         category->bShowWhenEmpty = showWhenEmpty;
 
     if (!modifyMode || categoryName != "Empty")
-        category->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
+        category->Name_0 = SDK::UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
     if (!modifyMode || categoryDescription != "Empty")
-        category->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
+        category->Description = SDK::UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
     if (categoryTextureModified)
         category->Thumbnail = categoryTexture;
     if (modifyCrafterType)
         category->CraftedBy = crafterType;
 
     if (categoryParent != nullptr)
-        category->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
+        category->ParentCategory = static_cast<SDK::TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
 
     RegistryHelper::AddToRegistry(category, "UWECraftingRecipeCategory");
 

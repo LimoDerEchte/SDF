@@ -39,6 +39,7 @@ add_library(${TARGET} SHARED
         src/Mod.cpp
 
         src/api/cpp/SDF.cpp
+        src/api/cpp/SDFRecipe.cpp
 
         src/api/lua/LuaStatics.cpp
         src/api/lua/SDF.cpp
