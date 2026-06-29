@@ -4,17 +4,28 @@
 
 // Include SDK-relevant types first to prevent collisions
 #include "registering/RecipeFactory.hpp"
+#include "registering/CategoryFactory.hpp"
 
 // Normal headers start here
 #include "SDF.hpp"
 
+#include "SDFCategory.hpp"
 #include "SDFRecipe.hpp"
+#include "util/Finders.hpp"
 
 int64_t SDF_Impl::incrementor = 0;
 SDF_Impl *SDF_Impl::internalInstance = new SDF_Impl();
 
 std::unordered_map<int64_t, SDF::EventCallbackC> SDF_Impl::eventHooks;
 std::unordered_map<int64_t, SDF::CreateAssetCallbackC> SDF_Impl::createAssetHooks;
+
+uint64_t SDF_Impl::GetCurrentVersion() {
+    return CurrentAPIVersion;
+}
+
+uint64_t SDF_Impl::GetLowestSupportedVersion() {
+    return LowestSupportedVersion;
+}
 
 int64_t SDF_Impl::HookEventInternal(EventCallbackC callback) {
     const int64_t id = incrementor++;
@@ -41,6 +52,15 @@ void SDF_Impl::DeleteCraftingRecipe(const std::string &id) {
     RecipeFactory factory(id, true);
     factory.setCategory("Fabricator");
     const auto _ = factory.registerRecipe();
+}
+
+std::unique_ptr<SDFCategory> SDF_Impl::CreateCategoryFactory(const std::string &id, bool modifyMode) {
+    return std::make_unique<SDFCategory_Impl>(id, modifyMode);
+}
+
+void SDF_Impl::DeleteCraftingRecipeCategory(const std::string &id) {
+    const auto cat = Finders::searchRecipeCategory(id);
+    cat->ParentCategory = static_cast<SDK::TSoftObjectPtr<SDK::UUWECraftingRecipeCategory>>(SDK::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr));
 }
 
 SDF_Impl *SDF_Impl::InternalInstance() {

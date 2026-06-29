@@ -4,8 +4,6 @@
 
 #include "SDFRecipe.hpp"
 
-#include "parsing/generic/IconParser.hpp"
-
 SDFRecipe_Impl::SDFRecipe_Impl(const std::string &id, const bool modifyMode) : factory(id, modifyMode) { }
 
 void SDFRecipe_Impl::setName(const std::string &name) {

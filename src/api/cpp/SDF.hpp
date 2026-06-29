@@ -14,12 +14,20 @@ class SDF_Impl final : public SDF {
     static std::unordered_map<int64_t, CreateAssetCallbackC> createAssetHooks;
 
 protected:
+    static constexpr uint64_t LowestSupportedVersion = 1;
+
+    uint64_t GetCurrentVersion() override;
+    uint64_t GetLowestSupportedVersion() override;
+
     int64_t HookEventInternal(EventCallbackC callback) override;
     int64_t HookCreateAssetInternal(CreateAssetCallbackC callback) override;
     void UnhookInternal(int64_t hookId) override;
 
     std::unique_ptr<SDFRecipe> CreateRecipeFactory(const std::string &id, bool modifyMode) override;
     void DeleteCraftingRecipe(const std::string &id) override;
+
+    std::unique_ptr<SDFCategory> CreateCategoryFactory(const std::string &id, bool modifyMode) override;
+    void DeleteCraftingRecipeCategory(const std::string &id) override;
 
 public:
     static SDF_Impl* InternalInstance();
