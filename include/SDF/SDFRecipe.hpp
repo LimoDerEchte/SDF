@@ -129,7 +129,7 @@ public:
 
     /**
      * Executes everything that was executed on this builder
-     * @return Returns either the registered / modified object or nullptr if the creation was too early
+     * @return Returns either the registered / modified object or nullptr if the creation failed due to being executed too early
      */
     [[nodiscard]] virtual RC::Unreal::UObject* createOrModifyRecipe() = 0;
 };

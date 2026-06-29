@@ -5,6 +5,7 @@
 #pragma once
 
 #include "SDFRecipe.hpp"
+#include "SDFCategory.hpp"
 
 #include <UObject.hpp>
 
@@ -16,6 +17,8 @@
 
 class SDF {
 public:
+    static constexpr int CurrentAPIVersion = 1;
+
     enum AssetType {
         Recipe,
         Category,
@@ -48,12 +51,18 @@ protected:
 
     virtual ~SDF() = default;
 
+    virtual uint64_t GetCurrentVersion() = 0;
+    virtual uint64_t GetLowestSupportedVersion() = 0;
+
     virtual int64_t HookEventInternal(EventCallbackC callback) = 0;
     virtual int64_t HookCreateAssetInternal(CreateAssetCallbackC callback) = 0;
     virtual void UnhookInternal(int64_t hookId) = 0;
 
     virtual std::unique_ptr<SDFRecipe> CreateRecipeFactory(const std::string &id, bool modifyMode) = 0;
     virtual void DeleteCraftingRecipe(const std::string &id) = 0;
+
+    virtual std::unique_ptr<SDFCategory> CreateCategoryFactory(const std::string &id, bool modifyMode) = 0;
+    virtual void DeleteCraftingRecipeCategory(const std::string &id) = 0;
 
     static SDF* Get() {
         if (instance == nullptr) {
@@ -64,18 +73,22 @@ protected:
             EnumProcessModules(currentProc, mods, sizeof(mods), &cb);
 
             for (unsigned i = 0; i < cb; i++) {
-                wchar_t modPath[MAX_PATH];
-                GetModuleFileNameExW(currentProc, mods[i], modPath, MAX_PATH);
-
-                if (!std::wstring(modPath).ends_with(L"Mods\\SDF\\dlls\\main.dll"))
-                    continue;
-
                 const auto func = reinterpret_cast<GetterFunc>(GetProcAddress(mods[i], "sdf_get_sdf"));
                 if (func == nullptr)
-                    return nullptr;
+                    continue;
 
                 instance = func();
+                break;
             }
+
+            if (!instance)
+                throw std::runtime_error("Could not acquire SDF C++ API handle");
+
+            if (uint64_t sdfAPIVersion = instance->GetCurrentVersion(); CurrentAPIVersion > sdfAPIVersion)
+                throw std::runtime_error(std::format("SDF API version is too old ({} > {})", CurrentAPIVersion, sdfAPIVersion));
+
+            if (uint64_t lowestAPIVersion = instance->GetLowestSupportedVersion(); CurrentAPIVersion < lowestAPIVersion)
+                throw std::runtime_error(std::format("SDF API does not support this API version anymore ({} < {})", CurrentAPIVersion, lowestAPIVersion));
         }
         return instance;
     }
@@ -145,5 +158,31 @@ public:
      */
     static void DeleteRecipe(const std::string &id) {
         Get()->DeleteCraftingRecipe(id);
+    }
+
+    /**
+     * Creates a builder that can be used for creating a new crafting recipe category
+     * @param id The id of the new crafting recipe category
+     * @return Returns a builder to construct the new category
+     */
+    static std::unique_ptr<SDFCategory> CreateRecipeCategory(const std::string &id) {
+        return Get()->CreateCategoryFactory(id, false);
+    }
+
+    /**
+     * Creates a builder that can be used for modifying an existing crafting recipe category
+     * @param id The id of the existing crafting recipe category according to the category notation: https://sn2-sdf.dev/generic/notations/#crafting-recipe-categories
+     * @return Returns a builder to modify the existing category
+     */
+    static std::unique_ptr<SDFCategory> ModifyRecipeCategory(const std::string &id) {
+        return Get()->CreateCategoryFactory(id, true);
+    }
+
+    /**
+     * Moves an existing crafting recipe category to an invalid category, effectively deleting it in the process
+     * @param id The id of the existing crafting recipe category according to the category notation: https://sn2-sdf.dev/generic/notations/#crafting-recipe-categories
+     */
+    static void DeleteRecipeCategory(const std::string &id) {
+        Get()->DeleteCraftingRecipeCategory(id);
     }
 };
