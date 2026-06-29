@@ -11,7 +11,7 @@ touch SDF/enabled.txt
 
 # Move Files
 cp ./cmake-build-release/SDF.dll SDF/dlls/main.dll
-cp src/api/types SDF
+cp -r src/api/types SDF
 cp LICENSE SDF/license/LICENSE
 cp libs/tomlplusplus/LICENSE SDF/license/LICENSE_tomlplusplus
 
