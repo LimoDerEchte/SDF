@@ -11,6 +11,9 @@
 class SDFRecipe_Lua : RC::LuaMadeSimple::Type::BaseObject {
     static int setName(const RC::LuaMadeSimple::Lua &lua);
     static int setDescription(const RC::LuaMadeSimple::Lua &lua);
+
+    static int setCategory(const RC::LuaMadeSimple::Lua &lua);
+
     static int createOrModifyRecipe(const RC::LuaMadeSimple::Lua &lua);
 
     GenericObjectHeader(SDFRecipe)
