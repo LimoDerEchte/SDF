@@ -4,6 +4,8 @@
 
 #include "SDFRecipe.hpp"
 
+#include "parsing/generic/IconParser.hpp"
+
 SDFRecipe_Impl::SDFRecipe_Impl(const std::string &id, const bool modifyMode) : factory(id, modifyMode) { }
 
 void SDFRecipe_Impl::setName(const std::string &name) {
@@ -20,6 +22,15 @@ void SDFRecipe_Impl::setCategory(const std::string &category) {
 
 void SDFRecipe_Impl::setCategory(RC::Unreal::UObject *category) {
     factory.setCategory(reinterpret_cast<SDK::UUWECraftingRecipeCategory*>(category));
+}
+
+void SDFRecipe_Impl::setIcon(const std::string &icon) {
+    switch (const IconParser parser(icon, ""); parser.getResult()) {
+        case Success:
+            factory.setIcon(parser.getTexture());
+            break;
+        default:
+    }
 }
 
 void SDFRecipe_Impl::setIcon(RC::Unreal::UObject *icon) {

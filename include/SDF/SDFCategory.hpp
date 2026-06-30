@@ -45,6 +45,12 @@ public:
 
     /**
      * Assigns an icon to the crafting recipe category
+     * @param icon An icon according to the icon notation: https://sn2-sdf.dev/generic/icons/
+     */
+    virtual void setIcon(const std::string &icon) = 0;
+
+    /**
+     * Assigns an icon to the crafting recipe category
      * @param icon An object of type Texture2D to use as the categories icon
      */
     virtual void setIcon(RC::Unreal::UObject *icon) = 0;

@@ -21,6 +21,50 @@ std::pair<LuaMadeSimple::Lua*, int> LuaStaticsSDF::make_hook_state(LuaMod *mod) 
     return {mod->m_hook_lua, thread_ref};
 }
 
+std::string LuaStaticsSDF::parse_string_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+    if (!lua.is_string())
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be a string", index, funcName));
+    return std::string(lua.get_string());
+}
+
+int64_t LuaStaticsSDF::parse_int_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+    if (!lua.is_integer())
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be an integer", index, funcName));
+    return lua.get_integer();
+}
+
+double LuaStaticsSDF::parse_double_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+    if (!lua.is_number())
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be an integer", index, funcName));
+    return lua.get_number();
+}
+
+bool LuaStaticsSDF::parse_bool_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+    if (!lua.is_bool())
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be an integer", index, funcName));
+    return lua.get_bool();
+}
+
+std::variant<std::string, Unreal::UObject*> LuaStaticsSDF::parse_string_or_object_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+    if (lua.is_string())
+        return std::string(lua.get_string());
+
+    // TODO: Figure out object read
+
+    lua.throw_error(std::format("Parameter #{} for function '{}' must be a string or UObject", index, funcName));
+    throw new std::runtime_error("Unreachable");
+}
+
+std::variant<std::string, Unreal::UObject *, Unreal::TSoftObjectPtr<>> LuaStaticsSDF::parse_string_or_object_or_ref_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+    if (lua.is_string())
+        return std::string(lua.get_string());
+
+    // TODO: Figure out object and ref read
+
+    lua.throw_error(std::format("Parameter #{} for function '{}' must be a string, UObject or SoftObjectPtr", index, funcName));
+    throw new std::runtime_error("Unreachable");
+}
+
 LuaTypeFactory::LuaTypeFactory(const LuaMadeSimple::Lua &lua) : lua(lua) {
     lua_createtable(lua.get_lua_state(), 0, 0);
 }

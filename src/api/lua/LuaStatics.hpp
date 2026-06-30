@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "SoftObjectPtr.hpp"
 #include "Mod/LuaMod.hpp"
 
 #define GenericObjectHeader(typeName) \
@@ -45,34 +46,19 @@ public:
     static std::pair<LuaMadeSimple::Lua*, int> make_hook_state(LuaMod* mod);
 
     template<typename T>
-    static const T &parse_userdata(const LuaMadeSimple::Lua &lua, const std::string& funcName) {
+    static const T &parse_self(const LuaMadeSimple::Lua &lua, const std::string& funcName) {
         if (!lua.is_userdata())
             lua.throw_error(std::format("Function '{}' must be called as a member function", funcName));
         return lua.get_userdata<T>();
     }
 
-    template<typename T>
-    static std::pair<const T&, std::string> parse_string_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName) {
-        const auto& lua_object = parse_userdata<T>(lua, funcName);
+    static std::string parse_string_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
+    static int64_t parse_int_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
+    static double parse_double_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
+    static bool parse_bool_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
 
-        if (!lua.is_string())
-            lua.throw_error(std::format("Parameter #1 for function '{}' must be a string", funcName));
-
-        return {lua_object, std::string(lua.get_string())};
-    }
-
-    template<typename T>
-    static std::pair<const T&, std::variant<std::string, Unreal::UObject*>> parse_string_or_object_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName) {
-        const auto& lua_object = parse_userdata<T>(lua, funcName);
-
-        if (lua.is_string())
-            return {lua_object, std::string(lua.get_string())};
-
-        // TODO: Figure out object read
-
-        lua.throw_error(std::format("Parameter #1 for function '{}' must be a string or UObject", funcName));
-        throw new std::runtime_error("Unreachable");
-    }
+    static std::variant<std::string, Unreal::UObject*> parse_string_or_object_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
+    static std::variant<std::string, Unreal::UObject*, Unreal::TSoftObjectPtr<>> parse_string_or_object_or_ref_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
 };
 
 class LuaTypeFactory {

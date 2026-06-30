@@ -19,8 +19,11 @@ class IconParser {
     SDK::TSoftObjectPtr<SDK::UTexture2D> texture;
     IconParseResult result;
 
+    void parseInternal(std::string content, const std::string& modName);
+
 public:
     explicit IconParser(toml::node_view<const toml::node> node, const std::string& modName);
+    explicit IconParser(const std::string& content, const std::string& modName);
 
     [[nodiscard]] IconParseResult getResult() const;
     [[nodiscard]] std::string getErrorMessage() const;

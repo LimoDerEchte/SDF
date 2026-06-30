@@ -15,15 +15,7 @@ namespace fs = std::filesystem;
 
 using namespace SDK;
 
-IconParser::IconParser(toml::node_view<const toml::node> node, const std::string& modName)
-    : texture(), result(FailedUnexpected) {
-
-    if (!node.is_string()) {
-        result = InvalidToml;
-        return;
-    }
-    auto content = node.as_string()->get();
-
+void IconParser::parseInternal(std::string content, const std::string &modName) {
     // Default Icon
     if (content == "DEFAULT") {
         const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(Finders::searchTexture("T_DefaultImage"));
@@ -96,6 +88,20 @@ IconParser::IconParser(toml::node_view<const toml::node> node, const std::string
 
     errorMessage = "Invalid path: " + content;
     result = FailedMessage;
+}
+
+IconParser::IconParser(const toml::node_view<const toml::node> node, const std::string& modName)
+    : texture(), result(FailedUnexpected) {
+
+    if (!node.is_string()) {
+        result = InvalidToml;
+        return;
+    }
+    parseInternal(node.as_string()->get(), modName);
+}
+
+IconParser::IconParser(const std::string &content, const std::string &modName) {
+    parseInternal(content, modName);
 }
 
 IconParseResult IconParser::getResult() const {

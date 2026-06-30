@@ -20,6 +20,7 @@ public:
     void setParent(const std::string &category) override;
     void setParent(RC::Unreal::UObject *category) override;
 
+    void setIcon(const std::string &icon) override;
     void setIcon(RC::Unreal::UObject *icon) override;
     void setIcon(const RC::Unreal::TSoftObjectPtr<> &icon) override;
 
