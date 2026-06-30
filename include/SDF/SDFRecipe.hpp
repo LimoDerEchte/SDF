@@ -8,6 +8,9 @@
 
 #include "SoftObjectPtr.hpp"
 
+/**
+ * This class is used to build certain aspects of a crafting recipe before actually creating it, so it is much less manual labor
+ */
 class SDFRecipe {
 public:
     virtual ~SDFRecipe() = default;

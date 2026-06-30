@@ -15,16 +15,25 @@
 #include <Windows.h>
 #include <Psapi.h>
 
+/**
+ * This class represents the heart of the SDF C++ API and provides multiple static functions to use in your code
+ */
 class SDF {
 public:
     static constexpr int CurrentAPIVersion = 1;
 
+    /**
+     * Represents a specific type of asset registered by SDF
+     */
     enum AssetType {
         Recipe,
         Category,
         DatabankEntry,
     };
 
+    /**
+     * Represents a specific kind of event triggered at certain points in the SDF code
+     */
     enum Event {
         PreTraverse,
         PostTraverse,
