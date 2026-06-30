@@ -127,8 +127,11 @@ int SDFRecipe_Lua::setOrderingIndex(const Lua &lua) {
 }
 
 int SDFRecipe_Lua::createOrModifyRecipe(const Lua &lua) {
-    const auto& object = LuaStaticsSDF::parse_self<SDFRecipe_Lua>(lua, "SDFRecipe:createOrModifyRecipe");
-    LuaType::auto_construct_object(lua, object.ref->createOrModifyRecipe());
+    const auto& self = LuaStaticsSDF::parse_self<SDFRecipe_Lua>(lua, "SDFRecipe:createOrModifyRecipe");
+    if (const auto ptr = self.ref->createOrModifyRecipe())
+        LuaType::auto_construct_object(lua, ptr);
+    else
+        lua.set_nil();
     return 1;
 }
 

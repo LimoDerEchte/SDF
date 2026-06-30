@@ -27,29 +27,29 @@ SDF.AssetType = {
 }
 
 --- Registers a callback to be invoked every time an SDF event is fired
----@param Callback fun(event: SDF.Event)
----@return int64
+---@param Callback fun(event: SDF.Event) This callback is invoked on every event
+---@return int64 Returns A unique hook id used in SDF.Unhook
 function SDF.HookEvent(Callback) end
 
 --- Registers a callback to be invoked every time SDF has registered or modified an asset
----@param Callback fun(type: SDF.AssetType, id: string, object: UObject)
----@return int64
+---@param Callback fun(type: SDF.AssetType, id: string, object: UObject) This callback is invoked on every event
+---@return int64 Returns A unique hook id used in SDF.Unhook
 function SDF.HookCreateAsset(Callback) end
 
 --- Unregisters a previously registered hook and disposes of the callback
----@param HookId int64
+---@param HookId int64 The previously obtained hook id
 function SDF.Unhook(HookId) end
 
 --- Creates a builder that can be used for creating a new crafting recipe
----@param RecipeId string
+---@param RecipeId string The id of the new crafting recipe
 ---@return SDFRecipe
 function SDF.CreateRecipe(RecipeId) end
 
 --- Creates a builder that can be used for modifying an existing crafting recipe
----@param RecipeId string
+---@param RecipeId string The id of the existing crafting recipe according to the recipe notation: https://sn2-sdf.dev/generic/notations/#crafting-recipes
 ---@return SDFRecipe
 function SDF.ModifyRecipe(RecipeId) end
 
 --- Moves an existing crafting recipe to an invalid category, effectively deleting it in the process
----@param RecipeId string
+---@param RecipeId string The id of the existing crafting recipe according to the recipe notation: https://sn2-sdf.dev/generic/notations/#crafting-recipes
 function SDF.DeleteRecipe(RecipeId) end
