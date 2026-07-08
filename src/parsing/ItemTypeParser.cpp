@@ -62,7 +62,7 @@ void ItemTypeParser::parseFile(const std::string &mod, const std::string &file, 
             return;
         }
         const auto actorPath = table["actor_path"].as_string()->get();
-        factory.setActor(actorPath);
+        //factory.setActor(actorPath);
     }
 
     if (const auto result = factory.registerItemType(); result == nullptr)

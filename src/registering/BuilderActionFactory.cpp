@@ -4,6 +4,7 @@
 
 #include "registering/BuilderActionFactory.hpp"
 
+#include "FText.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Finders.hpp"
@@ -71,18 +72,18 @@ USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() co
     }
 
     if (modifySecondaryDescription)
-        action->SecondaryDescription = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(secondaryDescription).c_str());
+        *reinterpret_cast<Unreal::FText*>(&action->SecondaryDescription) = Unreal::FText(UtfN::StringToWString(secondaryDescription).c_str());
     else if (!modifyMode)
-        action->SecondaryDescription = UKismetTextLibrary::Conv_StringToText(L"Empty");
+        *reinterpret_cast<Unreal::FText*>(&action->SecondaryDescription) = Unreal::FText(L"Empty");
 
     if (removePowerText) {
-        action->PowerDrainText = UKismetTextLibrary::Conv_StringToText(L"");
-        action->PowerGenerationText = UKismetTextLibrary::Conv_StringToText(L"");
+        *reinterpret_cast<Unreal::FText*>(&action->PowerDrainText) = Unreal::FText(L"");
+        *reinterpret_cast<Unreal::FText*>(&action->PowerGenerationText) = Unreal::FText(L"");
     }
     else if (powerDrainText.has_value())
-        action->PowerDrainText = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(powerDrainText.value()).c_str());
+        *reinterpret_cast<Unreal::FText*>(&action->PowerDrainText) = Unreal::FText(UtfN::StringToWString(powerDrainText.value()).c_str());
     else if (powerGenerationText.has_value())
-        action->PowerGenerationText = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(powerGenerationText.value()).c_str());
+        *reinterpret_cast<Unreal::FText*>(&action->PowerGenerationText) = Unreal::FText(UtfN::StringToWString(powerGenerationText.value()).c_str());
 
     action->Category = base->Category;
     action->EventTag = base->EventTag;

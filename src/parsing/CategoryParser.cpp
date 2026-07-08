@@ -8,8 +8,11 @@
 #include "generic/IconParser.hpp"
 #include "registering/CategoryFactory.hpp"
 #include "util/Log.hpp"
+#include "UKismetSystemLibrary.hpp"
 
 using namespace SDK;
+using namespace RC;
+using namespace Unreal;
 
 std::map<std::string, UUWECraftingRecipeCategory*> CategoryParser::categories{};
 
@@ -150,7 +153,7 @@ void CategoryParser::ParseCategories() {
 
                 CategoryFactory factory(recipeId, true);
                 const auto cat = factory.registerCategory();
-                cat->ParentCategory = static_cast<TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr));
+                *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&cat->ParentCategory) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr);
             }
         }
     }

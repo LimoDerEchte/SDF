@@ -4,6 +4,7 @@
 
 #include "DatabankEntryFactory.hpp"
 
+#include "UKismetSystemLibrary.hpp"
 #include "SDK/UWEStoryGoals_classes.hpp"
 
 #include "util/RegistryHelper.hpp"
@@ -39,7 +40,7 @@ bool DatabankEntryFactory::setIcon(UTexture2D *newIcon) {
     if (newIcon == nullptr)
         return false;
     iconModified = true;
-    icon = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(newIcon));
+    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&icon) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(newIcon));
     return true;
 }
 
@@ -84,18 +85,18 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
     if (iconModified)
         entry->EntryImage = icon;
     if (!modifyMode || title.has_value())
-        entry->EntryTitle = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(title.value_or("Empty")).c_str());
+        *reinterpret_cast<Unreal::FText*>(&entry->EntryTitle) = Unreal::FText(UtfN::StringToWString(title.value_or("Empty")).c_str());
     if (!modifyMode || text.has_value())
-        entry->EntryText = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(text.value_or("Empty")).c_str());
+        *reinterpret_cast<Unreal::FText*>(&entry->EntryText) = Unreal::FText(UtfN::StringToWString(text.value_or("Empty")).c_str());
 
     if (categoriesModified) {
-        const auto categoryList = reinterpret_cast<RC::Unreal::TArray<FText>*>(&entry->Categories);
+        const auto categoryList = reinterpret_cast<Unreal::TArray<Unreal::FText>*>(&entry->Categories);
         if (categoryList->Num() > 0)
             categoryList->Empty();
 
         categoryList->ResizeTo(static_cast<int32_t>(categories.size()));
         for (const auto &category : categories)
-            categoryList->Add(UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(category).c_str()));
+            categoryList->Add(Unreal::FText(UtfN::StringToWString(category).c_str()));
     }
 
     if (unlockConditionModified)

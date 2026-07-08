@@ -15,6 +15,7 @@
 #include "UnrealDef.hpp"
 #include "LuaMadeSimple/LuaMadeSimple.hpp"
 #include "SDK/AssetRegistry_classes.hpp"
+#include "sdk/TempFinders.hpp"
 
 using namespace SDK;
 using namespace RC;
@@ -94,9 +95,9 @@ uintptr_t Hooks::ScanCallMultiPass(uintptr_t address, const std::vector<int> &or
 }
 
 
-#define HookDefScan(name, typeName, funcName, ...) \
-    const auto funcGet##name = U##typeName::StaticClass()->GetFunction(#typeName, funcName); \
-    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->ExecFunction); \
+#define HookDefScan(name, packageName, typeName, funcName, ...) \
+    const auto funcGet##name = reinterpret_cast<Unreal::UClass*>(TempFinders::FindClass(#packageName, #typeName))->GetFunctionByName(L#funcName); \
+    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->GetFuncPtr()); \
     const auto internalPtrGet##name = ScanCallMultiPass(funcPtrGet##name, std::vector{__VA_ARGS__}); \
     Log::Verbose("Found "#name" registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGet##name), reinterpret_cast<void*>(internalPtrGet##name - moduleBase)); \
 
@@ -123,9 +124,9 @@ void Hooks::RegisterHooks() {
 
     const auto moduleBase = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
 
-    HookDefScan(Recipes, SN2AssetRegistry, "GetAllCraftingRecipes", 1);
-    HookDefScan(BuilderActions, SN2AssetRegistry, "GetAllBuilderActions", 1);
-    HookDefScan(DatabankEntries, SN2AssetRegistry, "GetAllDatabankEntries", 1);
+    HookDefScan(Recipes, Subnautica2, SN2AssetRegistry, GetAllCraftingRecipes, 1);
+    HookDefScan(BuilderActions, Subnautica2, SN2AssetRegistry, GetAllBuilderActions, 1);
+    HookDefScan(DatabankEntries, Subnautica2, SN2AssetRegistry, GetAllDatabankEntries, 1);
 
 #ifdef DEVELOPMENT
     const auto assetRegistryVTable = *static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);

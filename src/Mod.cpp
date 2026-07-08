@@ -1,5 +1,4 @@
 
-#include "registering/BioModFactory.hpp"
 #include "parsing/FileTraversal.hpp"
 #include "parsing/BuilderActionParser.hpp"
 #include "parsing/CategoryParser.hpp"
@@ -13,14 +12,16 @@
 #include "api/cpp/SDF.hpp"
 #include "api/lua/SDF.hpp"
 #include "Mod/CppUserModBase.hpp"
+#include "World.hpp"
 
 #include "SDF/Version.hpp"
+#include "sdk/TempFinders.hpp"
 #include "util/Log.hpp"
 
 using namespace RC;
 using namespace Unreal;
 
-class SDF_Mod : public CppUserModBase {
+class SDF_Mod final : public CppUserModBase {
     bool scanning = true;
 
     static void startup();
@@ -66,19 +67,6 @@ void SDF_Mod::startup() {
     SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
 
 #ifdef DEVELOPMENT
-    //RecipeFactory recipe("TestRec", "Test Recipe", "This is a recipe for testing dynamic icons");
-    //recipe.setCategory("CustomCategory");
-    //recipe.addIngredient("Titanium", 2);
-    //recipe.addOutput("Copper", 1);
-
-    //IconBuilder icon{};
-    //icon.addIconFromItem("Copper");
-    //icon.addIconFromItem("Titanium", StepData {
-    //    .x = 10, .y = 10, .width = 64, .height = 64
-    //});
-    //recipe.setIcon(icon.build());
-    //const auto _ = recipe.registerRecipe();
-
     BioModFactory bmf("CustomBioMod", false);
     bmf.setName("Test Bio Mod");
     bmf.setDescription("This bio mod is for testing the ability of SDF to create custom bio mods");
@@ -104,8 +92,8 @@ SDF_Mod::~SDF_Mod() {
 void SDF_Mod::on_update() {
     if (!scanning)
         return;
-    if (const auto world = SDK::UWorld::GetWorld()) {
-        if (world->GetName().contains("ClientLobby")) {
+    if (const auto world = reinterpret_cast<UWorld*>(TempFinders::TryGetWorld())) {
+        if (world->GetName().contains(L"ClientLobby")) {
             scanning = false;
             startup();
         }
@@ -113,5 +101,7 @@ void SDF_Mod::on_update() {
 }
 
 void SDF_Mod::on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
+#ifdef DEVELOPMENT
     SDF_Lua::RegisterLuaTypes(lua);
+#endif
 }

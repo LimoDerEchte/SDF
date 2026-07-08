@@ -6,20 +6,24 @@
 
 #include <filesystem>
 
+#include "UKismetSystemLibrary.hpp"
 #include "toml++/impl/node_view.hpp"
 #include "toml++/impl/value.hpp"
 #include "util/Finders.hpp"
 #include "UnrealDef.hpp"
+#include "sdk/TempFinders.hpp"
 
 namespace fs = std::filesystem;
 
 using namespace SDK;
+using namespace RC;
+using namespace Unreal;
 
 void IconParser::parseInternal(std::string content, const std::string &modName) {
     // Default Icon
     if (content == "DEFAULT") {
-        const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(Finders::searchTexture("T_DefaultImage"));
-        texture = *reinterpret_cast<const TSoftObjectPtr<UTexture2D>*>(&temp);
+        const auto temp = RC::Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(Finders::searchTexture("T_DefaultImage")));
+        texture = *reinterpret_cast<const SDK::TSoftObjectPtr<UTexture2D>*>(&temp);
         result = Success;
         return;
     }
@@ -41,8 +45,8 @@ void IconParser::parseInternal(std::string content, const std::string &modName) 
             errorMessage = "Could not find texture: " + content.substr(5);
             result = FailedMessage;
         } else {
-            const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<UObject*>(ptr));
-            texture = *reinterpret_cast<const TSoftObjectPtr<UTexture2D>*>(&temp);
+            const auto temp = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(ptr);
+            texture = *reinterpret_cast<const SDK::TSoftObjectPtr<UTexture2D>*>(&temp);
             result = Success;
         }
         return;
@@ -74,13 +78,12 @@ void IconParser::parseInternal(std::string content, const std::string &modName) 
             return;
         }
 
-        const auto worldContext = UWorld::GetWorld();
-        if (const auto tex = UKismetRenderingLibrary::ImportFileAsTexture2D(worldContext, UtfN::StringToWString(absolute(actualPath).string()).c_str()); tex == nullptr) {
+        if (const auto tex = TempFinders::ImportFileAsTexture2D(absolute(actualPath).string()); tex == nullptr) {
             errorMessage = "Could not read file: " + actualPath.string();
             result = FailedMessage;
         } else {
-            const auto temp = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(tex);
-            texture = *reinterpret_cast<const TSoftObjectPtr<UTexture2D>*>(&temp);
+            const auto temp = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(tex));
+            texture = *reinterpret_cast<const SDK::TSoftObjectPtr<UTexture2D>*>(&temp);
             result = Success;
         }
         return;
@@ -112,6 +115,6 @@ std::string IconParser::getErrorMessage() const {
     return errorMessage;
 }
 
-TSoftObjectPtr<UTexture2D> IconParser::getTexture() const {
+SDK::TSoftObjectPtr<UTexture2D> IconParser::getTexture() const {
     return texture;
 }

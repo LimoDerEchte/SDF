@@ -4,6 +4,7 @@
 
 #include "registering/CategoryFactory.hpp"
 
+#include "UKismetSystemLibrary.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Log.hpp"
@@ -98,7 +99,7 @@ bool CategoryFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
     categoryTextureModified = true;
-    categoryTexture = static_cast<SDK::TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
+    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&categoryTexture) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(icon));
     return true;
 }
 
@@ -122,16 +123,16 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
         category->bShowWhenEmpty = showWhenEmpty;
 
     if (!modifyMode || categoryName != "Empty")
-        category->Name_0 = SDK::UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
+        *reinterpret_cast<Unreal::FText*>(&category->Name_0) = Unreal::FText(UtfN::StringToWString(categoryName).c_str());
     if (!modifyMode || categoryDescription != "Empty")
-        category->Description = SDK::UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
+        *reinterpret_cast<Unreal::FText*>(&category->Description) = Unreal::FText(UtfN::StringToWString(categoryDescription).c_str());
     if (categoryTextureModified)
         category->Thumbnail = categoryTexture;
     if (modifyCrafterType)
         category->CraftedBy = crafterType;
 
     if (categoryParent != nullptr)
-        category->ParentCategory = static_cast<SDK::TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
+        *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&category->ParentCategory) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(categoryParent));
 
     RegistryHelper::AddToRegistry(category, "UWECraftingRecipeCategory");
 
