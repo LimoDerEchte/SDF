@@ -21,9 +21,15 @@ SDK::UObject *TempFinders::FindDefaultObjectInternal(const std::string &package,
 }
 
 SDK::UClass *TempFinders::FindClass(const std::string &package, const std::string &clazz) {
-    const std::string searchString = "/Script/" + package = "." + clazz;
+    const std::string searchString = "/Script/" + package + "." + clazz;
     const auto found = UObjectGlobals::StaticFindObject(nullptr, nullptr, UtfN::StringToWString(searchString).c_str());
     return reinterpret_cast<SDK::UClass*>(found);
+}
+
+SDK::UFunction *TempFinders::FindFunction(const std::string &package, const std::string &clazz,const std::string &function) {
+    const std::string searchString = "/Script/" + package + "." + clazz + ":" + function;
+    const auto found = UObjectGlobals::StaticFindObject(nullptr, nullptr, UtfN::StringToWString(searchString).c_str());
+    return reinterpret_cast<SDK::UFunction*>(found);
 }
 
 struct KismetRenderingLibrary_ImportFileAsTexture2D final

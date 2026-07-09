@@ -49,7 +49,7 @@ void SDF_Mod::startup() {
 
     Hooks::RegisterHooks();
 
-    /*SDF_Impl::TriggerEvent(SDF::Event::PreTraverse);
+    SDF_Impl::TriggerEvent(SDF::Event::PreTraverse);
     FileTraversal::ScanFiles();
     SDF_Impl::TriggerEvent(SDF::Event::PostTraverse);
 
@@ -68,7 +68,7 @@ void SDF_Mod::startup() {
 
     SDF_Impl::TriggerEvent(SDF::Event::PreDatabankEntry);
     DatabankEntryParser::ParseDatabankEntries();
-    SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);*/
+    SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
 
 #ifdef DEVELOPMENT
     BioModFactory bmf("CustomBioMod", false);

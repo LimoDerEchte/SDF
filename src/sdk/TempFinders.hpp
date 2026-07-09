@@ -11,6 +11,7 @@ class TempFinders {
 
 public:
     static SDK::UClass* FindClass(const std::string &package, const std::string &clazz);
+    static SDK::UFunction* FindFunction(const std::string &package, const std::string &clazz, const std::string &function);
 
     template<class T>
     static T* FindDefaultObject(const std::string &package, const std::string &clazz) {

@@ -96,8 +96,8 @@ uintptr_t Hooks::ScanCallMultiPass(uintptr_t address, const std::vector<int> &or
 
 
 #define HookDefScan(name, packageName, typeName, funcName, ...) \
-    const auto funcGet##name = reinterpret_cast<Unreal::UClass*>(TempFinders::FindClass(#packageName, #typeName))->GetFunctionByName(L#funcName); \
-    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->GetFuncPtr()); \
+    const auto funcGet##name = TempFinders::FindFunction(#packageName, #typeName, #funcName); \
+    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->ExecFunction); \
     const auto internalPtrGet##name = ScanCallMultiPass(funcPtrGet##name, std::vector{__VA_ARGS__}); \
     Log::Verbose("Found "#name" registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGet##name), reinterpret_cast<void*>(internalPtrGet##name - moduleBase)); \
 
