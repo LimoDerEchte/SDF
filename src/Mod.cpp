@@ -12,25 +12,22 @@
 #include "api/cpp/SDF.hpp"
 #include "api/lua/SDF.hpp"
 #include "Mod/CppUserModBase.hpp"
-#include "World.hpp"
+#include "FWorldContext.hpp"
 
 #include "SDF/Version.hpp"
-#include "sdk/TempFinders.hpp"
 #include "util/Log.hpp"
 
 using namespace RC;
 using namespace Unreal;
 
 class SDF_Mod final : public CppUserModBase {
-    bool scanning = true;
-
     static void startup();
 
 public:
     SDF_Mod();
     ~SDF_Mod() override;
 
-    void on_update() override;
+    auto on_unreal_init() -> void override;
     auto on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) -> void override;
 };
 
@@ -40,12 +37,19 @@ MOD_EXPORT inline CppUserModBase* start_mod(){ return new SDF_Mod(); }
 MOD_EXPORT inline void uninstall_mod(const CppUserModBase* mod) { delete mod; }
 }
 
+void SDF_Mod::on_unreal_init() {
+    const Hook::FCallbackOptions common_opts {true, false, STR("SDF"), STR("SDF_Startup")};
+    Hook::RegisterLoadMapPostCallback([this](Hook::TCallbackIterationData<bool>&, UEngine*, FWorldContext&, FURL, UPendingNetGame*, FString&) {
+        startup();
+    }, common_opts);
+}
+
 void SDF_Mod::startup() {
     Log::Verbose("SDF Version {} Initialized", SDFModVersion);
 
     Hooks::RegisterHooks();
 
-    SDF_Impl::TriggerEvent(SDF::Event::PreTraverse);
+    /*SDF_Impl::TriggerEvent(SDF::Event::PreTraverse);
     FileTraversal::ScanFiles();
     SDF_Impl::TriggerEvent(SDF::Event::PostTraverse);
 
@@ -64,7 +68,7 @@ void SDF_Mod::startup() {
 
     SDF_Impl::TriggerEvent(SDF::Event::PreDatabankEntry);
     DatabankEntryParser::ParseDatabankEntries();
-    SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
+    SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);*/
 
 #ifdef DEVELOPMENT
     BioModFactory bmf("CustomBioMod", false);
@@ -84,20 +88,7 @@ SDF_Mod::SDF_Mod() {
 }
 
 SDF_Mod::~SDF_Mod() {
-    if (scanning)
-        return;
     Hooks::UnregisterHooks();
-}
-
-void SDF_Mod::on_update() {
-    if (!scanning)
-        return;
-    if (const auto world = reinterpret_cast<UWorld*>(TempFinders::TryGetWorld())) {
-        if (world->GetName().contains(L"ClientLobby")) {
-            scanning = false;
-            startup();
-        }
-    }
 }
 
 void SDF_Mod::on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {

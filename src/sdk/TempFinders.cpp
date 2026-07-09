@@ -8,6 +8,8 @@
 #include "SDK/Engine_classes.hpp"
 #include "UnrealDef.hpp"
 #include "UObjectGlobals.hpp"
+#include "World.hpp"
+#include "util/Log.hpp"
 
 using namespace RC;
 using namespace Unreal;
@@ -32,8 +34,7 @@ struct KismetRenderingLibrary_ImportFileAsTexture2D final
 };
 
 SDK::UWorld *TempFinders::TryGetWorld() {
-    const auto world = FindDefaultObject<SDK::UWorld>("Engine", "World");
-    return reinterpret_cast<SDK::UWorld*>(reinterpret_cast<Unreal::UObject*>(world)->GetWorld());
+    return reinterpret_cast<SDK::UWorld*>(UWorld::StaticClass()->GetWorld());
 }
 
 SDK::UTexture2D *TempFinders::ImportFileAsTexture2D(const std::string &fileName) {
