@@ -48,7 +48,6 @@ uintptr_t RegistryHelper::StaticConstructTemplateInternal(SDK::UObject *base, co
 void RegistryHelper::AddToRegistry(UUWEPrimaryDataAssetBase *asset, const std::string &type) {
     InitCache();
 
-
     for (auto& pair : assetRegistrySubsystem->CachedDataAssets) {
         if (UtfN::WStringToString(reinterpret_cast<Unreal::UObject*>(pair.First)->GetName()) != type)
             continue;

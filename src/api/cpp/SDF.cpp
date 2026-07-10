@@ -9,6 +9,7 @@
 // Normal headers start here
 #include "SDF.hpp"
 
+#include "FProperty.hpp"
 #include "SDFCategory.hpp"
 #include "SDFRecipe.hpp"
 #include "UKismetSystemLibrary.hpp"
@@ -61,7 +62,7 @@ std::unique_ptr<SDFCategory> SDF_Impl::CreateCategoryFactory(const std::string &
 
 void SDF_Impl::DeleteCraftingRecipeCategory(const std::string &id) {
     const auto cat = Finders::searchRecipeCategory(id);
-    *reinterpret_cast<RC::Unreal::TSoftObjectPtr<>*>(&cat->ParentCategory) = RC::Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr);
+    *reinterpret_cast<RC::Unreal::UObject*>(cat)->GetPropertyByName(L"ParentCategory")->ContainerPtrToValuePtr<RC::Unreal::TSoftObjectPtr<>>(reinterpret_cast<RC::Unreal::UObject *>(cat)) = RC::Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr);
 }
 
 SDF_Impl *SDF_Impl::InternalInstance() {
