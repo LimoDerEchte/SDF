@@ -10,7 +10,18 @@ using namespace RC;
 using namespace Unreal;
 
 class UTexture2D final : public UObject {
+	// Stub Type
 	ClassBase(Engine, Texture2D)
+};
+
+class UStaticMesh final : public UObject {
+	// Stub Type
+	ClassBase(Engine, StaticMesh)
+};
+
+class UMaterialInstance final : public UObject {
+	// Stub Type
+	ClassBase(Engine, MaterialInstance)
 };
 
 class UUWEPrimaryDataAssetBase : public UObject {
@@ -18,6 +29,12 @@ class UUWEPrimaryDataAssetBase : public UObject {
 
     ClassProperty(PublishedStatus, EUWEPublishedStatus)
     ClassProperty(DeveloperNote, FString)
+};
+
+class UUWEScanData final : public UUWEPrimaryDataAssetBase
+{
+	// Stub Type
+	ClassBase(UWEScanner, UWEScanData)
 };
 
 class UUWEStoryGoalRule : public UObject {
@@ -96,13 +113,41 @@ class UUWEStoryGoal final : public UUWEPrimaryDataAssetBase {
 	ClassProperty(StoryGoalUnlocks, TArray<FStoryGoalUnlock>)
 	ClassProperty(UnlockingRequirements, UUWEStoryGoalRule*)
 	ClassProperty(UnlockOnRequirementsMet, bool)
-	ClassProperty(TriggeredDialogue, UUWEDialogueStoryEvent*)
-	ClassProperty(TriggeredNotification, UUWENotificationStoryEvent*)
-	ClassProperty(TriggeredTagStoryEvent, UUWETagStoryEvent*)
+	ClassProperty(TriggeredDialogue, class UUWEDialogueStoryEvent*)
+	ClassProperty(TriggeredNotification, class UUWENotificationStoryEvent*)
+	ClassProperty(TriggeredTagStoryEvent, class UUWETagStoryEvent*)
 	ClassProperty(StoryGroupTag, FGameplayTag)
 	//ClassProperty(PlayerCurrencyRewards, (TMap<FGameplayTag, int32>)) TODO: Figure out maps
 
 	ClassFunctionRet1(IsUnlockingRequirementsSatisfied, bool, AActor*, Actor);
+};
+
+class UUWEStoryEvent : public UUWEPrimaryDataAssetBase {
+	ClassBase(UWEStoryEvents, UWEStoryEvent)
+
+	ClassProperty(IdentifierTag, FGameplayTag)
+};
+
+class UUWEDialogueNode : public UUWEPrimaryDataAssetBase {
+	// Missing Implementations
+	ClassBase(UWEDialogue, UWEDialogueNode)
+};
+
+class UUWEDialogueStoryEvent final : public UUWEStoryEvent {
+	ClassBase(UWEDialogue, UWEDialogueStoryEvent)
+
+	ClassProperty(TriggeredDialogue, TSoftObjectPtr<UUWEDialogueNode>)
+};
+
+class UUWENotificationStoryEvent final : public UUWEStoryEvent {
+	// Stub
+	ClassBase(UWENotifications, UWENotificationStoryEvent)
+};
+
+class UUWETagStoryEvent final : public UUWEStoryEvent {
+	ClassBase(UWEStoryEvents, UWETagStoryEvent)
+
+	ClassProperty(EventTag, FGameplayTag)
 };
 
 class UUWEDatabankEntry : public UUWEPrimaryDataAssetBase {
@@ -117,6 +162,21 @@ class UUWEDatabankEntry : public UUWEPrimaryDataAssetBase {
 	ClassProperty(bCompletesInvestigation, bool);
 
 	ClassFunctionRet0(IsUnlocked, bool);
+};
+
+class UUWECraftingRecipeCategory final : public UUWEPrimaryDataAssetBase
+{
+	ClassBase(UWECrafting, UWECraftingRecipeCategory)
+
+	ClassProperty(Name_0, FText)
+	ClassProperty(Description, FText)
+	ClassProperty(CraftedBy, ECrafterType)
+	ClassProperty(Thumbnail, TSoftObjectPtr<UTexture2D>)
+	ClassProperty(OrderingIndex, int32)
+	ClassProperty(ParentCategory, TSoftObjectPtr<UUWECraftingRecipeCategory>)
+	ClassProperty(bShowWhenEmpty, bool)
+
+	ClassFunctionRet0(GetCrafterText, FText)
 };
 
 class UUWECraftingRecipe final : public UUWEPrimaryDataAssetBase {
@@ -138,17 +198,100 @@ class UUWECraftingRecipe final : public UUWEPrimaryDataAssetBase {
 	ClassProperty(DuplicatesBuilderActionData, bool)
 };
 
-class UUWECraftingRecipeCategory final : public UUWEPrimaryDataAssetBase
+class USN2BuilderActionData : public UUWEPrimaryDataAssetBase
 {
-	ClassBase(UWECrafting, UWECraftingRecipeCategory)
+	ClassBase(Subnautica2, SN2BuilderActionData)
 
-	ClassProperty(Name_0, FText)
 	ClassProperty(Description, FText)
-	ClassProperty(CraftedBy, ECrafterType)
+	ClassProperty(SecondaryDescription, FText)
+	ClassProperty(PowerGenerationText, FText)
+	ClassProperty(PowerDrainText, FText)
 	ClassProperty(Thumbnail, TSoftObjectPtr<UTexture2D>)
+	ClassProperty(Category, EBuilderMenuCategory)
+	ClassProperty(RecipeCategory, TSoftObjectPtr<UUWECraftingRecipeCategory>)
 	ClassProperty(OrderingIndex, int32)
-	ClassProperty(ParentCategory, TSoftObjectPtr<UUWECraftingRecipeCategory>)
-	ClassProperty(bShowWhenEmpty, bool)
+	ClassProperty(EventTag, FGameplayTag)
+	ClassProperty(ShowShowRecipeCategory, bool)
+	ClassProperty(bShowRecipeCategory, bool)
+	ClassProperty(Name_0, FText)
+	ClassProperty(DefaultUnlockState, EUnlockState)
+	ClassProperty(bNotifyOnUnlock, bool)
+	ClassProperty(UpdatedUnlockingRequirements, TArray<FUWERecipeUnlockRules>)
+	ClassProperty(TriggeredDialogue, UUWEDialogueStoryEvent*)
+	ClassProperty(NotificationOverride, FText)
+};
 
-	ClassFunctionRet0(GetCrafterText, FText)
+class USN2BuilderConstructActionData final : public USN2BuilderActionData
+{
+	ClassBase(Subnautica2, SN2BuilderConstructActionData)
+
+	ClassProperty(GhostMeshOverride, TSoftObjectPtr<UStaticMesh>)
+	ClassProperty(RenderGhostOverlaySeparately, bool)
+	ClassProperty(UseGhostCameraOffsetOverride, bool)
+	ClassProperty(GhostCameraOffsetOverride, float)
+	ClassProperty(PlacementParams, FSN2PlacementParams)
+	ClassProperty(TagsToAddDuringPlacement, FGameplayTagContainer)
+	ClassProperty(Recipe, UUWECraftingRecipe*)
+	ClassProperty(bDeconstructOnly, bool);
+	ClassProperty(bSpawnAsDynamicItem, bool);
+};
+
+class UUWEItemType : public UUWEPrimaryDataAssetBase
+{
+	ClassBase(UWEInventory, UWEItemType)
+
+	ClassProperty(TypeTag, FGameplayTag)
+	ClassProperty(ActorClass, TSoftClassPtr<>)
+	ClassProperty(HeldActorClass, TSoftClassPtr<>)
+	ClassProperty(DefaultAttachment, UUWEItemType*)
+	ClassProperty(Name_0, FText)
+	ClassProperty(Thumbnail, TSoftObjectPtr<UTexture2D>)
+	ClassProperty(ItemDescription, FText)
+	ClassProperty(FabricationPreviewMaterialInstance, TSoftObjectPtr<UMaterialInstance>)
+	ClassProperty(PickupDestination, EPickupDestination)
+	ClassProperty(bReequipSameTypeOnRemove, bool)
+	ClassProperty(EquipmentSlot, FGameplayTag)
+	ClassProperty(AttachmentRules, FUWEEquipmentAttachmentRules)
+	ClassProperty(Abilities, TArray<TSoftClassPtr<>>)
+	ClassProperty(RequiredTagsToDrop, FGameplayTagContainer)
+	ClassProperty(BlockingTagsToDrop, FGameplayTagContainer)
+	ClassProperty(RequiredTagsToUse, FGameplayTagContainer)
+	//ClassProperty(PlayerMissingTagWarnings, TMap<struct FGameplayTag, class FText>) TODO
+	ClassProperty(RequiredUseTagsNotMetErrorText, FText)
+	ClassProperty(CapturedAttributes, FGameplayTagContainer)
+	ClassProperty(ConsumeEffects, TArray<TSoftClassPtr<>>)
+	ClassProperty(GameplayTags, FGameplayTagContainer)
+	//ClassProperty(TunableData, TMap<struct FGameplayTag, float>)
+	ClassProperty(PickupCueTag, FGameplayTag)
+	ClassProperty(DropCueTag, FGameplayTag)
+	ClassProperty(EquipCue, FGameplayTag)
+	ClassProperty(FirstEquipCue, FGameplayTag)
+	ClassProperty(UnequipCue, FGameplayTag)
+	ClassProperty(HolsterCue, FGameplayTag)
+	ClassProperty(FailedActivationCue, FGameplayTag)
+	ClassProperty(ItemAcquisitionStoryGoalsRef, TArray<UUWEStoryGoal*>)
+	ClassProperty(EquippedStoryGoals, TArray<UUWEStoryGoal*>)
+	//ClassProperty(ItemAnimation, FUWEItemAnimation*)
+	//ClassProperty(FabricationPreviewMeshData, FUWEFabricationPreviewMeshData*)
+	ClassProperty(bEnergyTool, bool)
+	ClassProperty(bShowNameWhenHovered, bool)
+	ClassProperty(bUseFromInventory, bool)
+	ClassProperty(bInvisibleInFirstPerson, bool)
+	ClassProperty(bTool, bool)
+	ClassProperty(bIsTwoHanded, bool)
+	ClassProperty(bHideTunableDataInConsumableInfo, bool)
+	ClassProperty(bNonSingleton, bool)
+	ClassProperty(CarryableAttachmentTransform, FTransform)
+
+public:
+	TMap<struct FGameplayTag, class FString> GetDefaultCapturedAttributes();
+	class UTexture2D* GetThumbnailFromAttributeMap(const TMap<struct FGameplayTag, class FString>& Map);
+
+	class UClass* GetHeldActorClassLoaded() const;
+	class UClass* GetItemAnimEquippedAnimBlueprintClass() const;
+	struct FUWEFabricationPreviewMeshData GetPreviewMeshData() const;
+	void GetTunableData(const struct FGameplayTag& Tag, float* Value, bool* bFound) const;
+	bool IsEquippable() const;
+	bool IsEquippment() const;
+	void PreloadItemAnimBlueprintClass() const;
 };

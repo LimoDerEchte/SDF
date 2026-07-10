@@ -6,13 +6,11 @@
 
 #include "UObjectGlobals.hpp"
 #include "UObject.hpp"
-
-using namespace SDK;
+#include "UtfN.hpp"
 
 template <UObjectDerived T>
 T *Finders::findObject(const std::wstring &typeName, const std::string &fullName) {
-    const auto item = RC::Unreal::UObjectGlobals::FindObject(typeName.c_str(), UtfN::StringToWString(fullName).c_str());
-    return reinterpret_cast<T*>(item);
+    return UObjectGlobals::FindObject<T>(typeName.c_str(), UtfN::StringToWString(fullName).c_str());
 }
 
 template<UObjectDerived T>
@@ -21,9 +19,8 @@ bool Finders::tryFindObject(const std::wstring &typeName, const std::string &ful
     return *outObject != nullptr;
 }
 
-uintptr_t Finders::searchFirstOfInternal(const std::string &typeId) {
-    const auto item = RC::Unreal::UObjectGlobals::FindFirstOf(UtfN::StringToWString(typeId).c_str());
-    return reinterpret_cast<uintptr_t>(item);
+UObject* Finders::searchFirstOfInternal(const std::string &typeId) {
+    return UObjectGlobals::FindFirstOf(UtfN::StringToWString(typeId).c_str());
 }
 
 UUWEItemType *Finders::searchItem(const std::string &itemId) {
@@ -67,7 +64,7 @@ USN2BuilderConstructActionData *Finders::searchBuilderAction(const std::string &
     return findObject<USN2BuilderConstructActionData>(L"SN2BuilderConstructActionData", "DA_" + dataId);
 }
 
-UUWEBioAbilityData *Finders::searchBioAbilityData(const std::string &abilityName) {
+/*UUWEBioAbilityData *Finders::searchBioAbilityData(const std::string &abilityName) {
     return findObject<UUWEBioAbilityData>(L"UWEBioAbilityData", "DA_" + abilityName + "_BioAbilityData");
 }
 
@@ -75,7 +72,7 @@ UUWECrafterComponent *Finders::searchCrafterComponent(const std::string &compone
     const std::string trueExpr = "/Game/Blueprints/" + componentPath;
     const auto item = RC::Unreal::UObjectGlobals::StaticFindObject(nullptr, nullptr, UtfN::StringToWString(trueExpr).c_str());
     return reinterpret_cast<UUWECrafterComponent*>(item);
-}
+}*/
 
 UTexture2D *Finders::searchTexture(const std::string &textureName) {
     return findObject<UTexture2D>(L"UTexture2D", textureName);

@@ -54,7 +54,7 @@ add_library(${TARGET} SHARED
         src/registering/CategoryFactory.cpp
         src/registering/DatabankEntryFactory.cpp
         src/registering/StoryGoalRuleFactory.cpp
-        src/registering/BioModFactory.cpp
+        #src/registering/BioModFactory.cpp
 
         src/parsing/generic/IconParser.cpp
         src/parsing/generic/StoryGoalRuleParser.cpp
@@ -72,7 +72,7 @@ add_library(${TARGET} SHARED
 )
 
 target_link_libraries(${TARGET} PUBLIC UE4SS)
-target_include_directories(${TARGET} PRIVATE src include ${SDK_INCLUDE} ${HEADER_ONLY_INCLUDE})
+target_include_directories(${TARGET} PRIVATE src include ${HEADER_ONLY_INCLUDE})
 
 #target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
 
