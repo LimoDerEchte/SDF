@@ -10,7 +10,7 @@ class BuilderActionFactory {
     static std::vector<USN2BuilderActionData*> registeredActions;
 
     std::string id;
-    std::string secondaryDescription;
+    std::optional<std::string> secondaryDescription;
 
     std::optional<std::string> powerDrainText, powerGenerationText;
     UUWECraftingRecipe* recipe;
@@ -18,7 +18,6 @@ class BuilderActionFactory {
     bool modifyMode;
     bool removePowerText = false;
     bool recipeModified = false;
-    bool modifySecondaryDescription = false;
 
     friend class Hooks;
 

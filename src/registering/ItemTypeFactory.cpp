@@ -27,7 +27,7 @@ void ItemTypeFactory::setDescription(const std::string &itemDescription) {
     this->itemDescription = itemDescription;
 }
 
-/*bool ItemTypeFactory::setActor(const std::string &actorPath) {
+bool ItemTypeFactory::setActor(const std::string &actorPath) {
     const auto path = UKismetSystemLibrary::MakeSoftClassPath(UtfN::StringToWString(actorPath).c_str());
     setActor(UKismetSystemLibrary::Conv_SoftClassPathToSoftClassRef(path));
     return true;
@@ -44,16 +44,16 @@ bool ItemTypeFactory::setActor(UClass *actorClass) {
 void ItemTypeFactory::setActor(const TSoftClassPtr<UClass> &actorClass) {
     actorClassModified = true;
     this->actorClass = actorClass;
-}*/
+}
 
 bool ItemTypeFactory::setIconFromItem(const std::string &itemId) {
     return setIconFromItem(Finders::searchItem(itemId));
 }
 
-bool ItemTypeFactory::setIconFromItem(const UUWEItemType *item) {
+bool ItemTypeFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    itemTexture = item->Thumbnail;
+    itemTexture = item->GetThumbnail();
     return true;
 }
 
@@ -61,7 +61,7 @@ bool ItemTypeFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
     itemTextureModified = true;
-    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&itemTexture) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(icon));
+    itemTexture = icon;
     return true;
 }
 
@@ -79,21 +79,22 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     if (itemType == nullptr)
         return nullptr;
 
-    *reinterpret_cast<Unreal::FText*>(&itemType->Name_0) = Unreal::FText(UtfN::StringToWString(itemName).c_str());
-    *reinterpret_cast<Unreal::FText*>(&itemType->ItemDescription) = Unreal::FText(UtfN::StringToWString(itemDescription).c_str());
-    itemType->Thumbnail = itemTexture;
+    itemType->SetName_0(FText(UtfN::StringToWString(itemName).c_str()));
+    itemType->SetItemDescription(FText(UtfN::StringToWString(itemDescription).c_str()));
+    itemType->SetThumbnail(itemTexture);
 
-    itemType->FabricationPreviewMaterialInstance = base->FabricationPreviewMaterialInstance;
-    itemType->FabricationPreviewMeshData = base->FabricationPreviewMeshData;
+    itemType->SetFabricationPreviewMaterialInstance(base->GetFabricationPreviewMaterialInstance());
+    itemType->SetFabricationPreviewMeshData(*base->GetFabricationPreviewMeshData());
 
-    /*if (actorClassModified)
-        itemType->ActorClass = actorClass;
-    else if (!modifyMode)*/
-        itemType->ActorClass = base->ActorClass;
+    if (actorClassModified)
+        itemType->SetActorClass(actorClass);
+    else if (!modifyMode)
+        itemType->SetActorClass(*base->GetActorClass());
 
-    itemType->TypeTag = TempFinders::CreateTag(std::format("ItemType.Custom.{}", itemId));
-    itemType->GameplayTags = base->GameplayTags;
-    itemType->TunableData = base->TunableData;
+    itemType->SetTypeTag(FGameplayTag(UtfN::StringToWString(std::format("ItemType.Custom.{}", itemId))));
+    itemType->SetGameplayTags(*base->GetGameplayTags());
+
+    // TODO: Implement Tunable Data
 
     RegistryHelper::AddToRegistry(itemType, "UWEItemType");
 

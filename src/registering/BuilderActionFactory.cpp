@@ -26,7 +26,6 @@ void BuilderActionFactory::setRemovePowerText(const bool removePowerText) {
 
 void BuilderActionFactory::setSecondaryDescription(const std::string &secondaryDescription) {
     this->secondaryDescription = secondaryDescription;
-    modifySecondaryDescription = true;
 }
 
 void BuilderActionFactory::addPowerDrainText(const std::string& text) {
@@ -59,39 +58,37 @@ USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() co
         return nullptr;
 
     if (recipe != nullptr) {
-        action->Name_0 = recipe->Name_0;
-        action->Description = recipe->Description;
-        action->Thumbnail = recipe->Thumbnail;
+        action->SetName_0(*recipe->GetName_0());
+        action->SetDescription(*recipe->GetDescription());
+        action->SetThumbnail(recipe->GetThumbnail());
 
-        action->RecipeCategory = recipe->Category;
-        action->Recipe = recipe;
+        action->SetRecipeCategory(recipe->GetCategory());
+        action->SetRecipe(recipe);
 
-        action->DefaultUnlockState = recipe->DefaultRecipeState == ERecipeState::Unlocked ? EUnlockState::Unlocked : EUnlockState::Locked;
-        action->UpdatedUnlockingRequirements = recipe->UpdatedUnlockingRequirements;
+        action->SetDefaultUnlockState(*recipe->GetDefaultRecipeState() == ERecipeState::Unlocked ? EUnlockState::Unlocked : EUnlockState::Locked);
+        action->SetUpdatedUnlockingRequirements(*recipe->GetUpdatedUnlockingRequirements());
     }
 
-    if (modifySecondaryDescription)
-        *reinterpret_cast<Unreal::FText*>(&action->SecondaryDescription) = Unreal::FText(UtfN::StringToWString(secondaryDescription).c_str());
-    else if (!modifyMode)
-        *reinterpret_cast<Unreal::FText*>(&action->SecondaryDescription) = Unreal::FText(L"Empty");
+    if (modifyMode || secondaryDescription.has_value())
+        action->SetSecondaryDescription(FText(UtfN::StringToWString(secondaryDescription.value_or("Empty")).c_str()));
 
     if (removePowerText) {
-        *reinterpret_cast<Unreal::FText*>(&action->PowerDrainText) = Unreal::FText(L"");
-        *reinterpret_cast<Unreal::FText*>(&action->PowerGenerationText) = Unreal::FText(L"");
+        action->SetPowerDrainText(FText(L""));
+        action->SetPowerGenerationText(FText(L""));
     }
     else if (powerDrainText.has_value())
-        *reinterpret_cast<Unreal::FText*>(&action->PowerDrainText) = Unreal::FText(UtfN::StringToWString(powerDrainText.value()).c_str());
+        action->SetPowerDrainText(FText(UtfN::StringToWString(powerDrainText.value()).c_str()));
     else if (powerGenerationText.has_value())
-        *reinterpret_cast<Unreal::FText*>(&action->PowerGenerationText) = Unreal::FText(UtfN::StringToWString(powerGenerationText.value()).c_str());
+        action->SetPowerGenerationText(FText(UtfN::StringToWString(powerGenerationText.value()).c_str()));
 
-    action->Category = base->Category;
-    action->EventTag = base->EventTag;
+    action->SetCategory(*base->GetCategory());
+    action->SetEventTag(*base->GetEventTag());
 
     // TODO: All after this should be configurable
 
-    action->GhostMeshOverride = base->GhostMeshOverride;
-    action->PlacementParams = base->PlacementParams;
-    action->bSpawnAsDynamicItem = true;
+    action->SetGhostMeshOverride(base->GetGhostMeshOverride());
+    action->SetPlacementParams(*base->GetPlacementParams());
+    action->SetbSpawnAsDynamicItem(true);
 
     registeredActions.push_back(action);
     RegistryHelper::AddToRegistry(action, "SN2BuilderConstructActionData");

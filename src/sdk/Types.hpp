@@ -277,7 +277,7 @@ class UUWEItemType : public UUWEPrimaryDataAssetBase
 	ClassProperty(ItemAcquisitionStoryGoalsRef, TArray<UUWEStoryGoal*>)
 	ClassProperty(EquippedStoryGoals, TArray<UUWEStoryGoal*>)
 	//ClassProperty(ItemAnimation, FUWEItemAnimation*)
-	//ClassProperty(FabricationPreviewMeshData, FUWEFabricationPreviewMeshData*)
+	ClassProperty(FabricationPreviewMeshData, FUWEFabricationPreviewMeshData*)
 	ClassProperty(bEnergyTool, bool)
 	ClassProperty(bShowNameWhenHovered, bool)
 	ClassProperty(bUseFromInventory, bool)

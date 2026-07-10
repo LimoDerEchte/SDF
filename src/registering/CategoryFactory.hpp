@@ -40,7 +40,7 @@ public:
     bool setParent(UUWECraftingRecipeCategory *category);
 
     bool setIconFromItem(const std::string &itemId);
-    bool setIconFromItem(const UUWEItemType *item);
+    bool setIconFromItem(UUWEItemType *item);
     bool setIcon(UTexture2D *icon);
     void setIcon(const TSoftObjectPtr<UTexture2D> &icon);
 

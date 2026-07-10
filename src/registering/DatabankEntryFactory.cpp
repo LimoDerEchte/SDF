@@ -81,14 +81,14 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
         return nullptr;
 
     if (iconModified)
-        entry->EntryImage = icon;
+        entry->SetEntryImage(icon);
     if (!modifyMode || title.has_value())
-        *reinterpret_cast<Unreal::FText*>(&entry->EntryTitle) = Unreal::FText(UtfN::StringToWString(title.value_or("Empty")).c_str());
+        entry->SetEntryTitle(FText(UtfN::StringToWString(title.value_or("Empty")).c_str()));
     if (!modifyMode || text.has_value())
-        *reinterpret_cast<Unreal::FText*>(&entry->EntryText) = Unreal::FText(UtfN::StringToWString(text.value_or("Empty")).c_str());
+        entry->SetEntryText(FText(UtfN::StringToWString(text.value_or("Empty")).c_str()));
 
     if (categoriesModified) {
-        const auto categoryList = reinterpret_cast<Unreal::TArray<Unreal::FText>*>(&entry->Categories);
+        const auto categoryList = entry->GetCategories();
         if (categoryList->Num() > 0)
             categoryList->Empty();
 
@@ -98,14 +98,14 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
     }
 
     if (unlockConditionModified)
-        entry->UnlockingRequirements = unlockCondition;
+        entry->SetUnlockingRequirements(unlockCondition);
     if (hideConditionModified)
-        entry->HideOnStoryGoal = hideCondition;
+        entry->SetHideOnStoryGoal(hideCondition);
 
     RegistryHelper::AddToRegistry(entry, "UWEDatabankEntry");
     registeredDatabankEntries.push_back(entry);
 
     Log::Verbose("Databank entry {}: {}", modifyMode ? "modified" : "registered", id);
-    SDF_Impl::TriggerCreateAsset(SDF::Category, id, reinterpret_cast<Unreal::UObject*>(entry));
+    SDF_Impl::TriggerCreateAsset(SDF::Category, id, entry);
     return entry;
 }

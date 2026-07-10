@@ -104,7 +104,7 @@ UUWEStoryGoal *StoryGoalFactory::registerStoryGoal() {
     if (entry == nullptr)
         return nullptr;
 
-    entry->StoryGoalType = type;
+    entry->SetStoryGoalType(type);
 
     RegistryHelper::AddToRegistry(entry, "UWEStoryGoal");
     registeredStoryGoals.push_back(entry);

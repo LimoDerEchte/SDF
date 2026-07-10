@@ -84,9 +84,32 @@ enum class ERecipeState : uint8
 	ERecipeState_MAX                         = 2,
 };
 
+enum class ERecipeEventTypes : uint8
+{
+	OnPickup                                 = 0,
+	OnFirstScan                              = 5,
+	OnFullScan                               = 10,
+	OnRecipeUnlocked                         = 15,
+	OnDataCardCollected                      = 20,
+	OnEntitlement                            = 25,
+	Custom                                   = 255,
+	ERecipeEventTypes_MAX                    = 256,
+};
+
+enum class ERequirementScope : uint8
+{
+	Global                                   = 0,
+	PlayerSpecific                           = 1,
+	ERequirementScope_MAX                    = 2,
+};
+
 struct FGameplayTag
 {
     FName TagName;
+
+	explicit FGameplayTag(const std::wstring_view &tagName) {
+		TagName = FName(tagName);
+	}
 };
 
 struct FGameplayTagContainer final
@@ -100,6 +123,15 @@ struct FStoryGoalUnlock final
     class UUWEStoryGoal* GoalToUnlockRef;
     float DelayTime;
     uint8 Pad_C[0x4];
+};
+
+struct FUWEFabricationPreviewMeshData final
+{
+	FTransform RelativeTransform;
+	class UStaticMesh* Mesh;
+	class USkeletalMesh* SkeletalMesh;
+	class UMaterialInstance* MaterialInstance;
+	uint8 Pad_78[0x8];
 };
 
 struct FUWEEquipmentAttachmentRules final
@@ -117,6 +149,19 @@ struct FCraftingRecipeOutput final
     uint8 Pad_2C[0x4];
     FVector CollisionCheckSize;
     TArray<TSoftClassPtr<UClass>> ClassesToIgnoreForCollisionCheck;
+};
+
+struct FUWERecipeUnlockRuleEntry final
+{
+	ERecipeEventTypes EventType;
+	uint8 Pad_1[0x3];
+	FGameplayTag EventTrackerVerbTag;
+	ERequirementScope RequirementScope;
+	uint8 Pad_D[0x3];
+	int32 RequiredCount;
+	uint8 Pad_14[0x4];
+	class UUWEPrimaryDataAssetBase* EventAsset;
+	FGameplayTag EventTag;
 };
 
 struct FUWEPrimaryDataAssetBaseArray final

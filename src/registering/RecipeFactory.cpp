@@ -12,7 +12,6 @@
 #include "util/Finders.hpp"
 #include "util/RegistryHelper.hpp"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -52,10 +51,10 @@ bool RecipeFactory::setIconFromItem(const std::string &itemId) {
     return setIconFromItem(Finders::searchItem(itemId));
 }
 
-bool RecipeFactory::setIconFromItem(const UUWEItemType *item) {
+bool RecipeFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    recipeTexture = item->Thumbnail;
+    recipeTexture = item->GetThumbnail();
     return true;
 }
 
@@ -174,21 +173,21 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
         return nullptr;
 
     if (orderingIndexModify)
-        recipe->OrderingIndex = orderingIndex;
+        recipe->SetOrderingIndex(orderingIndex);
 
     if (recipeTextureModified)
-        recipe->Thumbnail = recipeTexture;
+        recipe->SetThumbnail(recipeTexture);
     if (!modifyMode || recipeName != "Empty")
-        *reinterpret_cast<Unreal::FText*>(&recipe->Name_0) = Unreal::FText(UtfN::StringToWString(recipeName).c_str());
+        recipe->SetName_0(FText(UtfN::StringToWString(recipeName).c_str()));
     if (!modifyMode || recipeDescription != "Empty")
-        *reinterpret_cast<Unreal::FText*>(&recipe->Description) = Unreal::FText(UtfN::StringToWString(recipeDescription).c_str());
+        recipe->SetDescription(FText(UtfN::StringToWString(recipeDescription).c_str()));
 
     if (!modifyMode || recipeCategory != nullptr)
-        *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&recipe->Category) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(recipeCategory));
+        recipe->SetCategory(recipeCategory);
     if (!modifyMode || craftingTime != -1)
-        recipe->CraftingTime = craftingTime;
+        recipe->SetCraftingTime(craftingTime);
 
-    const auto requirements = reinterpret_cast<Unreal::TArray<FCraftingRecipeRequirement>*>(&recipe->Requirements);
+    const auto requirements = recipe->GetRequirements();
     if (modifyMode && !ingredients.empty())
         requirements->SetNum(0, EAllowShrinking::Yes);
 
@@ -197,7 +196,7 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
         requirements->Add(ingredient);
     }
 
-    const auto output = reinterpret_cast<Unreal::TArray<FCraftingRecipeOutput>*>(&recipe->Output);
+    const auto output = recipe->GetOutput();
     if (modifyMode && !outputs.empty())
         output->SetNum(0, EAllowShrinking::Yes);
 
@@ -206,45 +205,45 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
         output->Add(out);
     }
 
-    const auto rules = reinterpret_cast<Unreal::TArray<FUWERecipeUnlockRules>*>(&recipe->UpdatedUnlockingRequirements);
+    const auto rules = recipe->GetUpdatedUnlockingRequirements();
     if (modifyMode && (!unlockingRules.empty() || removeRequirementsModify)) {
         rules->SetNum(0, EAllowShrinking::Yes);
-        recipe->DefaultRecipeState = ERecipeState::Unlocked;
+        recipe->SetDefaultRecipeState(ERecipeState::Unlocked);
     }
 
     rules->ResizeTo(rules->Num() + static_cast<int32_t>(unlockingRules.size()));
     for (const auto&[first, second] : unlockingRules) {
         auto rule = FUWERecipeUnlockRules {
-            .Entries = UC::TArray<FUWERecipeUnlockRuleEntry>(),
+            .Entries = TArray<FUWERecipeUnlockRuleEntry>(),
         };
-        *reinterpret_cast<Unreal::FText*>(&rule.RuleName) = Unreal::FText(UtfN::StringToWString(first).c_str());
-        const auto entries = reinterpret_cast<Unreal::TArray<FUWERecipeUnlockRuleEntry>*>(&rule.Entries);
+        rule.RuleName = FText(UtfN::StringToWString(first).c_str());
+
+        const auto entries = &rule.Entries;
         entries->ResizeTo(static_cast<int32_t>(second.size()));
         for (const auto& condition : second) {
             entries->Add(condition);
         }
+
         rules->Add(rule);
-        recipe->DefaultRecipeState = ERecipeState::Locked;
+        recipe->SetDefaultRecipeState(ERecipeState::Locked);
     }
 
     RegistryHelper::AddToRegistry(recipe, "UWECraftingRecipe");
     registeredRecipes.push_back(recipe);
     if (availableInLifePodModify) {
-        const auto staticBrokenFabricator = RC::Unreal::UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Game/Blueprints/Crafting/BP_Fabricator_Lifepod.Default__BP_Fabricator_Lifepod_C:Crafter");
-        const auto lifepodCrafter = reinterpret_cast<UUWECrafterComponent*>(staticBrokenFabricator);
-
-        if (lifepodCrafter == nullptr) {
+        const auto staticBrokenFabricator = UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Game/Blueprints/Crafting/BP_Fabricator_Lifepod.Default__BP_Fabricator_Lifepod_C:Crafter");
+        if (staticBrokenFabricator == nullptr) {
             Log::Warning("Failed to find lifepod fabricator component");
             return recipe;
         }
-        const auto itemList = reinterpret_cast<Unreal::TArray<Unreal::TSoftObjectPtr<>>*>(&lifepodCrafter->AllowedRecipesOverride);
 
+        const auto itemList = staticBrokenFabricator->GetPropertyByName(L"AllowedRecipesOverride")->ContainerPtrToValuePtr<TArray<TSoftObjectPtr<>>>(staticBrokenFabricator);
         if (availableInLifePod) {
-            itemList->Add(Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(recipe)));
+            itemList->Add(recipe);
             registeredRecipesLifePod.push_back(recipe);
         } else if (modifyMode) {
             for (int i = 0; i < itemList->Num(); i++) {
-                if ((*itemList)[i].ToSoftObjectPath().AssetPathName.ToString() != reinterpret_cast<Unreal::UObject*>(recipe)->GetName())
+                if ((*itemList)[i].ToSoftObjectPath().AssetPathName.ToString() != recipe->GetName())
                     continue;
                 itemList->RemoveAt(i);
                 break;
@@ -253,6 +252,6 @@ UUWECraftingRecipe* RecipeFactory::registerRecipe() const {
     }
 
     Log::Verbose("Recipe {}: {}", modifyMode ? "modified" : "registered", recipeId);
-    SDF_Impl::TriggerCreateAsset(SDF::Recipe, recipeId, reinterpret_cast<RC::Unreal::UObject*>(recipe));
+    SDF_Impl::TriggerCreateAsset(SDF::Recipe, recipeId, recipe);
     return recipe;
 }
