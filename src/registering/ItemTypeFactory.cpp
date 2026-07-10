@@ -6,15 +6,11 @@
 
 #include "FText.hpp"
 #include "UKismetSystemLibrary.hpp"
-#include "sdk/TempFinders.hpp"
-#include "UObject.hpp"
 #include "registering/RecipeFactory.hpp"
-#include "UObjectGlobals.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
 #include "util/RegistryHelper.hpp"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -37,7 +33,7 @@ void ItemTypeFactory::setDescription(const std::string &itemDescription) {
     return true;
 }
 
-bool ItemTypeFactory::setActor(SDK::UClass *actorClass) {
+bool ItemTypeFactory::setActor(UClass *actorClass) {
     if (actorClass == nullptr)
         return false;
     actorClassModified = true;
@@ -45,7 +41,7 @@ bool ItemTypeFactory::setActor(SDK::UClass *actorClass) {
     return true;
 }
 
-void ItemTypeFactory::setActor(const TSoftClassPtr<SDK::UClass> &actorClass) {
+void ItemTypeFactory::setActor(const TSoftClassPtr<UClass> &actorClass) {
     actorClassModified = true;
     this->actorClass = actorClass;
 }*/
@@ -69,7 +65,7 @@ bool ItemTypeFactory::setIcon(UTexture2D *icon) {
     return true;
 }
 
-void ItemTypeFactory::setIcon(const SDK::TSoftObjectPtr<UTexture2D> &icon) {
+void ItemTypeFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
     itemTextureModified = true;
     itemTexture = icon;
 }

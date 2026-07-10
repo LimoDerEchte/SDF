@@ -17,6 +17,10 @@ public: \
         const auto found = UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Script/"#Package".Default__"#Name); \
         return reinterpret_cast<U##Name*>(found); \
     } \
+    static UFunction* StaticFunction(const std::wstring &name) { \
+        const auto found = UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Script/"#Package"."#Name":" + name); \
+        return reinterpret_cast<UFunction*>(found); \
+    } \
     \
     bool Is##Name() { \
         /* TODO: Type and Null Check */ \

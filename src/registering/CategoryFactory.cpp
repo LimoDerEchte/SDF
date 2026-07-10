@@ -13,7 +13,6 @@
 #include "util/Finders.hpp"
 #include "util/RegistryHelper.hpp"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -103,7 +102,7 @@ bool CategoryFactory::setIcon(UTexture2D *icon) {
     return true;
 }
 
-void CategoryFactory::setIcon(const SDK::TSoftObjectPtr<UTexture2D> &icon) {
+void CategoryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
     categoryTextureModified = true;
     categoryTexture = icon;
 }

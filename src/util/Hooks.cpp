@@ -6,18 +6,12 @@
 
 #include <memory>
 
-#include "registering/DatabankEntryFactory.hpp"
-#include "util/Log.hpp"
-#include "registering/RecipeFactory.hpp"
-#include "polyhook2/Exceptions/AVehHook.hpp"
-#include "SDK/Subnautica2_classes.hpp"
+#include "Log.hpp"
 #include "registering/BuilderActionFactory.hpp"
-#include "UnrealDef.hpp"
-#include "LuaMadeSimple/LuaMadeSimple.hpp"
-#include "SDK/AssetRegistry_classes.hpp"
-#include "sdk/TempFinders.hpp"
+#include "registering/DatabankEntryFactory.hpp"
+#include "registering/RecipeFactory.hpp"
+#include "Windows.h"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -25,7 +19,7 @@ using namespace Unreal;
     Hooks::get##name##T Hooks::originalGet##name = nullptr; \
     std::unique_ptr<PLH::Detour> Hooks::get##name##Hook = nullptr; \
     \
-    SDK::TArray<type*> Hooks::Get##name##Hook() { \
+    TArray<type*> Hooks::Get##name##Hook() { \
         auto originalEntries = originalGet##name(); \
         const auto entries = reinterpret_cast<Unreal::TArray<type*>*>(&originalEntries); \
         entries->ResizeTo(entries->Num() + static_cast<int32_t>(list.size())); \
@@ -42,35 +36,6 @@ using namespace Unreal;
 HookDefStatic(UUWECraftingRecipe, Recipes, RecipeFactory::registeredRecipes, false)
 HookDefStatic(USN2BuilderActionData, BuilderActions, BuilderActionFactory::registeredActions, false)
 HookDefStatic(UUWEDatabankEntry, DatabankEntries, DatabankEntryFactory::registeredDatabankEntries, false)
-
-#ifdef DEVELOPMENT
-Hooks::getAssetsT Hooks::originalGetAssets = nullptr;
-std::unique_ptr<PLH::Detour> Hooks::getAssetsHook = nullptr;
-
-bool Hooks::GetAssetsHook(void* self, const FARFilter *filter, SDK::TArray<SDK::FAssetData> *out, const bool bSkipARFilteredAsset) {
-    bool ret = originalGetAssets(self, filter, out, bSkipARFilteredAsset);
-
-    if (out)
-        Log::Warning("Result count: {}", out->Num());
-    else
-        Log::Warning("Invalid result array");
-
-    for (const auto name : filter->ClassNames)
-        Log::Warning("Scanning for classname: {}", name.ToString());
-
-    for (const auto asset : filter->ClassPaths) {
-        Log::Warning("Scanning for classpath: {} {}", asset.PackageName.ToString(), asset.AssetName.ToString());
-    }
-
-    for (const auto name : filter->PackageNames)
-        Log::Warning("Scanning for packagename: {}", name.ToString());
-
-    for (const auto name : filter->PackagePaths)
-        Log::Warning("Scanning for packagepath: {}", name.ToString());
-
-    return ret;
-}
-#endif
 
 uintptr_t Hooks::ScanCall(uintptr_t address, int ordinal) {
     while (true) {
@@ -95,9 +60,9 @@ uintptr_t Hooks::ScanCallMultiPass(uintptr_t address, const std::vector<int> &or
 }
 
 
-#define HookDefScan(name, packageName, typeName, funcName, ...) \
-    const auto funcGet##name = TempFinders::FindFunction(#packageName, #typeName, #funcName); \
-    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(*funcGet##name->ExecFunction); \
+#define HookDefScan(name, typeName, funcName, ...) \
+    const auto funcGet##name = U##typeName::StaticFunction(STR(#funcName)); \
+    const auto funcPtrGet##name = reinterpret_cast<uintptr_t>(funcGet##name->GetFuncPtr()); \
     const auto internalPtrGet##name = ScanCallMultiPass(funcPtrGet##name, std::vector{__VA_ARGS__}); \
     Log::Verbose("Found "#name" registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGet##name), reinterpret_cast<void*>(internalPtrGet##name - moduleBase)); \
 
@@ -124,12 +89,12 @@ void Hooks::RegisterHooks() {
 
     const auto moduleBase = reinterpret_cast<uintptr_t>(GetModuleHandle(nullptr));
 
-    HookDefScan(Recipes, Subnautica2, SN2AssetRegistry, GetAllCraftingRecipes, 1);
-    HookDefScan(BuilderActions, Subnautica2, SN2AssetRegistry, GetAllBuilderActions, 1);
-    HookDefScan(DatabankEntries, Subnautica2, SN2AssetRegistry, GetAllDatabankEntries, 1);
+    HookDefScan(Recipes, SN2AssetRegistry, GetAllCraftingRecipes, 1);
+    HookDefScan(BuilderActions, SN2AssetRegistry, GetAllBuilderActions, 1);
+    HookDefScan(DatabankEntries, SN2AssetRegistry, GetAllDatabankEntries, 1);
 
 #ifdef DEVELOPMENT
-    const auto assetRegistryVTable = *static_cast<uintptr_t**>(SDK::UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);
+    const auto assetRegistryVTable = *static_cast<uintptr_t**>(UAssetRegistryHelpers::GetAssetRegistry().InterfacePointer);
 
     const auto internalPtrGetAssets = assetRegistryVTable[10];
     Log::Verbose("Found Assets registry getter at {:p} ({:p})", reinterpret_cast<void*>(internalPtrGetAssets), reinterpret_cast<void*>(internalPtrGetAssets - moduleBase));

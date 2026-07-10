@@ -67,7 +67,7 @@ bool RecipeFactory::setIcon(UTexture2D *icon) {
     return true;
 }
 
-void RecipeFactory::setIcon(const SDK::TSoftObjectPtr<UTexture2D> &icon) {
+void RecipeFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
     recipeTextureModified = true;
     recipeTexture = icon;
 }
@@ -96,7 +96,7 @@ bool RecipeFactory::addOutput(UUWEItemType *item, const int32_t amount) {
         return false;
     auto out = FCraftingRecipeOutput{
         .NumItems = amount,
-        .CollisionCheckSize = SDK::FVector(0, 0, 0),
+        .CollisionCheckSize = FVector(0, 0, 0),
     };
     *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&out.ItemType) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(item)),
     outputs.emplace_back(out);

@@ -6,11 +6,11 @@
 
 #include <string>
 
-#include "SDK/UWECrafting_classes.hpp"
+#include "sdk/Types.hpp"
 
 class CategoryFactory {
     std::string categoryId, categoryName, categoryDescription;
-    SDK::ECrafterType crafterType;
+    ECrafterType crafterType;
     bool rootCategory = true;
 
     int orderingIndex;
@@ -22,9 +22,9 @@ class CategoryFactory {
     bool modifyMode = false;
     bool modifyCrafterType = false;
 
-    SDK::UUWECraftingRecipeCategory* categoryParent = nullptr;
+    UUWECraftingRecipeCategory* categoryParent = nullptr;
     bool categoryTextureModified = false;
-    SDK::TSoftObjectPtr<SDK::UTexture2D> categoryTexture;
+    TSoftObjectPtr<UTexture2D> categoryTexture;
 
 public:
     CategoryFactory(std::string categoryId, bool modifyMode);
@@ -32,17 +32,17 @@ public:
     void setName(const std::string &categoryName);
     void setDescription(const std::string &categoryDescription);
 
-    void setCrafterType(SDK::ECrafterType crafterType);
+    void setCrafterType(ECrafterType crafterType);
     void setOrderingIndex(int orderingIndex);
     void setShowWhenEmpty(bool showWhenEmpty);
 
     bool setParent(const std::string &categoryId);
-    bool setParent(SDK::UUWECraftingRecipeCategory *category);
+    bool setParent(UUWECraftingRecipeCategory *category);
 
     bool setIconFromItem(const std::string &itemId);
-    bool setIconFromItem(const SDK::UUWEItemType *item);
-    bool setIcon(SDK::UTexture2D *icon);
-    void setIcon(const SDK::TSoftObjectPtr<SDK::UTexture2D> &icon);
+    bool setIconFromItem(const UUWEItemType *item);
+    bool setIcon(UTexture2D *icon);
+    void setIcon(const TSoftObjectPtr<UTexture2D> &icon);
 
-    [[nodiscard]] SDK::UUWECraftingRecipeCategory* registerCategory() const;
+    [[nodiscard]] UUWECraftingRecipeCategory* registerCategory() const;
 };

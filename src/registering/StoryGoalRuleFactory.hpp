@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "SDK/UWEStoryGoals_classes.hpp"
+#include "sdk/Types.hpp"
 
 enum StoryGoalRuleType {
     And,
@@ -46,38 +46,38 @@ struct StoryGoalRuleCount : StoryGoalRuleListType {
 };
 
 struct StoryGoalRequiredRule : StoryGoalRule {
-    SDK::UUWEStoryGoal* goal;
+    UUWEStoryGoal* goal;
 
     [[nodiscard]] StoryGoalRuleType type() const override { return Required; }
 };
 
 class StoryGoalRuleFactory {
-    template <typename T, typename = std::enable_if_t<std::is_base_of_v<SDK::UUWEStoryGoalRule, T>>>
-    static T* registerBase(std::string baseId, std::string id, int* incrementor, std::optional<SDK::UObject*> outer);
+    template <typename T, typename = std::enable_if_t<std::is_base_of_v<UUWEStoryGoalRule, T>>>
+    static T* registerBase(std::string baseId, std::string id, int* incrementor, std::optional<UObject*> outer);
 
-    static void addToArray(UC::TArray<SDK::UUWEStoryGoalRule *> *array, const std::vector<std::unique_ptr<StoryGoalRule>> &rules, int *incrementor, std::optional<SDK::UObject*> outer);
+    static void addToArray(TArray<UUWEStoryGoalRule *> *array, const std::vector<std::unique_ptr<StoryGoalRule>> &rules, int *incrementor, std::optional<UObject*> outer);
 
-    static SDK::UUWEStoryGoalRule* registerUnknown(const std::unique_ptr<StoryGoalRule> &rule, int* incrementor, std::optional<SDK::UObject*> outer);
-    static SDK::UUWEStoryGoalRule* registerAnd(const StoryGoalRuleAnd *rule, int *incrementor, std::optional<SDK::UObject *> outer);
-    static SDK::UUWEStoryGoalRule* registerOr(const StoryGoalRuleOr *rule, int *incrementor, std::optional<SDK::UObject *> outer);
-    static SDK::UUWEStoryGoalRule* registerNegate(const StoryGoalRuleNegate *rule, int *incrementor, std::optional<SDK::UObject *> outer);
-    static SDK::UUWEStoryGoalRule* registerCount(const StoryGoalRuleCount *rule, int *incrementor, std::optional<SDK::UObject *> outer);
-    static SDK::UUWEStoryGoalRule* registerRequired(const StoryGoalRequiredRule *rule, int *incrementor, std::optional<SDK::UObject *> outer);
+    static UUWEStoryGoalRule* registerUnknown(const std::unique_ptr<StoryGoalRule> &rule, int* incrementor, std::optional<UObject*> outer);
+    static UUWEStoryGoalRule* registerAnd(const StoryGoalRuleAnd *rule, int *incrementor, std::optional<UObject *> outer);
+    static UUWEStoryGoalRule* registerOr(const StoryGoalRuleOr *rule, int *incrementor, std::optional<UObject *> outer);
+    static UUWEStoryGoalRule* registerNegate(const StoryGoalRuleNegate *rule, int *incrementor, std::optional<UObject *> outer);
+    static UUWEStoryGoalRule* registerCount(const StoryGoalRuleCount *rule, int *incrementor, std::optional<UObject *> outer);
+    static UUWEStoryGoalRule* registerRequired(const StoryGoalRequiredRule *rule, int *incrementor, std::optional<UObject *> outer);
 
 public:
-    static SDK::UUWEStoryGoalRule* registerStoryGoalRule(const std::unique_ptr<StoryGoalRule> &rule);
+    static UUWEStoryGoalRule* registerStoryGoalRule(const std::unique_ptr<StoryGoalRule> &rule);
 };
 
 class StoryGoalFactory {
-    static std::vector<SDK::UUWEStoryGoal*> registeredStoryGoals;
+    static std::vector<UUWEStoryGoal*> registeredStoryGoals;
 
     std::string id;
-    SDK::EStoryGoalTargetType type = SDK::EStoryGoalTargetType::NotSet;
+    EStoryGoalTargetType type = EStoryGoalTargetType::NotSet;
 
 public:
     explicit StoryGoalFactory(const std::string& id);
 
-    void setTargetType(SDK::EStoryGoalTargetType type);
+    void setTargetType(EStoryGoalTargetType type);
 
-    SDK::UUWEStoryGoal* registerStoryGoal();
+    UUWEStoryGoal* registerStoryGoal();
 };

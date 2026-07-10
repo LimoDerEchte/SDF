@@ -4,8 +4,7 @@
 
 #include "DatabankEntryFactory.hpp"
 
-#include "UKismetSystemLibrary.hpp"
-#include "SDK/UWEStoryGoals_classes.hpp"
+#include "UKismetSystemLibrary.hpp"d
 
 #include "util/RegistryHelper.hpp"
 #include "util/Finders.hpp"
@@ -14,7 +13,6 @@
 #include "Containers/Array.hpp"
 #include "api/cpp/SDF.hpp"
 
-using namespace SDK;
 using namespace RC;
 
 std::vector<UUWEDatabankEntry*> DatabankEntryFactory::registeredDatabankEntries;

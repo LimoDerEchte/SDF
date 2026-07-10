@@ -4,17 +4,16 @@
 
 #pragma once
 
-#include "SDK/Subnautica2_classes.hpp"
-#include "SDK/UWECrafting_classes.hpp"
+#include "sdk/Types.hpp"
 
 class BuilderActionFactory {
-    static std::vector<SDK::USN2BuilderActionData*> registeredActions;
+    static std::vector<USN2BuilderActionData*> registeredActions;
 
     std::string id;
     std::string secondaryDescription;
 
     std::optional<std::string> powerDrainText, powerGenerationText;
-    SDK::UUWECraftingRecipe* recipe;
+    UUWECraftingRecipe* recipe;
 
     bool modifyMode;
     bool removePowerText = false;
@@ -33,7 +32,7 @@ public:
     void addPowerGenerationText(const std::string& text);
 
     bool setRecipe(const std::string& recipe);
-    bool setRecipe(SDK::UUWECraftingRecipe* recipe);
+    bool setRecipe(UUWECraftingRecipe* recipe);
 
-    [[nodiscard]] SDK::USN2BuilderConstructActionData* registerBuilderAction() const;
+    [[nodiscard]] USN2BuilderConstructActionData* registerBuilderAction() const;
 };

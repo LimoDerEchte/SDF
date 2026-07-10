@@ -24,6 +24,11 @@ class UMaterialInstance final : public UObject {
 	ClassBase(Engine, MaterialInstance)
 };
 
+class USN2AssetRegistry final : public UObject {
+	// Stub Type
+	ClassBase(Subnautica2, SN2AssetRegistry)
+};
+
 class UUWEPrimaryDataAssetBase : public UObject {
     ClassBase(UWEAssetRegistry, UWEPrimaryDataAssetBase)
 

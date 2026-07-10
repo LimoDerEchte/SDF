@@ -119,6 +119,11 @@ struct FCraftingRecipeOutput final
     TArray<TSoftClassPtr<UClass>> ClassesToIgnoreForCollisionCheck;
 };
 
+struct FUWEPrimaryDataAssetBaseArray final
+{
+	TArray<class UUWEPrimaryDataAssetBase*> Assets;
+};
+
 struct FScheduledStoryGoal final
 {
     UUWEStoryGoal* GoalToUnlock;
