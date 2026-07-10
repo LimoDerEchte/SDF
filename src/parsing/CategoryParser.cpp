@@ -10,10 +10,6 @@
 #include "util/Log.hpp"
 #include "UKismetSystemLibrary.hpp"
 
-using namespace SDK;
-using namespace RC;
-using namespace Unreal;
-
 std::map<std::string, UUWECraftingRecipeCategory*> CategoryParser::categories{};
 
 const std::map<std::string, ECrafterType> craftedByMap = {
@@ -153,7 +149,7 @@ void CategoryParser::ParseCategories() {
 
                 CategoryFactory factory(recipeId, true);
                 const auto cat = factory.registerCategory();
-                *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&cat->ParentCategory) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr);
+                cat->SetParentCategory(nullptr);
             }
         }
     }

@@ -28,8 +28,7 @@ void ItemTypeFactory::setDescription(const std::string &itemDescription) {
 }
 
 bool ItemTypeFactory::setActor(const std::string &actorPath) {
-    const auto path = UKismetSystemLibrary::MakeSoftClassPath(UtfN::StringToWString(actorPath).c_str());
-    setActor(UKismetSystemLibrary::Conv_SoftClassPathToSoftClassRef(path));
+    setActor(TSoftClassPtr(FSoftObjectPath(FString(UtfN::StringToWString(actorPath)))).LoadSynchronous());
     return true;
 }
 
@@ -37,7 +36,7 @@ bool ItemTypeFactory::setActor(UClass *actorClass) {
     if (actorClass == nullptr)
         return false;
     actorClassModified = true;
-    this->actorClass = UKismetSystemLibrary::Conv_ClassToSoftClassReference(actorClass);
+    this->actorClass = actorClass;
     return true;
 }
 
@@ -53,7 +52,7 @@ bool ItemTypeFactory::setIconFromItem(const std::string &itemId) {
 bool ItemTypeFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    itemTexture = item->GetThumbnail();
+    itemTexture = *item->GetThumbnail();
     return true;
 }
 
@@ -83,7 +82,7 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     itemType->SetItemDescription(FText(UtfN::StringToWString(itemDescription).c_str()));
     itemType->SetThumbnail(itemTexture);
 
-    itemType->SetFabricationPreviewMaterialInstance(base->GetFabricationPreviewMaterialInstance());
+    itemType->SetFabricationPreviewMaterialInstance(*base->GetFabricationPreviewMaterialInstance());
     itemType->SetFabricationPreviewMeshData(*base->GetFabricationPreviewMeshData());
 
     if (actorClassModified)

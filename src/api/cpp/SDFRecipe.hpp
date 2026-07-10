@@ -17,23 +17,23 @@ public:
     void setDescription(const std::string &description) override;
 
     void setCategory(const std::string &category) override;
-    void setCategory(RC::Unreal::UObject *category) override;
+    void setCategory(UObject *category) override;
 
     void setIcon(const std::string &icon) override;
-    void setIcon(RC::Unreal::UObject *icon) override;
-    void setIcon(const RC::Unreal::TSoftObjectPtr<> &icon) override;
+    void setIcon(UObject *icon) override;
+    void setIcon(const TSoftObjectPtr<> &icon) override;
 
     void addIngredient(const std::string &ingredient, int32_t amount) override;
-    void addIngredient(RC::Unreal::UObject *ingredient, int32_t amount) override;
+    void addIngredient(UObject *ingredient, int32_t amount) override;
 
     void addOutput(const std::string &output, int32_t amount) override;
-    void addOutput(RC::Unreal::UObject *output, int32_t amount) override;
+    void addOutput(UObject *output, int32_t amount) override;
 
     void addItemPickupUnlockingRequirement(const std::string &setId, const std::string &item) override;
-    void addItemPickupUnlockingRequirement(const std::string &setId, RC::Unreal::UObject *item) override;
+    void addItemPickupUnlockingRequirement(const std::string &setId, UObject *item) override;
 
     void addScanDataUnlockingRequirement(const std::string &setId, const std::string &scanData) override;
-    void addScanDataUnlockingRequirement(const std::string &setId, RC::Unreal::UObject *scanData) override;
+    void addScanDataUnlockingRequirement(const std::string &setId, UObject *scanData) override;
 
     void removeUnlockingRequirements() override;
 
@@ -41,5 +41,5 @@ public:
     void setAvailableInLifepod(bool available) override;
     void setOrderingIndex(int orderingIndex) override;
 
-    [[nodiscard]] RC::Unreal::UObject *createOrModifyRecipe() override;
+    [[nodiscard]] UObject *createOrModifyRecipe() override;
 };

@@ -46,8 +46,6 @@ add_library(${TARGET} SHARED
         src/api/lua/SDF.cpp
         src/api/lua/SDFRecipe.cpp
 
-        src/sdk/TempFinders.cpp
-
         src/registering/RecipeFactory.cpp
         src/registering/ItemTypeFactory.cpp
         src/registering/BuilderActionFactory.cpp

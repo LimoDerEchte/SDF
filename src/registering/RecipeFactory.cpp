@@ -54,7 +54,7 @@ bool RecipeFactory::setIconFromItem(const std::string &itemId) {
 bool RecipeFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    recipeTexture = item->GetThumbnail();
+    recipeTexture = *item->GetThumbnail();
     return true;
 }
 

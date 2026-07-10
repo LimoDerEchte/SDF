@@ -90,7 +90,7 @@ bool CategoryFactory::setIconFromItem(const std::string &itemId) {
 bool CategoryFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    categoryTexture = item->GetThumbnail();
+    categoryTexture = *item->GetThumbnail();
     return true;
 }
 

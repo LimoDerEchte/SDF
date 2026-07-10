@@ -5,10 +5,8 @@
 #include "StoryGoalParser.hpp"
 
 #include "FileTraversal.hpp"
-#include "util/Finders.hpp"
+#include "registering/StoryGoalRuleFactory.hpp"
 #include "util/Log.hpp"
-
-using namespace SDK;
 
 std::map<std::string, UUWEStoryGoal*> StoryGoalParser::storyGoals{};
 

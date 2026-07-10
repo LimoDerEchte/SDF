@@ -24,6 +24,12 @@ class UMaterialInstance final : public UObject {
 	ClassBase(Engine, MaterialInstance)
 };
 
+class UKismetRenderingLibrary final : public UObject {
+	ClassBase(Engine, KismetRenderingLibrary)
+
+	ClassFunctionRet2(ImportFileAsTexture2D, UTexture2D*, UObject*, WorldContextObject, const FString&, Filename)
+};
+
 class USN2AssetRegistry final : public UObject {
 	// Stub Type
 	ClassBase(Subnautica2, SN2AssetRegistry)

@@ -6,11 +6,11 @@
 
 #include <map>
 
-#include "SDK/UWECrafting_classes.hpp"
+#include "sdk/Types.hpp"
 #include "toml++/impl/table.hpp"
 
 class CategoryParser {
-    static std::map<std::string, SDK::UUWECraftingRecipeCategory*> categories;
+    static std::map<std::string, UUWECraftingRecipeCategory*> categories;
 
     static void parseFile(const std::string &mod, const std::string &file, const toml::table &table, bool modifyMode);
 

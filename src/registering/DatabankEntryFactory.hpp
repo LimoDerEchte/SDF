@@ -34,7 +34,7 @@ public:
     void setText(const std::string &newText);
     void addCategory(const std::string &category);
 
-    bool setIcon(UTexture2D *newIcon);
+    bool setIcon(const UTexture2D *newIcon);
     void setIcon(const TSoftObjectPtr<UTexture2D> &newIcon);
 
     bool setUnlockCondition(const std::string &ruleId);

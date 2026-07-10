@@ -2,11 +2,6 @@
 // Created by Limo on 27/06/2026.
 //
 
-// Include SDK-relevant types first to prevent collisions
-#include "registering/RecipeFactory.hpp"
-#include "registering/CategoryFactory.hpp"
-
-// Normal headers start here
 #include "SDF.hpp"
 
 #include "FProperty.hpp"
@@ -14,6 +9,7 @@
 #include "SDFRecipe.hpp"
 #include "UKismetSystemLibrary.hpp"
 #include "util/Finders.hpp"
+#include "registering/RecipeFactory.hpp"
 
 int64_t SDF_Impl::incrementor = 0;
 SDF_Impl *SDF_Impl::internalInstance = new SDF_Impl();
@@ -62,7 +58,7 @@ std::unique_ptr<SDFCategory> SDF_Impl::CreateCategoryFactory(const std::string &
 
 void SDF_Impl::DeleteCraftingRecipeCategory(const std::string &id) {
     const auto cat = Finders::searchRecipeCategory(id);
-    *reinterpret_cast<RC::Unreal::UObject*>(cat)->GetPropertyByName(L"ParentCategory")->ContainerPtrToValuePtr<RC::Unreal::TSoftObjectPtr<>>(reinterpret_cast<RC::Unreal::UObject *>(cat)) = RC::Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(nullptr);
+    cat->SetParentCategory(nullptr);
 }
 
 SDF_Impl *SDF_Impl::InternalInstance() {
@@ -74,7 +70,7 @@ void SDF_Impl::TriggerEvent(const Event event) {
         callback(hookId, event);
 }
 
-void SDF_Impl::TriggerCreateAsset(const AssetType type, const std::string &id, RC::Unreal::UObject *asset) {
+void SDF_Impl::TriggerCreateAsset(const AssetType type, const std::string &id, UObject *asset) {
     for (const auto [hookId, callback]: createAssetHooks)
         callback(hookId, type, id, asset);
 }

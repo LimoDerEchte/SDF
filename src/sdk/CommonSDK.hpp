@@ -60,3 +60,20 @@ public: \
         ProcessEvent(GetFunctionByName(L#Name), &params); \
         return params.ReturnValue; \
     }
+
+
+#define ClassFunctionRet2(Name, T, T1, N1, T2, N2) \
+    struct Name##_Params { \
+        T1 n1; \
+        T2 n2; \
+        T ReturnValue; \
+    }; \
+    \
+    T Invoke##Name(T1 N1, T2 N2) { \
+        Name##_Params params { \
+            .n1 = N1, \
+            .n2 = N2, \
+        }; \
+        ProcessEvent(GetFunctionByName(L#Name), &params); \
+        return params.ReturnValue; \
+    }

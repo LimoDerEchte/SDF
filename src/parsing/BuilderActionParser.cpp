@@ -9,8 +9,6 @@
 #include "registering/BuilderActionFactory.hpp"
 #include "util/Log.hpp"
 
-using namespace SDK;
-
 std::map<std::string, USN2BuilderConstructActionData*> BuilderActionParser::builderActions{};
 
 void BuilderActionParser::parseFile(const std::string &mod, const std::string &file, const toml::table &table, const bool modifyMode) {

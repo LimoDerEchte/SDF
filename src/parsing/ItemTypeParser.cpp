@@ -9,8 +9,6 @@
 #include "registering/ItemTypeFactory.hpp"
 #include "util/Log.hpp"
 
-using namespace SDK;
-
 std::map<std::string, UUWEItemType*> ItemTypeParser::itemTypes{};
 
 

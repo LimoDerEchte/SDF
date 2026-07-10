@@ -107,6 +107,8 @@ struct FGameplayTag
 {
     FName TagName;
 
+	FGameplayTag() = default;
+
 	explicit FGameplayTag(const std::wstring_view &tagName) {
 		TagName = FName(tagName);
 	}
@@ -154,19 +156,19 @@ struct FCraftingRecipeOutput final
 struct FUWERecipeUnlockRuleEntry final
 {
 	ERecipeEventTypes EventType;
-	uint8 Pad_1[0x3];
+	uint8 Pad_1[0x3]{};
 	FGameplayTag EventTrackerVerbTag;
 	ERequirementScope RequirementScope;
-	uint8 Pad_D[0x3];
+	uint8 Pad_D[0x3]{};
 	int32 RequiredCount;
-	uint8 Pad_14[0x4];
+	uint8 Pad_14[0x4]{};
 	class UUWEPrimaryDataAssetBase* EventAsset;
 	FGameplayTag EventTag;
 };
 
 struct FUWEPrimaryDataAssetBaseArray final
 {
-	TArray<class UUWEPrimaryDataAssetBase*> Assets;
+	TArray<UUWEPrimaryDataAssetBase*> Assets;
 };
 
 struct FScheduledStoryGoal final
@@ -179,7 +181,15 @@ struct FScheduledStoryGoal final
 struct FUWERecipeUnlockRules final
 {
 	FText RuleName;
-	TArray<struct FUWERecipeUnlockRuleEntry> Entries;
+	TArray<FUWERecipeUnlockRuleEntry> Entries;
+};
+
+struct FSN2SnappingSocket final
+{
+	FString SocketTag;
+	bool UseSocketRotation;
+	uint8 Pad_11[0xF];
+	FTransform Offset;
 };
 
 struct FCraftingRecipeRequirement final

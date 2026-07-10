@@ -4,7 +4,7 @@
 
 #include "DatabankEntryFactory.hpp"
 
-#include "UKismetSystemLibrary.hpp"d
+#include "UKismetSystemLibrary.hpp"
 
 #include "util/RegistryHelper.hpp"
 #include "util/Finders.hpp"
@@ -34,11 +34,11 @@ void DatabankEntryFactory::addCategory(const std::string &category) {
     categories.push_back(category);
 }
 
-bool DatabankEntryFactory::setIcon(UTexture2D *newIcon) {
+bool DatabankEntryFactory::setIcon(const UTexture2D *newIcon) {
     if (newIcon == nullptr)
         return false;
     iconModified = true;
-    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&icon) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(newIcon));
+    icon = newIcon;
     return true;
 }
 

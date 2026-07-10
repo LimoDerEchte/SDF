@@ -4,14 +4,11 @@
 
 #include "parsing/DatabankEntryParser.hpp"
 
-#include "fmt/std.h"
 #include "parsing/FileTraversal.hpp"
 #include "generic/IconParser.hpp"
 #include "generic/StoryGoalRuleParser.hpp"
 #include "registering/DatabankEntryFactory.hpp"
 #include "util/Log.hpp"
-
-using namespace SDK;
 
 std::map<std::string, UUWEDatabankEntry*> DatabankEntryParser::databankEntries{};
 

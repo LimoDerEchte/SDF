@@ -60,9 +60,9 @@ USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() co
     if (recipe != nullptr) {
         action->SetName_0(*recipe->GetName_0());
         action->SetDescription(*recipe->GetDescription());
-        action->SetThumbnail(recipe->GetThumbnail());
+        action->SetThumbnail(*recipe->GetThumbnail());
 
-        action->SetRecipeCategory(recipe->GetCategory());
+        action->SetRecipeCategory(*recipe->GetCategory());
         action->SetRecipe(recipe);
 
         action->SetDefaultUnlockState(*recipe->GetDefaultRecipeState() == ERecipeState::Unlocked ? EUnlockState::Unlocked : EUnlockState::Locked);
@@ -86,7 +86,7 @@ USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() co
 
     // TODO: All after this should be configurable
 
-    action->SetGhostMeshOverride(base->GetGhostMeshOverride());
+    action->SetGhostMeshOverride(*base->GetGhostMeshOverride());
     action->SetPlacementParams(*base->GetPlacementParams());
     action->SetbSpawnAsDynamicItem(true);
 

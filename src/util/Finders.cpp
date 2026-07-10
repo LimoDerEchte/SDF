@@ -10,7 +10,8 @@
 
 template <UObjectDerived T>
 T *Finders::findObject(const std::wstring &typeName, const std::string &fullName) {
-    return UObjectGlobals::FindObject<T>(typeName.c_str(), UtfN::StringToWString(fullName).c_str());
+    const auto result = UObjectGlobals::FindObject(typeName.c_str(), UtfN::StringToWString(fullName).c_str());
+    return reinterpret_cast<T*>(result);
 }
 
 template<UObjectDerived T>
