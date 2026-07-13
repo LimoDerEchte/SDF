@@ -5,6 +5,9 @@
 #include "LuaStatics.hpp"
 
 #include "LuaType/LuaFSoftObjectPath.hpp"
+#include "LuaType/LuaTSoftObjectPtr.hpp"
+#include "SDK/CoreUObject_classes.hpp"
+#include "util/Log.hpp"
 
 int LuaStaticsSDF::ensure_hook_thread_exists(LuaMod *mod) {
     if (mod->m_hook_lua == nullptr)
@@ -35,13 +38,13 @@ int64_t LuaStaticsSDF::parse_int_arg(const LuaMadeSimple::Lua &lua, const std::s
 
 double LuaStaticsSDF::parse_double_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
     if (!lua.is_number())
-        lua.throw_error(std::format("Parameter #{} for function '{}' must be an integer", index, funcName));
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be a floating point number", index, funcName));
     return lua.get_number();
 }
 
 bool LuaStaticsSDF::parse_bool_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
     if (!lua.is_bool())
-        lua.throw_error(std::format("Parameter #{} for function '{}' must be an integer", index, funcName));
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be a boolean", index, funcName));
     return lua.get_bool();
 }
 
@@ -49,20 +52,38 @@ std::variant<std::string, Unreal::UObject*> LuaStaticsSDF::parse_string_or_objec
     if (lua.is_string())
         return std::string(lua.get_string());
 
-    // TODO: Figure out object read
+    if (!lua.is_userdata())
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be a string, UObject or reference", index, funcName));
 
-    lua.throw_error(std::format("Parameter #{} for function '{}' must be a string or UObject", index, funcName));
-    throw new std::runtime_error("Unreachable");
+    const auto& userdata = lua.get_userdata<LuaType::UE4SSBaseObject>(1, true);
+    const auto name = std::string_view(userdata.get_object_name());
+
+    if (name == "UObject")
+        return reinterpret_cast<Unreal::UObject*>(userdata.get_remote_cpp_object());
+
+    if (name == "TSoftObjectPtr")
+        return reinterpret_cast<Unreal::TSoftObjectPtr<>*>(userdata.get_remote_cpp_object())->LoadSynchronous();
+
+    lua.throw_error(std::format("Parameter #{} for function '{}' must be a string, UObject or reference", index, funcName));
+    throw std::runtime_error("Unreachable");
 }
 
-std::variant<std::string, Unreal::UObject *, Unreal::TSoftObjectPtr<>> LuaStaticsSDF::parse_string_or_object_or_ref_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
+std::variant<std::string, Unreal::UObject*> LuaStaticsSDF::parse_string_or_object_or_ref_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
     if (lua.is_string())
         return std::string(lua.get_string());
 
-    // TODO: Figure out object and ref read
+    if (!lua.is_userdata())
+        lua.throw_error(std::format("Parameter #{} for function '{}' must be a string, UObject or SoftObjectPtr", index, funcName));
+    const auto& userdata = lua.get_userdata<LuaType::UE4SSBaseObject>(1, true);
 
-    lua.throw_error(std::format("Parameter #{} for function '{}' must be a string, UObject or SoftObjectPtr", index, funcName));
-    throw new std::runtime_error("Unreachable");
+    if (std::string_view(userdata.get_object_name()) == "UObject")
+        return lua.get_userdata<LuaType::UObject>().get_remote_cpp_object();
+
+
+    Log::Warning("{}", userdata.get_object_name());
+
+    //throw std::runtime_error(std::format("Parameter #{} for function '{}' must be a string, UObject or SoftObjectPtr", index, funcName));
+    return nullptr;
 }
 
 LuaTypeFactory::LuaTypeFactory(const LuaMadeSimple::Lua &lua) : lua(lua) {
