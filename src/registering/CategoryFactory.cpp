@@ -90,7 +90,7 @@ bool CategoryFactory::setIconFromItem(const std::string &itemId) {
 bool CategoryFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    categoryTexture = *item->GetThumbnail();
+    categoryTexture = item->GetThumbnail()->LoadSynchronous();
     return true;
 }
 
@@ -98,13 +98,8 @@ bool CategoryFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
     categoryTextureModified = true;
-    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&categoryTexture) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(icon));
-    return true;
-}
-
-void CategoryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
-    categoryTextureModified = true;
     categoryTexture = icon;
+    return true;
 }
 
 UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
@@ -125,13 +120,13 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
         category->SetName_0(FText(UtfN::StringToWString(categoryName).c_str()));
     if (!modifyMode || categoryDescription != "Empty")
         category->SetDescription(FText(UtfN::StringToWString(categoryDescription).c_str()));
-    if (categoryTextureModified)
-        category->SetThumbnail(categoryTexture);
+    //if (categoryTextureModified)
+    //    category->SetThumbnail(categoryTexture);
     if (modifyCrafterType)
         category->SetCraftedBy(crafterType);
 
-    if (categoryParent != nullptr)
-        category->SetParentCategory(categoryParent);
+    //if (categoryParent != nullptr)
+    //    category->SetParentCategory(categoryParent);
 
     RegistryHelper::AddToRegistry(category, "UWECraftingRecipeCategory");
 

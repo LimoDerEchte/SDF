@@ -41,10 +41,6 @@ void SDFCategory_Impl::setIcon(UObject *icon) {
     factory.setIcon(reinterpret_cast<UTexture2D*>(icon));
 }
 
-void SDFCategory_Impl::setIcon(const TSoftObjectPtr<> &icon) {
-    factory.setIcon(reinterpret_cast<const TSoftObjectPtr<UTexture2D>&>(icon));
-}
-
 void SDFCategory_Impl::setOrderingIndex(const int orderingIndex) {
     factory.setOrderingIndex(orderingIndex);
 }

@@ -56,12 +56,6 @@ public:
     virtual void setIcon(RC::Unreal::UObject *icon) = 0;
 
     /**
-     * Assigns an icon to the crafting recipe category
-     * @param icon A soft object reference to an object of type Texture2D to use as the categories icon
-     */
-    virtual void setIcon(const RC::Unreal::TSoftObjectPtr<> &icon) = 0;
-
-    /**
      * Sets the categories ordering index, that decides the order the categories are shown in - The higher the ordering index, the lower the category will be
      * @param orderingIndex Ordering index to assign
      */

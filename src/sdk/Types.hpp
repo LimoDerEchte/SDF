@@ -182,9 +182,26 @@ class UUWECraftingRecipeCategory final : public UUWEPrimaryDataAssetBase
 	ClassProperty(Name_0, FText)
 	ClassProperty(Description, FText)
 	ClassProperty(CraftedBy, ECrafterType)
-	ClassProperty(Thumbnail, TSoftObjectPtr<UTexture2D>)
+	//ClassSoftProperty(Thumbnail, UTexture2D)
+	TSoftObjectPtr<UTexture2D> *GetThumbnail() {
+		Log::Verbose("Test ""Thumbnail"": {:p}", (void *) this);
+		Log::Verbose("Test ""Thumbnail"": {:p}", (void *) GetPropertyByName(L"Thumbnail"));
+		const auto ret = GetPropertyByName(L"Thumbnail")->ContainerPtrToValuePtr<TSoftObjectPtr<>>(this);
+		Log::Verbose("etuujoos {:p}", (void*)ret);
+		const auto ret2 = GetPropertyByName(L"Thumbnail")->ContainerPtrToValuePtr<TSoftObjectPtr<UTexture2D>>(this);
+		Log::Verbose("sudhosdg {:p}", (void*)ret2);
+		return ret2;
+	}
+
+	void SetThumbnail(const UTexture2D *value) {
+		Log::Verbose("Test 1 ""Thumbnail"": {:p}", (void *) GetThumbnail());
+		Log::Verbose("Test 2 ""Thumbnail"": {:p}", (void *) GetThumbnail());
+		//*GetPropertyByName(L"Thumbnail")->ContainerPtrToValuePtr<TSoftObjectPtr<>>(this) = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(value);
+		GetThumbnail()->Reset();
+		GetThumbnail()->operator=(value);
+	}
 	ClassProperty(OrderingIndex, int32)
-	ClassProperty(ParentCategory, TSoftObjectPtr<UUWECraftingRecipeCategory>)
+	ClassSoftProperty(ParentCategory, UUWECraftingRecipeCategory)
 	ClassProperty(bShowWhenEmpty, bool)
 
 	ClassFunctionRet0(GetCrafterText, FText)

@@ -54,20 +54,20 @@ void SDF_Mod::startup() {
     SDF_Impl::TriggerEvent(SDF::Event::PostTraverse);
 
     StoryGoalParser::ParseStoryGoals();
-    ItemTypeParser::ParseItemTypes();
+    //ItemTypeParser::ParseItemTypes();
 
     SDF_Impl::TriggerEvent(SDF::Event::PreCategory);
     CategoryParser::ParseCategories();
     SDF_Impl::TriggerEvent(SDF::Event::PostCategory);
 
     SDF_Impl::TriggerEvent(SDF::Event::PreRecipe);
-    RecipeParser::ParseRecipes();
+    //RecipeParser::ParseRecipes();
     SDF_Impl::TriggerEvent(SDF::Event::PostRecipe);
 
-    BuilderActionParser::ParseBuilderActions();
+    //BuilderActionParser::ParseBuilderActions();
 
     SDF_Impl::TriggerEvent(SDF::Event::PreDatabankEntry);
-    DatabankEntryParser::ParseDatabankEntries();
+    //DatabankEntryParser::ParseDatabankEntries();
     SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
 
 #ifdef DEVELOPMENT

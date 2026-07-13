@@ -24,7 +24,7 @@ class CategoryFactory {
 
     UUWECraftingRecipeCategory* categoryParent = nullptr;
     bool categoryTextureModified = false;
-    TSoftObjectPtr<UTexture2D> categoryTexture;
+    UTexture2D* categoryTexture;
 
 public:
     CategoryFactory(std::string categoryId, bool modifyMode);
@@ -42,7 +42,6 @@ public:
     bool setIconFromItem(const std::string &itemId);
     bool setIconFromItem(UUWEItemType *item);
     bool setIcon(UTexture2D *icon);
-    void setIcon(const TSoftObjectPtr<UTexture2D> &icon);
 
     [[nodiscard]] UUWECraftingRecipeCategory* registerCategory() const;
 };

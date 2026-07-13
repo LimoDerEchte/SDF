@@ -22,7 +22,6 @@ public:
 
     void setIcon(const std::string &icon) override;
     void setIcon(UObject *icon) override;
-    void setIcon(const TSoftObjectPtr<> &icon) override;
 
     void setOrderingIndex(int orderingIndex) override;
 

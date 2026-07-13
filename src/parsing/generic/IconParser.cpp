@@ -6,7 +6,6 @@
 
 #include <filesystem>
 
-#include "UKismetSystemLibrary.hpp"
 #include "toml++/impl/node_view.hpp"
 #include "toml++/impl/value.hpp"
 #include "util/Finders.hpp"
@@ -32,7 +31,7 @@ void IconParser::parseInternal(std::string content, const std::string &modName) 
             errorMessage = "Could not find item: " + content.substr(5);
             result = FailedMessage;
         } else {
-            texture = *item->GetThumbnail();
+            texture = item->GetThumbnail()->LoadSynchronous();
             result = Success;
         }
         return;
@@ -43,7 +42,7 @@ void IconParser::parseInternal(std::string content, const std::string &modName) 
             errorMessage = "Could not find texture: " + content.substr(5);
             result = FailedMessage;
         } else {
-            texture = ptr;
+            texture = reinterpret_cast<UTexture2D*>(ptr);
             result = Success;
         }
         return;
@@ -111,6 +110,6 @@ std::string IconParser::getErrorMessage() const {
     return errorMessage;
 }
 
-TSoftObjectPtr<UTexture2D> IconParser::getTexture() const {
+UTexture2D* IconParser::getTexture() const {
     return texture;
 }

@@ -4,8 +4,10 @@
 
 #pragma once
 
+#include "UKismetSystemLibrary.hpp"
 #include "FProperty.hpp"
 #include "UObject.hpp"
+#include "util/Log.hpp"
 
 #define ClassBase(Package, Name) \
 public: \
@@ -33,6 +35,18 @@ public: \
     \
     void Set##Name(T value) { \
         *Get##Name() = value; \
+    }
+
+#define ClassSoftProperty(Name, T) \
+    TSoftObjectPtr<T>* Get##Name() { \
+        Log::Verbose("Test "#Name": {:p}", (void*)this);\
+        Log::Verbose("Test "#Name": {:p}", (void*)GetPropertyByName(L#Name));\
+        return GetPropertyByName(L#Name)->ContainerPtrToValuePtr<TSoftObjectPtr<T>>(this); \
+    } \
+    \
+    void Set##Name(T* value) { \
+        Log::Verbose("Test "#Name": {:p}", (void*)Get##Name());\
+        *GetPropertyByName(L#Name)->ContainerPtrToValuePtr<TSoftObjectPtr<>>(this) = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(value); \
     }
 
 #define ClassFunctionRet0(Name, T) \

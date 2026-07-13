@@ -16,7 +16,7 @@ enum IconParseResult {
 
 class IconParser {
     std::string errorMessage;
-    TSoftObjectPtr<UTexture2D> texture;
+    UTexture2D* texture;
     IconParseResult result;
 
     void parseInternal(std::string content, const std::string& modName);
@@ -27,5 +27,5 @@ public:
 
     [[nodiscard]] IconParseResult getResult() const;
     [[nodiscard]] std::string getErrorMessage() const;
-    [[nodiscard]] TSoftObjectPtr<UTexture2D> getTexture() const;
+    [[nodiscard]] UTexture2D* getTexture() const;
 };
