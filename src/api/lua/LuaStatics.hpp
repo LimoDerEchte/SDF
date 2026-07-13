@@ -58,7 +58,6 @@ public:
     static bool parse_bool_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
 
     static std::variant<std::string, Unreal::UObject*> parse_string_or_object_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
-    static std::variant<std::string, Unreal::UObject*, Unreal::TSoftObjectPtr<>> parse_string_or_object_or_ref_arg(const LuaMadeSimple::Lua &lua, const std::string& funcName, int index);
 };
 
 class LuaTypeFactory {

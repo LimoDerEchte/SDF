@@ -8,6 +8,9 @@
 
 #include "SoftObjectPtr.hpp"
 
+/**
+ * This class is used to build certain aspects of a crafting recipe category before actually creating it to reduce manual labor
+ */
 class SDFCategory {
 public:
     virtual ~SDFCategory() = default;

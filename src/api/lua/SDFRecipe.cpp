@@ -54,7 +54,7 @@ int SDFRecipe_Lua::setIcon(const Lua &lua) {
 int SDFRecipe_Lua::addIngredient(const Lua &lua) {
     const auto& self = LuaStaticsSDF::parse_self<SDFRecipe_Lua>(lua, "SDFRecipe:addIngredient");
     const auto ingredient = LuaStaticsSDF::parse_string_or_object_arg(lua, "SDFRecipe:addIngredient", 1);
-    const auto amount = LuaStaticsSDF::parse_int_arg(lua, "SDFRecipe:addIngredient", 2);
+    const auto amount = static_cast<int>(LuaStaticsSDF::parse_int_arg(lua, "SDFRecipe:addIngredient", 2));
 
     if (const auto text = std::get_if<std::string>(&ingredient))
         self.ref->addIngredient(*text, amount);
@@ -66,7 +66,7 @@ int SDFRecipe_Lua::addIngredient(const Lua &lua) {
 int SDFRecipe_Lua::addOutput(const Lua &lua) {
     const auto& self = LuaStaticsSDF::parse_self<SDFRecipe_Lua>(lua, "SDFRecipe:addOutput");
     const auto output = LuaStaticsSDF::parse_string_or_object_arg(lua, "SDFRecipe:addOutput", 1);
-    const auto amount = LuaStaticsSDF::parse_int_arg(lua, "SDFRecipe:addOutput", 2);
+    const auto amount = static_cast<int>(LuaStaticsSDF::parse_int_arg(lua, "SDFRecipe:addOutput", 2));
 
     if (const auto text = std::get_if<std::string>(&output))
         self.ref->addOutput(*text, amount);
@@ -122,7 +122,7 @@ int SDFRecipe_Lua::setAvailableInLifepod(const Lua &lua) {
 int SDFRecipe_Lua::setOrderingIndex(const Lua &lua) {
     const auto& self = LuaStaticsSDF::parse_self<SDFRecipe_Lua>(lua, "SDFRecipe:setOrderingIndex");
     const auto index = LuaStaticsSDF::parse_int_arg(lua, "SDFRecipe:setOrderingIndex", 1);
-    self.ref->setOrderingIndex(index);
+    self.ref->setOrderingIndex(static_cast<int>(index));
     return 0;
 }
 
