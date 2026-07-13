@@ -68,24 +68,6 @@ std::variant<std::string, Unreal::UObject*> LuaStaticsSDF::parse_string_or_objec
     throw std::runtime_error("Unreachable");
 }
 
-std::variant<std::string, Unreal::UObject*> LuaStaticsSDF::parse_string_or_object_or_ref_arg(const LuaMadeSimple::Lua &lua, const std::string &funcName, int index) {
-    if (lua.is_string())
-        return std::string(lua.get_string());
-
-    if (!lua.is_userdata())
-        lua.throw_error(std::format("Parameter #{} for function '{}' must be a string, UObject or SoftObjectPtr", index, funcName));
-    const auto& userdata = lua.get_userdata<LuaType::UE4SSBaseObject>(1, true);
-
-    if (std::string_view(userdata.get_object_name()) == "UObject")
-        return lua.get_userdata<LuaType::UObject>().get_remote_cpp_object();
-
-
-    Log::Warning("{}", userdata.get_object_name());
-
-    //throw std::runtime_error(std::format("Parameter #{} for function '{}' must be a string, UObject or SoftObjectPtr", index, funcName));
-    return nullptr;
-}
-
 LuaTypeFactory::LuaTypeFactory(const LuaMadeSimple::Lua &lua) : lua(lua) {
     lua_createtable(lua.get_lua_state(), 0, 0);
 }
