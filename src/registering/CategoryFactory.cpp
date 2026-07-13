@@ -4,6 +4,7 @@
 
 #include "registering/CategoryFactory.hpp"
 
+#include "UKismetSystemLibrary.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Log.hpp"
@@ -12,7 +13,6 @@
 #include "util/Finders.hpp"
 #include "util/RegistryHelper.hpp"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -87,10 +87,10 @@ bool CategoryFactory::setIconFromItem(const std::string &itemId) {
     return setIconFromItem(Finders::searchItem(itemId));
 }
 
-bool CategoryFactory::setIconFromItem(const UUWEItemType *item) {
+bool CategoryFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    categoryTexture = item->Thumbnail;
+    categoryTexture = *item->GetThumbnail();
     return true;
 }
 
@@ -98,11 +98,11 @@ bool CategoryFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
     categoryTextureModified = true;
-    categoryTexture = static_cast<SDK::TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
+    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&categoryTexture) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(icon));
     return true;
 }
 
-void CategoryFactory::setIcon(const SDK::TSoftObjectPtr<UTexture2D> &icon) {
+void CategoryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &icon) {
     categoryTextureModified = true;
     categoryTexture = icon;
 }
@@ -117,25 +117,25 @@ UUWECraftingRecipeCategory *CategoryFactory::registerCategory() const {
         return nullptr;
 
     if (orderingIndexModify)
-        category->OrderingIndex = orderingIndex;
+        category->SetOrderingIndex(orderingIndex);
     if (showWhenEmptyModify)
-        category->bShowWhenEmpty = showWhenEmpty;
+        category->SetbShowWhenEmpty(showWhenEmpty);
 
     if (!modifyMode || categoryName != "Empty")
-        category->Name_0 = SDK::UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryName).c_str());
+        category->SetName_0(FText(UtfN::StringToWString(categoryName).c_str()));
     if (!modifyMode || categoryDescription != "Empty")
-        category->Description = SDK::UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(categoryDescription).c_str());
+        category->SetDescription(FText(UtfN::StringToWString(categoryDescription).c_str()));
     if (categoryTextureModified)
-        category->Thumbnail = categoryTexture;
+        category->SetThumbnail(categoryTexture);
     if (modifyCrafterType)
-        category->CraftedBy = crafterType;
+        category->SetCraftedBy(crafterType);
 
     if (categoryParent != nullptr)
-        category->ParentCategory = static_cast<SDK::TSoftObjectPtr<UUWECraftingRecipeCategory>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(categoryParent));
+        category->SetParentCategory(categoryParent);
 
     RegistryHelper::AddToRegistry(category, "UWECraftingRecipeCategory");
 
     Log::Verbose("Category {}: {}", modifyMode ? "modified" : "registered", categoryId);
-    SDF_Impl::TriggerCreateAsset(SDF::Category, categoryId, reinterpret_cast<Unreal::UObject*>(category));
+    SDF_Impl::TriggerCreateAsset(SDF::Category, categoryId, category);
     return category;
 }

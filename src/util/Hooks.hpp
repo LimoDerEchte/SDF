@@ -4,28 +4,19 @@
 
 #pragma once
 
-#include "SDK/UWECrafting_classes.hpp"
-#include "SDK/Subnautica2_classes.hpp"
+#include "sdk/Types.hpp"
 #include "polyhook2/Detour/x64Detour.hpp"
 
 #define HookDefHeader(type, name) \
-    using get##name##T = SDK::TArray<type*>(*)(); \
+    using get##name##T = TArray<type*>(*)(); \
     static get##name##T originalGet##name; \
     static std::unique_ptr<PLH::Detour> get##name##Hook; \
-    static SDK::TArray<type*> Get##name##Hook(); \
+    static TArray<type*> Get##name##Hook(); \
 
 class Hooks {
-    HookDefHeader(SDK::UUWECraftingRecipe, Recipes)
-    HookDefHeader(SDK::USN2BuilderActionData, BuilderActions)
-    HookDefHeader(SDK::UUWEDatabankEntry, DatabankEntries)
-
-#ifdef DEVELOPMENT
-    using getAssetsT = bool(*)(void*, const SDK::FARFilter*, SDK::TArray<SDK::FAssetData>*, bool);
-
-    static getAssetsT originalGetAssets;
-    static std::unique_ptr<PLH::Detour> getAssetsHook;
-    static bool GetAssetsHook(void* self, const SDK::FARFilter* filter, SDK::TArray<SDK::FAssetData>* out, bool bSkipARFilteredAsset);
-#endif
+    HookDefHeader(UUWECraftingRecipe, Recipes)
+    HookDefHeader(USN2BuilderActionData, BuilderActions)
+    HookDefHeader(UUWEDatabankEntry, DatabankEntries)
 
     static uintptr_t ScanCall(uintptr_t address, int ordinal);
     static uintptr_t ScanCallMultiPass(uintptr_t address, const std::vector<int>& ordinals);

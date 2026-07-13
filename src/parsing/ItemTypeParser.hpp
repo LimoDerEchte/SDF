@@ -6,11 +6,11 @@
 
 #include <map>
 
-#include "SDK/UWECrafting_classes.hpp"
+#include "sdk/Types.hpp"
 #include "toml++/impl/table.hpp"
 
 class ItemTypeParser {
-    static std::map<std::string, SDK::UUWEItemType*> itemTypes;
+    static std::map<std::string, UUWEItemType*> itemTypes;
 
     static void parseFile(const std::string &mod, const std::string &file, const toml::table &table, bool modifyMode);
 

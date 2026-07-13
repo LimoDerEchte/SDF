@@ -4,17 +4,17 @@
 
 #pragma once
 
-#include "SDK/UWEAssetRegistry_classes.hpp"
+#include "sdk/Types.hpp"
 
 class RegistryHelper {
     static void InitCache();
 
-    static uintptr_t StaticConstructTemplateInternal(SDK::UObject *base, const std::string &name, std::optional<SDK::UObject*> overrideOuter);
+    static uintptr_t StaticConstructTemplateInternal(UObject *base, const std::string &name, std::optional<UObject*> overrideOuter);
 
 public:
-    template <typename T, typename = std::enable_if_t<std::is_base_of_v<SDK::UObject, T>>>
-    static T *StaticConstructTemplate(T *base, const std::string &name, const std::optional<SDK::UObject*> overrideOuter = std::nullopt) {
+    template <typename T, typename = std::enable_if_t<std::is_base_of_v<UObject, T>>>
+    static T *StaticConstructTemplate(T *base, const std::string &name, const std::optional<UObject*> overrideOuter = std::nullopt) {
         return reinterpret_cast<T*>(StaticConstructTemplateInternal(base, name, overrideOuter));
     }
-    static void AddToRegistry(SDK::UUWEPrimaryDataAssetBase* asset, const std::string &type);
+    static void AddToRegistry(UUWEPrimaryDataAssetBase* asset, const std::string &type);
 };

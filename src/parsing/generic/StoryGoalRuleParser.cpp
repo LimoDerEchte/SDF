@@ -7,8 +7,6 @@
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
 
-using namespace SDK;
-
 std::unique_ptr<StoryGoalRule> StoryGoalRuleParser::parseRuleSegment(const std::string& id, std::string& content, const bool debug) {
     if (content.starts_with("'")) {
         const auto searchString = content.substr(1, content.find('\'', 1) - 1);

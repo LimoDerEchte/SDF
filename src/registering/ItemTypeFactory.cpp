@@ -4,15 +4,13 @@
 
 #include "registering/ItemTypeFactory.hpp"
 
-#include "UObject.hpp"
+#include "FText.hpp"
+#include "UKismetSystemLibrary.hpp"
 #include "registering/RecipeFactory.hpp"
-#include "UObjectGlobals.hpp"
-#include "SDK/AssetRegistry_classes.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
 #include "util/RegistryHelper.hpp"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -30,20 +28,19 @@ void ItemTypeFactory::setDescription(const std::string &itemDescription) {
 }
 
 bool ItemTypeFactory::setActor(const std::string &actorPath) {
-    const auto path = UKismetSystemLibrary::MakeSoftClassPath(UtfN::StringToWString(actorPath).c_str());
-    setActor(UKismetSystemLibrary::Conv_SoftClassPathToSoftClassRef(path));
+    setActor(TSoftClassPtr(FSoftObjectPath(FString(UtfN::StringToWString(actorPath)))).LoadSynchronous());
     return true;
 }
 
-bool ItemTypeFactory::setActor(SDK::UClass *actorClass) {
+bool ItemTypeFactory::setActor(UClass *actorClass) {
     if (actorClass == nullptr)
         return false;
     actorClassModified = true;
-    this->actorClass = UKismetSystemLibrary::Conv_ClassToSoftClassReference(actorClass);
+    this->actorClass = actorClass;
     return true;
 }
 
-void ItemTypeFactory::setActor(const TSoftClassPtr<SDK::UClass> &actorClass) {
+void ItemTypeFactory::setActor(const TSoftClassPtr<UClass> &actorClass) {
     actorClassModified = true;
     this->actorClass = actorClass;
 }
@@ -52,10 +49,10 @@ bool ItemTypeFactory::setIconFromItem(const std::string &itemId) {
     return setIconFromItem(Finders::searchItem(itemId));
 }
 
-bool ItemTypeFactory::setIconFromItem(const UUWEItemType *item) {
+bool ItemTypeFactory::setIconFromItem(UUWEItemType *item) {
     if (item == nullptr)
         return false;
-    itemTexture = item->Thumbnail;
+    itemTexture = *item->GetThumbnail();
     return true;
 }
 
@@ -63,7 +60,7 @@ bool ItemTypeFactory::setIcon(UTexture2D *icon) {
     if (icon == nullptr)
         return false;
     itemTextureModified = true;
-    itemTexture = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(icon));
+    itemTexture = icon;
     return true;
 }
 
@@ -81,21 +78,22 @@ UUWEItemType* ItemTypeFactory::registerItemType() const {
     if (itemType == nullptr)
         return nullptr;
 
-    itemType->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(itemName).c_str());
-    itemType->ItemDescription = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(itemDescription).c_str());
-    itemType->Thumbnail = itemTexture;
+    itemType->SetName_0(FText(UtfN::StringToWString(itemName).c_str()));
+    itemType->SetItemDescription(FText(UtfN::StringToWString(itemDescription).c_str()));
+    itemType->SetThumbnail(itemTexture);
 
-    itemType->FabricationPreviewMaterialInstance = base->FabricationPreviewMaterialInstance;
-    itemType->FabricationPreviewMeshData = base->FabricationPreviewMeshData;
+    itemType->SetFabricationPreviewMaterialInstance(*base->GetFabricationPreviewMaterialInstance());
+    itemType->SetFabricationPreviewMeshData(*base->GetFabricationPreviewMeshData());
 
     if (actorClassModified)
-        itemType->ActorClass = actorClass;
+        itemType->SetActorClass(actorClass);
     else if (!modifyMode)
-        itemType->ActorClass = base->ActorClass;
+        itemType->SetActorClass(*base->GetActorClass());
 
-    itemType->TypeTag = FGameplayTag(UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("ItemType.Custom.{}", itemId)).c_str()));
-    itemType->GameplayTags = base->GameplayTags;
-    itemType->TunableData = base->TunableData;
+    itemType->SetTypeTag(FGameplayTag(UtfN::StringToWString(std::format("ItemType.Custom.{}", itemId))));
+    itemType->SetGameplayTags(*base->GetGameplayTags());
+
+    // TODO: Implement Tunable Data
 
     RegistryHelper::AddToRegistry(itemType, "UWEItemType");
 

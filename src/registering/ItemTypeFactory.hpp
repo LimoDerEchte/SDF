@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "SDK/Subnautica2_classes.hpp"
+#include "sdk/Types.hpp"
 
 class ItemTypeFactory {
     std::string itemId, itemName, itemDescription;
-    SDK::TSoftObjectPtr<SDK::UTexture2D> itemTexture;
+    TSoftObjectPtr<UTexture2D> itemTexture;
 
-    SDK::TSoftClassPtr<SDK::UClass> actorClass;
+    TSoftClassPtr<UClass> actorClass;
     bool actorClassModified;
 
     bool modifyMode = false;
@@ -25,14 +25,14 @@ public:
     void setDescription(const std::string &itemDescription);
 
     bool setActor(const std::string& actorPath);
-    bool setActor(SDK::UClass* actorClass);
-    void setActor(const SDK::TSoftClassPtr<SDK::UClass> &actorClass);
+    bool setActor(UClass* actorClass);
+    void setActor(const TSoftClassPtr<UClass> &actorClass);
 
     bool setIconFromItem(const std::string &itemId);
-    bool setIconFromItem(const SDK::UUWEItemType *item);
-    bool setIcon(SDK::UTexture2D *icon);
-    void setIcon(const SDK::TSoftObjectPtr<SDK::UTexture2D> &icon);
+    bool setIconFromItem(UUWEItemType *item);
+    bool setIcon(UTexture2D *icon);
+    void setIcon(const TSoftObjectPtr<UTexture2D> &icon);
 
-    [[nodiscard]] SDK::UUWEItemType* registerItemType() const;
-    [[nodiscard]] static SDK::UUWEItemType* registerItemType(const std::string &itemId, const std::string &path);
+    [[nodiscard]] UUWEItemType* registerItemType() const;
+    [[nodiscard]] static UUWEItemType* registerItemType(const std::string &itemId, const std::string &path);
 };

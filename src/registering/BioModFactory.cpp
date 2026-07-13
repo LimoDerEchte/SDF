@@ -4,11 +4,16 @@
 
 #include "BioModFactory.hpp"
 
+#include "FText.hpp"
+#include "UKismetSystemLibrary.hpp"
+#include "sdk/TempFinders.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
 #include "util/RegistryHelper.hpp"
 
 using namespace SDK;
+using namespace RC;
+using namespace Unreal;
 
 std::vector<UUWEBioAbilityData*> BioModFactory::registeredBioMods;
 
@@ -33,11 +38,11 @@ void BioModFactory::setType(EUWEBioAbilityType bioModType) {
 bool BioModFactory::setIcon(UTexture2D *bioModIcon) {
     if (bioModIcon == nullptr)
         return false;
-    icon = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(bioModIcon));
+    *reinterpret_cast<Unreal::TSoftObjectPtr<>*>(&icon) = Unreal::UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(reinterpret_cast<Unreal::UObject*>(bioModIcon));
     return true;
 }
 
-void BioModFactory::setIcon(const TSoftObjectPtr<UTexture2D> &bioModIcon) {
+void BioModFactory::setIcon(const SDK::TSoftObjectPtr<UTexture2D> &bioModIcon) {
     icon = bioModIcon;
 }
 
@@ -52,13 +57,13 @@ UUWEBioAbilityData* BioModFactory::registerBioMod() {
 
     if (!modifyMode) {
         bioMod->PublishedStatus = EUWEPublishedStatus::Published;
-        bioMod->AbilityTag = FGameplayTag(UKismetStringLibrary::Conv_StringToName(UtfN::StringToWString(std::format("Biomods.BioAbility.{}", id)).c_str()));
+        bioMod->AbilityTag = TempFinders::CreateTag(std::format("Biomods.BioAbility.{}", id));
     }
 
     if (!modifyMode || name.has_value())
-        bioMod->Name_0 = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(name.value_or("Invalid")).c_str());
+        *reinterpret_cast<Unreal::FText*>(&bioMod->Name_0) = Unreal::FText(UtfN::StringToWString(name.value_or("Invalid")).c_str());
     if (!modifyMode || description.has_value())
-        bioMod->Description = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(description.value_or("Invalid")).c_str());
+        *reinterpret_cast<Unreal::FText*>(&bioMod->Description) = Unreal::FText(UtfN::StringToWString(description.value_or("Invalid")).c_str());
 
     if (!modifyMode || type.has_value())
         bioMod->BioAbilityType = type.value_or(EUWEBioAbilityType::Passive);

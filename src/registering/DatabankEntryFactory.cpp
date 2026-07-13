@@ -4,7 +4,7 @@
 
 #include "DatabankEntryFactory.hpp"
 
-#include "SDK/UWEStoryGoals_classes.hpp"
+#include "UKismetSystemLibrary.hpp"
 
 #include "util/RegistryHelper.hpp"
 #include "util/Finders.hpp"
@@ -13,7 +13,6 @@
 #include "Containers/Array.hpp"
 #include "api/cpp/SDF.hpp"
 
-using namespace SDK;
 using namespace RC;
 
 std::vector<UUWEDatabankEntry*> DatabankEntryFactory::registeredDatabankEntries;
@@ -35,11 +34,11 @@ void DatabankEntryFactory::addCategory(const std::string &category) {
     categories.push_back(category);
 }
 
-bool DatabankEntryFactory::setIcon(UTexture2D *newIcon) {
+bool DatabankEntryFactory::setIcon(const UTexture2D *newIcon) {
     if (newIcon == nullptr)
         return false;
     iconModified = true;
-    icon = static_cast<TSoftObjectPtr<UTexture2D>>(UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(newIcon));
+    icon = newIcon;
     return true;
 }
 
@@ -82,31 +81,31 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
         return nullptr;
 
     if (iconModified)
-        entry->EntryImage = icon;
+        entry->SetEntryImage(icon);
     if (!modifyMode || title.has_value())
-        entry->EntryTitle = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(title.value_or("Empty")).c_str());
+        entry->SetEntryTitle(FText(UtfN::StringToWString(title.value_or("Empty")).c_str()));
     if (!modifyMode || text.has_value())
-        entry->EntryText = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(text.value_or("Empty")).c_str());
+        entry->SetEntryText(FText(UtfN::StringToWString(text.value_or("Empty")).c_str()));
 
     if (categoriesModified) {
-        const auto categoryList = reinterpret_cast<RC::Unreal::TArray<FText>*>(&entry->Categories);
+        const auto categoryList = entry->GetCategories();
         if (categoryList->Num() > 0)
             categoryList->Empty();
 
         categoryList->ResizeTo(static_cast<int32_t>(categories.size()));
         for (const auto &category : categories)
-            categoryList->Add(UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(category).c_str()));
+            categoryList->Add(Unreal::FText(UtfN::StringToWString(category).c_str()));
     }
 
     if (unlockConditionModified)
-        entry->UnlockingRequirements = unlockCondition;
+        entry->SetUnlockingRequirements(unlockCondition);
     if (hideConditionModified)
-        entry->HideOnStoryGoal = hideCondition;
+        entry->SetHideOnStoryGoal(hideCondition);
 
     RegistryHelper::AddToRegistry(entry, "UWEDatabankEntry");
     registeredDatabankEntries.push_back(entry);
 
     Log::Verbose("Databank entry {}: {}", modifyMode ? "modified" : "registered", id);
-    SDF_Impl::TriggerCreateAsset(SDF::Category, id, reinterpret_cast<Unreal::UObject*>(entry));
+    SDF_Impl::TriggerCreateAsset(SDF::Category, id, entry);
     return entry;
 }

@@ -1,5 +1,4 @@
 
-#include "registering/BioModFactory.hpp"
 #include "parsing/FileTraversal.hpp"
 #include "parsing/BuilderActionParser.hpp"
 #include "parsing/CategoryParser.hpp"
@@ -13,6 +12,7 @@
 #include "api/cpp/SDF.hpp"
 #include "api/lua/SDF.hpp"
 #include "Mod/CppUserModBase.hpp"
+#include "FWorldContext.hpp"
 
 #include "SDF/Version.hpp"
 #include "util/Log.hpp"
@@ -20,16 +20,14 @@
 using namespace RC;
 using namespace Unreal;
 
-class SDF_Mod : public CppUserModBase {
-    bool scanning = true;
-
+class SDF_Mod final : public CppUserModBase {
     static void startup();
 
 public:
     SDF_Mod();
     ~SDF_Mod() override;
 
-    void on_update() override;
+    auto on_unreal_init() -> void override;
     auto on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) -> void override;
 };
 
@@ -37,6 +35,13 @@ public:
 extern "C" {
 MOD_EXPORT inline CppUserModBase* start_mod(){ return new SDF_Mod(); }
 MOD_EXPORT inline void uninstall_mod(const CppUserModBase* mod) { delete mod; }
+}
+
+void SDF_Mod::on_unreal_init() {
+    const Hook::FCallbackOptions common_opts {true, false, STR("SDF"), STR("SDF_Startup")};
+    Hook::RegisterLoadMapPostCallback([this](Hook::TCallbackIterationData<bool>&, UEngine*, FWorldContext&, FURL, UPendingNetGame*, FString&) {
+        startup();
+    }, common_opts);
 }
 
 void SDF_Mod::startup() {
@@ -66,19 +71,6 @@ void SDF_Mod::startup() {
     SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
 
 #ifdef DEVELOPMENT
-    //RecipeFactory recipe("TestRec", "Test Recipe", "This is a recipe for testing dynamic icons");
-    //recipe.setCategory("CustomCategory");
-    //recipe.addIngredient("Titanium", 2);
-    //recipe.addOutput("Copper", 1);
-
-    //IconBuilder icon{};
-    //icon.addIconFromItem("Copper");
-    //icon.addIconFromItem("Titanium", StepData {
-    //    .x = 10, .y = 10, .width = 64, .height = 64
-    //});
-    //recipe.setIcon(icon.build());
-    //const auto _ = recipe.registerRecipe();
-
     BioModFactory bmf("CustomBioMod", false);
     bmf.setName("Test Bio Mod");
     bmf.setDescription("This bio mod is for testing the ability of SDF to create custom bio mods");
@@ -96,22 +88,11 @@ SDF_Mod::SDF_Mod() {
 }
 
 SDF_Mod::~SDF_Mod() {
-    if (scanning)
-        return;
     Hooks::UnregisterHooks();
 }
 
-void SDF_Mod::on_update() {
-    if (!scanning)
-        return;
-    if (const auto world = SDK::UWorld::GetWorld()) {
-        if (world->GetName().contains("ClientLobby")) {
-            scanning = false;
-            startup();
-        }
-    }
-}
-
 void SDF_Mod::on_lua_start(StringViewType mod_name, LuaMadeSimple::Lua &lua, LuaMadeSimple::Lua &main_lua, LuaMadeSimple::Lua &async_lua, LuaMadeSimple::Lua *hook_lua) {
+#ifdef DEVELOPMENT
     SDF_Lua::RegisterLuaTypes(lua);
+#endif
 }

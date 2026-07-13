@@ -52,7 +52,7 @@ add_library(${TARGET} SHARED
         src/registering/CategoryFactory.cpp
         src/registering/DatabankEntryFactory.cpp
         src/registering/StoryGoalRuleFactory.cpp
-        src/registering/BioModFactory.cpp
+        #src/registering/BioModFactory.cpp
 
         src/parsing/generic/IconParser.cpp
         src/parsing/generic/StoryGoalRuleParser.cpp
@@ -66,21 +66,13 @@ add_library(${TARGET} SHARED
 
         src/util/Hooks.cpp
         src/util/RegistryHelper.cpp
-        # src/util/IconBuilder.cpp
         src/util/Finders.cpp
-
-        libs/CppSDK/SDK/Basic.cpp
-        libs/CppSDK/SDK/CoreUObject_functions.cpp
-        libs/CppSDK/SDK/Engine_functions.cpp
-        libs/CppSDK/SDK/AssetRegistry_functions.cpp
-        libs/CppSDK/SDK/UWEAssetRegistry_functions.cpp
-        libs/CppSDK/SDK/Subnautica2_functions.cpp
 )
 
 target_link_libraries(${TARGET} PUBLIC UE4SS)
-target_include_directories(${TARGET} PRIVATE src include ${SDK_INCLUDE} ${HEADER_ONLY_INCLUDE})
+target_include_directories(${TARGET} PRIVATE src include ${HEADER_ONLY_INCLUDE})
 
-target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
+#target_compile_definitions(${TARGET} PRIVATE DEVELOPMENT)
 
 message(STATUS "${CMAKE_CONFIGURATION_TYPES}")
 

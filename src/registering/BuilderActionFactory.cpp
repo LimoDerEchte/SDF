@@ -4,13 +4,13 @@
 
 #include "registering/BuilderActionFactory.hpp"
 
+#include "FText.hpp"
 #include "registering/RecipeFactory.hpp"
 #include "UObjectGlobals.hpp"
 #include "util/Finders.hpp"
 #include "util/Log.hpp"
 #include "util/RegistryHelper.hpp"
 
-using namespace SDK;
 using namespace RC;
 using namespace Unreal;
 
@@ -26,7 +26,6 @@ void BuilderActionFactory::setRemovePowerText(const bool removePowerText) {
 
 void BuilderActionFactory::setSecondaryDescription(const std::string &secondaryDescription) {
     this->secondaryDescription = secondaryDescription;
-    modifySecondaryDescription = true;
 }
 
 void BuilderActionFactory::addPowerDrainText(const std::string& text) {
@@ -59,39 +58,37 @@ USN2BuilderConstructActionData* BuilderActionFactory::registerBuilderAction() co
         return nullptr;
 
     if (recipe != nullptr) {
-        action->Name_0 = recipe->Name_0;
-        action->Description = recipe->Description;
-        action->Thumbnail = recipe->Thumbnail;
+        action->SetName_0(*recipe->GetName_0());
+        action->SetDescription(*recipe->GetDescription());
+        action->SetThumbnail(*recipe->GetThumbnail());
 
-        action->RecipeCategory = recipe->Category;
-        action->Recipe = recipe;
+        action->SetRecipeCategory(*recipe->GetCategory());
+        action->SetRecipe(recipe);
 
-        action->DefaultUnlockState = recipe->DefaultRecipeState == ERecipeState::Unlocked ? EUnlockState::Unlocked : EUnlockState::Locked;
-        action->UpdatedUnlockingRequirements = recipe->UpdatedUnlockingRequirements;
+        action->SetDefaultUnlockState(*recipe->GetDefaultRecipeState() == ERecipeState::Unlocked ? EUnlockState::Unlocked : EUnlockState::Locked);
+        action->SetUpdatedUnlockingRequirements(*recipe->GetUpdatedUnlockingRequirements());
     }
 
-    if (modifySecondaryDescription)
-        action->SecondaryDescription = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(secondaryDescription).c_str());
-    else if (!modifyMode)
-        action->SecondaryDescription = UKismetTextLibrary::Conv_StringToText(L"Empty");
+    if (modifyMode || secondaryDescription.has_value())
+        action->SetSecondaryDescription(FText(UtfN::StringToWString(secondaryDescription.value_or("Empty")).c_str()));
 
     if (removePowerText) {
-        action->PowerDrainText = UKismetTextLibrary::Conv_StringToText(L"");
-        action->PowerGenerationText = UKismetTextLibrary::Conv_StringToText(L"");
+        action->SetPowerDrainText(FText(L""));
+        action->SetPowerGenerationText(FText(L""));
     }
     else if (powerDrainText.has_value())
-        action->PowerDrainText = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(powerDrainText.value()).c_str());
+        action->SetPowerDrainText(FText(UtfN::StringToWString(powerDrainText.value()).c_str()));
     else if (powerGenerationText.has_value())
-        action->PowerGenerationText = UKismetTextLibrary::Conv_StringToText(UtfN::StringToWString(powerGenerationText.value()).c_str());
+        action->SetPowerGenerationText(FText(UtfN::StringToWString(powerGenerationText.value()).c_str()));
 
-    action->Category = base->Category;
-    action->EventTag = base->EventTag;
+    action->SetCategory(*base->GetCategory());
+    action->SetEventTag(*base->GetEventTag());
 
     // TODO: All after this should be configurable
 
-    action->GhostMeshOverride = base->GhostMeshOverride;
-    action->PlacementParams = base->PlacementParams;
-    action->bSpawnAsDynamicItem = true;
+    action->SetGhostMeshOverride(*base->GetGhostMeshOverride());
+    action->SetPlacementParams(*base->GetPlacementParams());
+    action->SetbSpawnAsDynamicItem(true);
 
     registeredActions.push_back(action);
     RegistryHelper::AddToRegistry(action, "SN2BuilderConstructActionData");

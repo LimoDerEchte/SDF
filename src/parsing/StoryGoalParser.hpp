@@ -6,12 +6,11 @@
 
 #include <map>
 
-#include "registering/StoryGoalRuleFactory.hpp"
-#include "SDK/UWECrafting_classes.hpp"
+#include "sdk/Types.hpp"
 #include "toml++/impl/table.hpp"
 
 class StoryGoalParser {
-    static std::map<std::string, SDK::UUWEStoryGoal*> storyGoals;
+    static std::map<std::string, UUWEStoryGoal*> storyGoals;
 
     static void parseFile(const std::string &file, const toml::table &table);
 

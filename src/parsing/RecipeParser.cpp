@@ -9,8 +9,6 @@
 #include "registering/RecipeFactory.hpp"
 #include "util/Log.hpp"
 
-using namespace SDK;
-
 std::map<std::string, UUWECraftingRecipe*> RecipeParser::recipes{};
 
 void RecipeParser::parseFile(const std::string &mod, const std::string &file, const toml::table &table, const bool modifyMode) {

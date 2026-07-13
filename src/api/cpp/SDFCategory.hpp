@@ -18,13 +18,13 @@ public:
     void setCrafterType(uint8_t type) override;
 
     void setParent(const std::string &category) override;
-    void setParent(RC::Unreal::UObject *category) override;
+    void setParent(UObject *category) override;
 
     void setIcon(const std::string &icon) override;
-    void setIcon(RC::Unreal::UObject *icon) override;
-    void setIcon(const RC::Unreal::TSoftObjectPtr<> &icon) override;
+    void setIcon(UObject *icon) override;
+    void setIcon(const TSoftObjectPtr<> &icon) override;
 
     void setOrderingIndex(int orderingIndex) override;
 
-    [[nodiscard]] RC::Unreal::UObject *createOrModifyCategory() override;
+    [[nodiscard]] UObject *createOrModifyCategory() override;
 };

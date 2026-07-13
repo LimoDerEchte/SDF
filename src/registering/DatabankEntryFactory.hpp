@@ -4,20 +4,20 @@
 
 #pragma once
 
-#include "SDK/UWEDatabank_classes.hpp"
+#include "sdk/Types.hpp"
 
 class DatabankEntryFactory {
-    static std::vector<SDK::UUWEDatabankEntry*> registeredDatabankEntries;
+    static std::vector<UUWEDatabankEntry*> registeredDatabankEntries;
 
     std::string id;
     std::optional<std::string> title;
     std::optional<std::string> text;
 
     std::vector<std::string> categories;
-    SDK::TSoftObjectPtr<SDK::UTexture2D> icon;
+    TSoftObjectPtr<UTexture2D> icon;
 
-    SDK::UUWEStoryGoalRule* unlockCondition = nullptr;
-    SDK::UUWEStoryGoal* hideCondition = nullptr;
+    UUWEStoryGoalRule* unlockCondition = nullptr;
+    UUWEStoryGoal* hideCondition = nullptr;
 
     bool modifyMode = false;
     bool iconModified = false;
@@ -34,14 +34,14 @@ public:
     void setText(const std::string &newText);
     void addCategory(const std::string &category);
 
-    bool setIcon(SDK::UTexture2D *newIcon);
-    void setIcon(const SDK::TSoftObjectPtr<SDK::UTexture2D> &newIcon);
+    bool setIcon(const UTexture2D *newIcon);
+    void setIcon(const TSoftObjectPtr<UTexture2D> &newIcon);
 
     bool setUnlockCondition(const std::string &ruleId);
-    bool setUnlockCondition(SDK::UUWEStoryGoalRule* goalRule);
+    bool setUnlockCondition(UUWEStoryGoalRule* goalRule);
 
     bool setHideCondition(const std::string &goalId);
-    bool setHideCondition(SDK::UUWEStoryGoal* goal);
+    bool setHideCondition(UUWEStoryGoal* goal);
 
-    SDK::UUWEDatabankEntry* registerDatabankEntry();
+    UUWEDatabankEntry* registerDatabankEntry();
 };
