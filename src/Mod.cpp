@@ -37,11 +37,21 @@ MOD_EXPORT inline CppUserModBase* start_mod(){ return new SDF_Mod(); }
 MOD_EXPORT inline void uninstall_mod(const CppUserModBase* mod) { delete mod; }
 }
 
+bool firstMapLoaded = false;
+
 void SDF_Mod::on_unreal_init() {
     const Hook::FCallbackOptions common_opts {true, false, STR("SDF"), STR("SDF_Startup")};
-    Hook::RegisterLoadMapPostCallback([this](Hook::TCallbackIterationData<bool>&, UEngine*, FWorldContext&, FURL, UPendingNetGame*, FString&) {
-        startup();
+    Hook::RegisterLoadMapPostCallback([&](Hook::TCallbackIterationData<bool>&, UEngine*, FWorldContext&, const FURL&, UPendingNetGame*, FString&) {
+        firstMapLoaded = true;
     }, common_opts);
+
+    const Hook::FCallbackOptions tick_opts {true, false, STR("SDF"), STR("SDF_Startup")};
+    Hook::RegisterEngineTickPreCallback([&](Hook::TCallbackIterationData<void>&, UEngine*, float, bool) {
+        if (!firstMapLoaded)
+            return;
+        startup();
+        firstMapLoaded = false;
+    }, tick_opts);
 }
 
 void SDF_Mod::startup() {
@@ -57,7 +67,7 @@ void SDF_Mod::startup() {
     //ItemTypeParser::ParseItemTypes();
 
     SDF_Impl::TriggerEvent(SDF::Event::PreCategory);
-    CategoryParser::ParseCategories();
+    //CategoryParser::ParseCategories();
     SDF_Impl::TriggerEvent(SDF::Event::PostCategory);
 
     SDF_Impl::TriggerEvent(SDF::Event::PreRecipe);
@@ -67,7 +77,7 @@ void SDF_Mod::startup() {
     //BuilderActionParser::ParseBuilderActions();
 
     SDF_Impl::TriggerEvent(SDF::Event::PreDatabankEntry);
-    //DatabankEntryParser::ParseDatabankEntries();
+    DatabankEntryParser::ParseDatabankEntries();
     SDF_Impl::TriggerEvent(SDF::Event::PostDatabankEntry);
 
 #ifdef DEVELOPMENT

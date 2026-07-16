@@ -4,6 +4,8 @@
 
 #include "DatabankEntryFactory.hpp"
 
+#include <utility>
+
 #include "UKismetSystemLibrary.hpp"
 
 #include "util/RegistryHelper.hpp"
@@ -17,8 +19,8 @@ using namespace RC;
 
 std::vector<UUWEDatabankEntry*> DatabankEntryFactory::registeredDatabankEntries;
 
-DatabankEntryFactory::DatabankEntryFactory(const std::string &id, const bool modifyMode)
-    : id(id), icon(), modifyMode(modifyMode) {
+DatabankEntryFactory::DatabankEntryFactory(std::string id, const bool modifyMode)
+    : id(std::move(id)), modifyMode(modifyMode) {
 }
 
 void DatabankEntryFactory::setTitle(const std::string &newTitle) {
@@ -34,17 +36,11 @@ void DatabankEntryFactory::addCategory(const std::string &category) {
     categories.push_back(category);
 }
 
-bool DatabankEntryFactory::setIcon(const UTexture2D *newIcon) {
+bool DatabankEntryFactory::setIcon(UTexture2D *newIcon) {
     if (newIcon == nullptr)
         return false;
-    iconModified = true;
     icon = newIcon;
     return true;
-}
-
-void DatabankEntryFactory::setIcon(const TSoftObjectPtr<UTexture2D> &newIcon) {
-    iconModified = true;
-    icon = newIcon;
 }
 
 bool DatabankEntryFactory::setUnlockCondition(const std::string &ruleId) {
@@ -55,7 +51,6 @@ bool DatabankEntryFactory::setUnlockCondition(UUWEStoryGoalRule *goalRule) {
     if (goalRule == nullptr)
         return false;
     unlockCondition = goalRule;
-    unlockConditionModified = true;
     return true;
 }
 
@@ -67,7 +62,6 @@ bool DatabankEntryFactory::setHideCondition(UUWEStoryGoal *goal) {
     if (goal == nullptr)
         return false;
     hideCondition = goal;
-    hideConditionModified = true;
     return true;
 }
 
@@ -80,8 +74,17 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
     if (entry == nullptr)
         return nullptr;
 
-    if (iconModified)
-        entry->SetEntryImage(icon);
+    Log::Warning("Test: {}", UtfN::WStringToString(base->GetFullName()));
+    Log::Warning("Test 0 {:p}", (void*)base);
+    const auto sptr = base->GetEntryImage();
+    Log::Warning("Test 1 {:p}", (void*)sptr);
+    const auto icon = sptr->IsValid();
+    Log::Warning("Test 2 {}", icon);
+    //Log::Warning("Test 2 {:p}", (void*)icon);
+    //entry->SetEntryImage(icon);
+
+    //if (icon.has_value())
+    //    entry->SetEntryImage();
     if (!modifyMode || title.has_value())
         entry->SetEntryTitle(FText(UtfN::StringToWString(title.value_or("Empty")).c_str()));
     if (!modifyMode || text.has_value())
@@ -94,13 +97,13 @@ UUWEDatabankEntry *DatabankEntryFactory::registerDatabankEntry() {
 
         categoryList->ResizeTo(static_cast<int32_t>(categories.size()));
         for (const auto &category : categories)
-            categoryList->Add(Unreal::FText(UtfN::StringToWString(category).c_str()));
+            categoryList->Add(FText(UtfN::StringToWString(category).c_str()));
     }
 
-    if (unlockConditionModified)
-        entry->SetUnlockingRequirements(unlockCondition);
-    if (hideConditionModified)
-        entry->SetHideOnStoryGoal(hideCondition);
+    if (unlockCondition.has_value())
+        entry->SetUnlockingRequirements(unlockCondition.value());
+    if (hideCondition.has_value())
+        entry->SetHideOnStoryGoal(hideCondition.value());
 
     RegistryHelper::AddToRegistry(entry, "UWEDatabankEntry");
     registeredDatabankEntries.push_back(entry);

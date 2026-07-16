@@ -34,7 +34,7 @@ public: \
     } \
     \
     void Set##Name(T value) { \
-        *Get##Name() = value; \
+        *Get##Name() = std::move(value); \
     }
 
 #define ClassSoftProperty(Name, T) \

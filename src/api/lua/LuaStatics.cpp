@@ -6,8 +6,6 @@
 
 #include "LuaType/LuaFSoftObjectPath.hpp"
 #include "LuaType/LuaTSoftObjectPtr.hpp"
-#include "SDK/CoreUObject_classes.hpp"
-#include "util/Log.hpp"
 
 int LuaStaticsSDF::ensure_hook_thread_exists(LuaMod *mod) {
     if (mod->m_hook_lua == nullptr)

@@ -40,14 +40,12 @@ int SDFRecipe_Lua::setCategory(const Lua &lua) {
 
 int SDFRecipe_Lua::setIcon(const Lua &lua) {
     const auto& self = LuaStaticsSDF::parse_self<SDFRecipe_Lua>(lua, "SDFRecipe:setIcon");
-    const auto arg = LuaStaticsSDF::parse_string_or_object_or_ref_arg(lua, "SDFRecipe:setIcon", 1);
+    const auto arg = LuaStaticsSDF::parse_string_or_object_arg(lua, "SDFRecipe:setIcon", 1);
 
     if (const auto text = std::get_if<std::string>(&arg))
         self.ref->setIcon(*text);
     else if (const auto uObj = std::get_if<UObject*>(&arg))
         self.ref->setIcon(*uObj);
-    else if (const auto uRef = std::get_if<Unreal::TSoftObjectPtr<>>(&arg))
-        self.ref->setIcon(*uRef);
     return 0;
 }
 

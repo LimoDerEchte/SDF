@@ -14,28 +14,24 @@ class DatabankEntryFactory {
     std::optional<std::string> text;
 
     std::vector<std::string> categories;
-    TSoftObjectPtr<UTexture2D> icon;
+    std::optional<UTexture2D*> icon;
 
-    UUWEStoryGoalRule* unlockCondition = nullptr;
-    UUWEStoryGoal* hideCondition = nullptr;
+    std::optional<UUWEStoryGoalRule*> unlockCondition = nullptr;
+    std::optional<UUWEStoryGoal*> hideCondition = nullptr;
 
     bool modifyMode = false;
-    bool iconModified = false;
     bool categoriesModified = false;
-    bool unlockConditionModified = false;
-    bool hideConditionModified = false;
 
     friend class Hooks;
 
 public:
-    explicit DatabankEntryFactory(const std::string &id, bool modifyMode);
+    explicit DatabankEntryFactory(std::string id, bool modifyMode);
 
     void setTitle(const std::string &newTitle);
     void setText(const std::string &newText);
     void addCategory(const std::string &category);
 
-    bool setIcon(const UTexture2D *newIcon);
-    void setIcon(const TSoftObjectPtr<UTexture2D> &newIcon);
+    bool setIcon(UTexture2D *newIcon);
 
     bool setUnlockCondition(const std::string &ruleId);
     bool setUnlockCondition(UUWEStoryGoalRule* goalRule);

@@ -167,7 +167,13 @@ class UUWEDatabankEntry : public UUWEPrimaryDataAssetBase {
 	ClassProperty(Categories, TArray<FText>)
 	ClassProperty(EntryTitle, FText);
 	ClassProperty(EntryText, FText);
-	ClassProperty(EntryImage, TSoftObjectPtr<UTexture2D>);
+	TSoftObjectPtr<UTexture2D> *GetEntryImage() {
+		return GetValuePtrByPropertyNameInChain<TSoftObjectPtr<UTexture2D>>(L"EntryImage");
+	}
+
+	void SetEntryImage(UObject *value) {
+		*GetEntryImage() = value;
+	}
 	ClassProperty(UnlockingRequirements, UUWEStoryGoalRule*);
 	ClassProperty(HideOnStoryGoal, UUWEStoryGoal*);
 	ClassProperty(bCompletesInvestigation, bool);
