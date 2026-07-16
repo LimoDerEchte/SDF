@@ -19,7 +19,6 @@ enum class EPickupDestination : uint8
 	ToolbarAndEquip                          = 11,
 	ToolbarAndAlwaysEquip                    = 12,
 	ToolbarAndAlwaysEquipIfNew               = 13,
-	EPickupDestination_MAX                   = 14,
 };
 
 enum class EUWEPublishedStatus : uint8
@@ -27,7 +26,6 @@ enum class EUWEPublishedStatus : uint8
     Published                                = 0,
     Unpublished                              = 1,
     Deprecated                               = 2,
-    EUWEPublishedStatus_MAX                  = 3,
 };
 
 enum class EStoryGoalTargetType : uint8
@@ -37,7 +35,6 @@ enum class EStoryGoalTargetType : uint8
     Player                                   = 2,
     Databank                                 = 3,
     Invalid                                  = 4,
-    EStoryGoalTargetType_MAX                 = 5,
 };
 
 enum class ECrafterType : uint8
@@ -48,7 +45,6 @@ enum class ECrafterType : uint8
     Refinery                                 = 3,
     VehicleFabricator                        = 4,
     ModificationStation                      = 5,
-    ECrafterType_MAX                         = 6,
 };
 
 enum class EBuilderMenuCategory : uint8
@@ -59,14 +55,12 @@ enum class EBuilderMenuCategory : uint8
     Interior                                 = 3,
     PredefinedLocationOnly                   = 4,
     Count                                    = 5,
-    EBuilderMenuCategory_MAX                 = 6,
 };
 
 enum class EUnlockState : uint8
 {
     Locked                                   = 0,
     Unlocked                                 = 1,
-    EUnlockState_MAX                         = 2,
 };
 
 enum class EBuilderSnapping : uint8
@@ -74,14 +68,12 @@ enum class EBuilderSnapping : uint8
 	Freeform                                 = 0,
 	Base                                     = 1,
 	None                                     = 2,
-	EBuilderSnapping_MAX                     = 3,
 };
 
 enum class ERecipeState : uint8
 {
 	Locked                                   = 0,
 	Unlocked                                 = 1,
-	ERecipeState_MAX                         = 2,
 };
 
 enum class ERecipeEventTypes : uint8
@@ -93,14 +85,12 @@ enum class ERecipeEventTypes : uint8
 	OnDataCardCollected                      = 20,
 	OnEntitlement                            = 25,
 	Custom                                   = 255,
-	ERecipeEventTypes_MAX                    = 256,
 };
 
 enum class ERequirementScope : uint8
 {
 	Global                                   = 0,
 	PlayerSpecific                           = 1,
-	ERequirementScope_MAX                    = 2,
 };
 
 struct FGameplayTag

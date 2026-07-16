@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <Unreal/CoreUObject/UObject/UnrealType.hpp>
 #include "UKismetSystemLibrary.hpp"
-#include "FProperty.hpp"
 #include "UObject.hpp"
 #include "util/Log.hpp"
 
@@ -23,14 +23,10 @@ public: \
         const auto found = UObjectGlobals::StaticFindObject(nullptr, nullptr, L"/Script/"#Package"."#Name":" + name); \
         return reinterpret_cast<UFunction*>(found); \
     } \
-    \
-    bool Is##Name() { \
-        /* TODO: Type and Null Check */ \
-    } \
 
 #define ClassProperty(Name, T) \
     T* Get##Name() { \
-        return GetPropertyByName(L#Name)->ContainerPtrToValuePtr<T>(this); \
+        return GetPropertyByName(STR(#Name))->ContainerPtrToValuePtr<T>(this); \
     } \
     \
     void Set##Name(T value) { \
@@ -40,13 +36,13 @@ public: \
 #define ClassSoftProperty(Name, T) \
     TSoftObjectPtr<T>* Get##Name() { \
         Log::Verbose("Test "#Name": {:p}", (void*)this);\
-        Log::Verbose("Test "#Name": {:p}", (void*)GetPropertyByName(L#Name));\
-        return GetPropertyByName(L#Name)->ContainerPtrToValuePtr<TSoftObjectPtr<T>>(this); \
+        Log::Verbose("Test "#Name": {:p}", (void*)GetPropertyByName(STR(#Name)));\
+        return GetPropertyByName(STR(#Name))->ContainerPtrToValuePtr<TSoftObjectPtr<T>>(this); \
     } \
     \
     void Set##Name(T* value) { \
         Log::Verbose("Test "#Name": {:p}", (void*)Get##Name());\
-        *GetPropertyByName(L#Name)->ContainerPtrToValuePtr<TSoftObjectPtr<>>(this) = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(value); \
+        *GetPropertyByName(STR(#Name))->ContainerPtrToValuePtr<TSoftObjectPtr<>>(this) = UKismetSystemLibrary::Conv_ObjectToSoftObjectReference(value); \
     }
 
 #define ClassFunctionRet0(Name, T) \
@@ -56,7 +52,7 @@ public: \
     \
     T Invoke##Name() { \
         Name##_Params params {}; \
-        ProcessEvent(GetFunctionByName(L#Name), &params); \
+        ProcessEvent(GetFunctionByName(STR(#Name)), &params); \
         return params.ReturnValue; \
     }
 
@@ -71,7 +67,7 @@ public: \
         Name##_Params params { \
             .n1 = N1, \
         }; \
-        ProcessEvent(GetFunctionByName(L#Name), &params); \
+        ProcessEvent(GetFunctionByName(STR(#Name)), &params); \
         return params.ReturnValue; \
     }
 
@@ -88,6 +84,6 @@ public: \
             .n1 = N1, \
             .n2 = N2, \
         }; \
-        ProcessEvent(GetFunctionByName(L#Name), &params); \
+        ProcessEvent(GetFunctionByName(STR(#Name)), &params); \
         return params.ReturnValue; \
     }

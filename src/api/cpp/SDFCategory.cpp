@@ -34,6 +34,7 @@ void SDFCategory_Impl::setIcon(const std::string &icon) {
             factory.setIcon(parser.getTexture());
             break;
         default:
+            break;
     }
 }
 

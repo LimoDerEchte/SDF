@@ -44,7 +44,7 @@ std::unique_ptr<StoryGoalRule> StoryGoalRuleParser::parseRuleSegment(const std::
             content = content.substr(6);
             try {
                 reinterpret_cast<StoryGoalRuleCount*>(entry.get())->count = std::stoi(content.substr(0, content.find(';')));
-            } catch (std::exception& _) {
+            } catch (std::exception&) {
                 if (debug) Log::Warning("Failed to parse integer! Remaining content: {}", content);
                 return nullptr;
             }
